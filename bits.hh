@@ -19,8 +19,24 @@
 #define TINYGRAPH_BITS_HH_INCLUDED
 
 #include <cstdint>
+#include <limits>
 
 // change to uint64_t for larger range of n, or uint16_t for possibly faster processing
 typedef uint32_t word;
+
+constexpr int MAXN = std::numeric_limits<word>::digits;
+
+inline int popcount(word x) {
+    static_assert(sizeof (word) <= sizeof (int) ||
+		  sizeof (word) == sizeof (long) ||
+		  sizeof (word) == sizeof (long long),
+		  "cannot determine popcount intrinsic");
+    if (sizeof (word) <= sizeof (int))
+	return __builtin_popcount(x);
+    else if (sizeof (word) == sizeof (long))
+	return __builtin_popcountl(x);
+    else
+	return __builtin_popcountll(x);
+}
 
 #endif // TINYGRAPH_BITS_HH_INCLUDED

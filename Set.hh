@@ -30,6 +30,8 @@ public:
     }
     Set() : Set({}) { }
 
+    int size() const { return popcount(bits_); }
+
     void add(int x) { bits_ |= (word(1) << x); }
 
 private:
