@@ -18,6 +18,7 @@
 #ifndef TINYGRAPH_SET_HH_INCLUDED
 #define TINYGRAPH_SET_HH_INCLUDED
 
+#include <cassert>
 #include <initializer_list>
 
 #include "bits.hh"
@@ -30,9 +31,13 @@ public:
     }
     Set() : Set({}) { }
 
+    static int maxSize() { return MAXN; }
     int size() const { return popcount(bits_); }
 
-    void add(int x) { bits_ |= (word(1) << x); }
+    void add(int x) {
+	assert(x >= 0 && x < MAXN);
+	bits_ |= (word(1) << x);
+    }
 
 private:
     word bits_;
