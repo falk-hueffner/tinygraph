@@ -25,10 +25,10 @@ CXXFLAGS  = -std=c++11 $(CFLAGS) -W -Wall -Werror
 
 all: .deps $(EXECS)
 
-tinygraph: main.o
+tinygraph: main.o Set.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-test: test.o bits.o Set.o
+test: test.o testBits.o testSet.o Set.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 .deps:

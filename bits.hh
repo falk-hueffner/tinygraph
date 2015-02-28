@@ -39,4 +39,17 @@ inline int popcount(word x) {
 	return __builtin_popcountll(x);
 }
 
+inline int ctz(word x) {
+    static_assert(sizeof (word) <= sizeof (int) ||
+		  sizeof (word) == sizeof (long) ||
+		  sizeof (word) == sizeof (long long),
+		  "cannot determine ctz intrinsic");
+    if (sizeof (word) <= sizeof (int))
+	return __builtin_ctz(x);
+    else if (sizeof (word) == sizeof (long))
+	return __builtin_ctzl(x);
+    else
+	return __builtin_ctzll(x);
+}
+
 #endif // TINYGRAPH_BITS_HH_INCLUDED

@@ -20,6 +20,7 @@
 
 #include <cassert>
 #include <initializer_list>
+#include <iostream>
 
 #include "bits.hh"
 
@@ -66,9 +67,24 @@ public:
     bool isSubset(Set other) const { return (*this - other).isEmpty(); }
     bool isSuperset(Set other) const { return other.isSubset(*this); }
 
+    class Iterator {
+	friend Set;
+    public:
+	bool operator!=(Iterator it) const { return bits_ != it.bits_; }
+	int operator*() const { return ctz(bits_); }
+	Iterator& operator++() { bits_ &= bits_ - 1; return *this; }
+    private:
+	Iterator(word bits) : bits_(bits) { }
+	word bits_;
+    };
+    Iterator begin() const { return Iterator(bits_); }
+    Iterator end() const { return Iterator(0); }
+
 private:
     explicit Set(word bits) : bits_(bits) { }
     word bits_;
 };
+
+std::ostream& operator<<(std::ostream& out, Set s);
 
 #endif  // TINYGRAPH_SET_HH_INCLUDED

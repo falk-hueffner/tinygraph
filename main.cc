@@ -15,11 +15,17 @@
    with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.  */
 
-#include "Set.hh"
+#include "Graph.hh"
+
+bool f(Set s1, Set s2) {
+    return s1.isSubset(s2);
+}
 
 int main() {
-    Set s = {1, 2, 5};
-    s.add(7);
+    //Graph g(5, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}});
+    Set s{0, 1, 2, 5, 9, 13, 31, 5};
+
+    std::cout << s << std::endl;
 
     return 0;
 }
