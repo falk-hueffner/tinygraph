@@ -81,4 +81,15 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(!s1.isSuperset(s2));
 	REQUIRE(s2.isSuperset(s1));
     }
+    SECTION("enumerate") {
+	int n = 0;
+	for (int x : s2) {
+	    REQUIRE(s2.contains(x));
+	    ++n;
+	}
+	REQUIRE(n == s2.size());
+	for (int x : empty)
+	    REQUIRE(false);
+
+    }
 }
