@@ -31,15 +31,43 @@ public:
     }
     Set() : Set({}) { }
 
-    static int maxSize() { return MAXN; }
-    int size() const { return popcount(bits_); }
+    static constexpr int MAX_ELEMENT = MAXN - 1;
 
-    void add(int x) {
-	assert(x >= 0 && x < MAXN);
-	bits_ |= (word(1) << x);
+    bool isEmpty() const { return bits_ == 0; }
+    int size() const { return popcount(bits_); }
+    bool contains(int x) const {
+	assert(x >= 0 && x <= MAX_ELEMENT);
+	return bits_ & (word(1) << x);
     }
 
+    void add(int x)     { assert(x >= 0 && x <= MAX_ELEMENT); bits_ |=  (word(1) << x); }
+    void discard(int x) { assert(x >= 0 && x <= MAX_ELEMENT); bits_ &= ~(word(1) << x); }
+    void remove(int x)  { assert(contains(x)); discard(x); }
+
+    bool operator==(Set other) const { return bits_ == other.bits_; }
+    bool operator!=(Set other) const { return bits_ != other.bits_; }
+
+    Set& operator&=(Set other) { bits_ &=  other.bits_; return *this; }
+    Set& operator|=(Set other) { bits_ |=  other.bits_; return *this; }
+    Set& operator^=(Set other) { bits_ ^=  other.bits_; return *this; }
+    Set& operator-=(Set other) { bits_ &= ~other.bits_; return *this; }
+
+    Set operator&(Set other) const { Set s = *this; return s &= other; }
+    Set operator|(Set other) const { Set s = *this; return s |= other; }
+    Set operator^(Set other) const { Set s = *this; return s ^= other; }
+    Set operator-(Set other) const { Set s = *this; return s -= other; }
+
+    Set& operator+=(int x) { add(x);     return *this; }
+    Set& operator-=(int x) { discard(x); return *this; }
+
+    Set operator+(int x) const { Set s = *this; return s += x; }
+    Set operator-(int x) const { Set s = *this; return s -= x; }
+
+    bool isSubset(Set other) const { return (*this - other).isEmpty(); }
+    bool isSuperset(Set other) const { return other.isSubset(*this); }
+
 private:
+    explicit Set(word bits) : bits_(bits) { }
     word bits_;
 };
 
