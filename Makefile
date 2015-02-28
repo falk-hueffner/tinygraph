@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = tinygraph test
+EXECS	  = tinygraph
 
 CC	  = gcc
 CXX	  = g++
@@ -28,7 +28,10 @@ all: .deps $(EXECS)
 tinygraph: main.o Set.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-test: test.o testBits.o testSet.o Set.o
+test: testMain
+	./testMain
+
+testMain: testMain.o testBits.o testSet.o Set.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 .deps:
