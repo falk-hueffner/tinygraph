@@ -92,4 +92,25 @@ TEST_CASE("Set", "[Set]") {
 	    REQUIRE(false);
 
     }
+    SECTION("subsets") {
+	int n = 0;
+	for (Set s : s2.subsets()) {
+	    REQUIRE(s.isSubset(s2));
+	    ++n;
+	}
+	REQUIRE(n == 1 << s2.size());
+
+	n = 0;
+	for (Set s : empty) {
+	    REQUIRE(s == empty);
+	    ++n;
+	}
+	REQUIRE(n == 1);
+	n = 0;
+	for (Set s : Set({Set::MAX_ELEMENT})) {
+	    REQUIRE(s == empty || s == Set({Set::MAX_ELEMENT}));
+	    ++n;
+	}
+	REQUIRE(n == 2);
+    }
 }

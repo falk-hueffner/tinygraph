@@ -80,6 +80,29 @@ public:
     Iterator begin() const { return Iterator(bits_); }
     Iterator end() const { return Iterator(0); }
 
+    class Subsets {
+    public:
+	Subsets(word set) : set_(set) { }
+	class Iterator {
+	    friend Set;
+	public:
+	    // hack to get correct for() semantics without unneccessary comparisons
+	    bool operator!=(Iterator it) const { return !it.done_; }
+	    Set operator*() const { return Set(subset_); }
+	    const Iterator& operator++() { subset_ = (subset_ - set_) & set_; done_ = subset_ == 0; return *this; }
+	private:
+	    Iterator(word set, bool done) : set_(set), subset_(0), done_(done) { }
+	    word set_;
+	    word subset_;
+	    bool done_;
+	};
+	Iterator begin() const { return Iterator(set_, false); }
+	Iterator end() const { return Iterator(set_, true); }
+    private:
+	word set_;
+    };
+    Subsets subsets() { return Subsets(bits_); }
+
 private:
     explicit Set(word bits) : bits_(bits) { }
     word bits_;
