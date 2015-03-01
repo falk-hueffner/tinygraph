@@ -43,7 +43,9 @@ public:
 
     void add(int x)     { assert(x >= 0 && x <= MAX_ELEMENT); bits_ |=  (word(1) << x); }
     void discard(int x) { assert(x >= 0 && x <= MAX_ELEMENT); bits_ &= ~(word(1) << x); }
+    void toggle(int x)  { assert(x >= 0 && x <= MAX_ELEMENT); bits_ ^=  (word(1) << x); }
     void remove(int x)  { assert(contains(x)); discard(x); }
+    int pop() { assert(bits_); int x = ctz(bits_); bits_ &= bits_ - 1; return x; }
 
     bool operator==(Set other) const { return bits_ == other.bits_; }
     bool operator!=(Set other) const { return bits_ != other.bits_; }

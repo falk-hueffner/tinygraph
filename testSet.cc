@@ -147,4 +147,18 @@ TEST_CASE("Set", "[Set]") {
 	    REQUIRE(false);
 	}
     }
+    SECTION("toggle") {
+	s2.toggle(Set::MAX_ELEMENT);
+	s2.toggle(0);
+	s2.toggle(2);
+	s2.toggle(3);
+	REQUIRE(s2 == Set({1, 3, 6}));
+    }
+    SECTION("pop") {
+	REQUIRE(s2.pop() == 0);
+	REQUIRE(s2.pop() == 1);
+	REQUIRE(s2.pop() == 2);
+	REQUIRE(s2.pop() == 6);
+	REQUIRE(s2.pop() == Set::MAX_ELEMENT);
+    }
 }
