@@ -24,5 +24,4 @@ std::ostream& operator<<(std::ostream& out, const Graph& g) {
             if (g.hasEdge(u, v))
                 out << u << '\t' << v << std::endl;
     return out;
-
 }
