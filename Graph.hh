@@ -25,7 +25,7 @@
 
 class Graph {
 public:
-    explicit Graph(int n, std::initializer_list<std::pair<int, int>> es) : neighbors_(n) {
+    explicit Graph(int n, std::initializer_list<std::pair<int, int>> es = {}) : neighbors_(n) {
 	assert(n <= Set::MAX_ELEMENT + 1);
 	for (auto e : es)
 	    addEdge(e.first, e.second);
