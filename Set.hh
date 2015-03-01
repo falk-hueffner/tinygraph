@@ -114,7 +114,7 @@ public:
 	    Iterator& operator++() {
 		if (comb_ == 0) {
 		    // special case for k = 0; need to yield the empty
-		    // set, so we need to make sure end() != begin
+		    // set, so we need to make sure end() != begin()
 		    comb_ = 1;
 		    return *this;
 		}
