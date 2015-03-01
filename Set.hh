@@ -30,7 +30,8 @@ public:
 	for (int x : xs)
 	    add(x);
     }
-    Set() : Set({}) { }
+    Set() : bits_(0) { }
+    static Set ofBits(word s) { return Set(s); }
 
     static constexpr int MAX_ELEMENT = MAXN - 1;
 

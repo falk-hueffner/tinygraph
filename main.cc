@@ -17,15 +17,65 @@
 
 #include "Graph.hh"
 
-bool f(Set s1, Set s2) {
-    return s1.isSubset(s2);
+Set findP5(const Graph& g) {
+    int n = g.n();
+    for (int u = 0; u < n; ++u) {
+	for (int v : g.neighbors(u)) {
+	    for (int w : g.neighbors(v)) {
+		if (w == u || g.hasEdge(w, u))
+		    continue;
+		for (int x : g.neighbors(w)) {
+		    if (g.hasEdge(x, v) || g.hasEdge(x, u))
+			continue;
+		    for (int y : g.neighbors(x)) {
+			if (y < u || g.hasEdge(y, w) || g.hasEdge(y, v) || g.hasEdge(y, u))
+			    continue;
+			return {u, v, w, x, y};
+		    }
+		}
+	    }
+	}
+    }
+    return {};
+}
+
+bool p5EditingBranch(Graph& g, int k) {
+    if (k < 0)
+	return false;
+    Set p5 = findP5(g);
+    if (p5.isEmpty())
+	return true;
+    for (Set e : p5.combinations(2)) {
+	int u = e.pop();
+	int v = e.pop();
+	g.toggleEdge(u, v);
+	if (p5EditingBranch(g, k - 1))
+	    return true;
+	g.toggleEdge(u, v);
+    }
+    return false;
+}
+
+int p5Editing(const Graph& g0) {
+    Graph g = g0;
+    for (int k = 0; ; ++k) {
+	if (p5EditingBranch(g, k))
+	    return k;
+    }
 }
 
 int main() {
-    //Graph g(5, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}});
-    Set s{0, 1, 2, 5, 9, 13, 31, 5};
-
-    std::cout << s << std::endl;
+    int max_k = 0;
+    for (int n = 1; n < MAXN; ++n) {
+	std::cout << "*** n = " << n << std::endl;
+	Graph::enumerate(n, [&max_k](const Graph& g) {
+		int k = p5Editing(g);
+		if (k > max_k) {
+		    std::cout << "k = " << k << std::endl << g << std::endl;
+		    max_k = k;
+		}
+	    });
+    }
 
     return 0;
 }

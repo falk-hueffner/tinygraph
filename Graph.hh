@@ -18,6 +18,7 @@
 #ifndef TINYGRAPH_GRAPH_HH_INCLUDED
 #define TINYGRAPH_GRAPH_HH_INCLUDED
 
+#include <functional>
 #include <stdexcept>
 #include <vector>
 
@@ -30,6 +31,8 @@ public:
 	for (auto e : es)
 	    addEdge(e.first, e.second);
     }
+
+    static Graph ofNauty(word* g, int n);
 
     int n() const { return neighbors_.size(); }
     int m() const {
@@ -56,8 +59,14 @@ public:
 	neighbors_[v].toggle(u);
     }
 
+    typedef std::function<void(const Graph&)> EnumerateCallback;
+    enum { CONNECTED = 1 };
+    static void enumerate(int n, EnumerateCallback f, int flags = 0);
+    static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
+
 private:
     std::vector<Set> neighbors_;
+    static EnumerateCallback enumerateCallback_;
 };
 
 std::ostream& operator<<(std::ostream& out, const Graph& g);

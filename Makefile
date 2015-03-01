@@ -23,9 +23,11 @@ CXX	  = g++
 CFLAGS	  = -Ofast -march=native -g
 CXXFLAGS  = -std=c++11 $(CFLAGS) -W -Wall -Werror
 
-all: .deps $(EXECS)
+GENG_OBJ = gtools.o nauty1.o nautil1.o naugraph1.o schreier.o naurng.o
 
-tinygraph: main.o Set.o
+all: .deps nauty $(EXECS)
+
+tinygraph: main.o Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: testMain
@@ -33,6 +35,16 @@ test: testMain
 
 testMain: testMain.o testBits.o testSet.o Set.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
+
+nauty: nauty25r9.tar.gz
+	rm -rf nauty25r9 nauty
+	tar -xvvzf nauty25r9.tar.gz
+	ln -s nauty25r9 nauty
+	patch -p0 < geng.patch
+	(cd nauty && CFLAGS="$(CFLAGS)" ./configure --enable-wordsize=$$(awk '/typedef.*word/ {print gensub(/uint(.*)_t/, "\\1", "g", $$2)}' ../bits.hh) && make $(GENG_OBJ))
+
+nauty25r9.tar.gz:
+	wget http://cs.anu.edu.au/~bdm/nauty/nauty25r9.tar.gz
 
 .deps:
 	mkdir -p .deps

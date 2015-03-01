@@ -1,0 +1,28 @@
+--- nauty25r9.orig/geng.c	2014-02-13 09:53:33.000000001 +0100
++++ nauty25r9/geng.c	2015-01-02 16:05:25.000000001 +0100
+@@ -465,6 +465,25 @@ static xword xbit[] = {0x00000001,0x0000
+     + bytecount[((x)>>24)&0xFF] + bytecount[(x)&0xFF])
+ #endif
+ 
++#if defined(SETWORD_LONGLONG) && HAVE_CLZLL
++#undef XNEXTBIT
++#undef XPOPCOUNT
++#define XNEXTBIT(x) ((x) ? __builtin_ctzll(x) : WORDSIZE)
++#define XPOPCOUNT(x) __builtin_popcountll(x)
++#endif
++#if defined(SETWORD_LONG) && HAVE_CLZL
++#undef XNEXTBIT
++#undef XPOPCOUNT
++#define XNEXTBIT(x) ((x) ? __builtin_ctzl(x) : WORDSIZE)
++#define XPOPCOUNT(x) __builtin_popcountl(x)
++#endif
++#if defined(SETWORD_INT) && HAVE_CLZ
++#undef XNEXTBIT
++#undef XPOPCOUNT
++#define XNEXTBIT(x) ((x) ? __builtin_ctz(x) : WORDSIZE)
++#define XPOPCOUNT(x) __builtin_popcount(x)
++#endif
++
+ typedef struct
+ {
+     int ne,dmax;          /* values used for xlb,xub calculation */

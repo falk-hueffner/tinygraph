@@ -1,6 +1,9 @@
 *.o
 *~
 .deps
+nauty
+nauty25r9
+nauty25r9.tar.gz
 test
 testMain
 tinygraph

@@ -52,6 +52,28 @@ inline int ctz(word x) {
 	return __builtin_ctzll(x);
 }
 
+inline word reverseBits(word x) {
+    if (MAXN == 64) {
+	x = ((x >> 1) & 0x5555555555555555) | ((x & 0x5555555555555555) << 1);
+	x = ((x >> 2) & 0x3333333333333333) | ((x & 0x3333333333333333) << 2);
+	x = ((x >> 4) & 0x0f0f0f0f0f0f0f0f) | ((x & 0x0f0f0f0f0f0f0f0f) << 4);
+	return __builtin_bswap64(x);
+    } else if (MAXN == 32) {
+	x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
+	x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
+	x = ((x >> 4) & 0x0f0f0f0f) | ((x & 0x0f0f0f0f) << 4);
+	return __builtin_bswap32(x);
+    } else if (MAXN == 16) {
+	x = ((x >> 1) & 0x5555) | ((x & 0x5555) << 1);
+	x = ((x >> 2) & 0x3333) | ((x & 0x3333) << 2);
+	x = ((x >> 4) & 0x0f0f) | ((x & 0x0f0f) << 4);
+	return __builtin_bswap16(x);
+    } else {
+	abort();
+    }
+}
+
+
 inline word lowestBits(word x, int k) {
     word y = x;
     for (int i = 0; i < k; ++i)
