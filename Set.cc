@@ -17,6 +17,8 @@
 
 #include "Set.hh"
 
+constexpr int Set::MAX_ELEMENT;
+
 std::ostream& operator<<(std::ostream& out, Set s) {
     out << '{';
     bool first = true;
@@ -28,3 +30,4 @@ std::ostream& operator<<(std::ostream& out, Set s) {
     }
     return out << '}';
 }
+
