@@ -103,6 +103,53 @@ public:
     };
     Subsets subsets() { return Subsets(bits_); }
 
+    class Combinations {
+    public:
+	Combinations(word set, int k) : set_(set), k_(k) { }
+	class Iterator {
+	    friend Set;
+	public:
+	    bool operator!=(Iterator it) const { return comb_ != it.comb_; }
+	    Set operator*() const { return Set(comb_); }
+	    Iterator& operator++() {
+		if (comb_ == 0) {
+		    // special case for k = 0; need to yield the empty
+		    // set, so we need to make sure end() != begin
+		    comb_ = 1;
+		    return *this;
+		}
+		word h = (-comb_ & (comb_ ^ set_)) - 1;
+		word l = set_;
+		for (int i = 0; i < popcount(h & comb_) - 1; ++i)
+		    l &= l - 1;
+		comb_ = (set_ & h) ^ l;
+		return *this;
+	    }
+	private:
+	    Iterator(word set, word comb) : set_(set), comb_(comb) { }
+	    word set_;
+	    word comb_;
+	};
+	Iterator begin() const {
+	    if (k_ > popcount(set_))
+		return Iterator(0, 0);
+	    else
+		return Iterator(set_, lowestBits(set_, k_));
+	}
+	Iterator end() const {
+	    if (k_ > popcount(set_)) {
+		 return Iterator(0, 0);
+	    } else {
+		Iterator it(set_, highestBits(set_, k_));
+		return ++it;
+	    }
+	}
+    private:
+	word set_;
+	int k_;
+    };
+    Combinations combinations(int k) { return Combinations(bits_, k); }
+
 private:
     explicit Set(word bits) : bits_(bits) { }
     word bits_;

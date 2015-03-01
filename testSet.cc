@@ -113,4 +113,38 @@ TEST_CASE("Set", "[Set]") {
 	}
 	REQUIRE(n == 2);
     }
+    SECTION("combinations") {
+	int n = 0;
+	for (Set s : empty.combinations(0)) {
+	    REQUIRE(s.size() == 0);
+	    ++n;
+	}
+	REQUIRE(n == 1);
+	for (Set s : empty.combinations(10)) {
+	    CAPTURE(s);
+	    REQUIRE(false);
+	}
+	n = 0;
+	for (Set s : s2.combinations(0)) {
+	    REQUIRE(s.size() == 0);
+	    ++n;
+	}
+	REQUIRE(n == 1);
+	n = 0;
+	for (Set s : s2.combinations(1)) {
+	    REQUIRE(s.size() == 1);
+	    ++n;
+	}
+	REQUIRE(n == s2.size());
+	n = 0;
+	for (Set s : s2.combinations(3)) {
+	    REQUIRE(s.size() == 3);
+	    ++n;
+	}
+	REQUIRE(n == 10);
+	for (Set s : s2.combinations(s2.size() + 1)) {
+	    CAPTURE(s);
+	    REQUIRE(false);
+	}
+    }
 }
