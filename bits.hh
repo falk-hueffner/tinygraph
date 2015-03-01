@@ -52,4 +52,17 @@ inline int ctz(word x) {
 	return __builtin_ctzll(x);
 }
 
+inline word lowestBits(word x, int k) {
+    word y = x;
+    for (int i = 0; i < k; ++i)
+	y &= y - 1;
+    return x ^ y;
+}
+
+inline word highestBits(word x, int k) {
+    while (popcount(x) > k)
+	x &= x - 1;
+    return x;
+}
+
 #endif // TINYGRAPH_BITS_HH_INCLUDED
