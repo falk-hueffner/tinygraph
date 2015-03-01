@@ -101,14 +101,14 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(n == 1 << s2.size());
 
 	n = 0;
-	for (Set s : empty) {
+	for (Set s : empty.subsets()) {
 	    REQUIRE(s == empty);
 	    ++n;
 	}
 	REQUIRE(n == 1);
 	n = 0;
-	for (Set s : Set({Set::MAX_ELEMENT})) {
-	    REQUIRE(s == empty || s == Set({Set::MAX_ELEMENT}));
+	for (Set s : Set({Set::MAX_ELEMENT}).subsets()) {
+	    REQUIRE(((s == empty) || (s == Set({Set::MAX_ELEMENT}))));
 	    ++n;
 	}
 	REQUIRE(n == 2);

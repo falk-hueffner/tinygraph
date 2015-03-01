@@ -87,7 +87,7 @@ public:
 	    friend Set;
 	public:
 	    // hack to get correct for() semantics without unneccessary comparisons
-	    bool operator!=(Iterator it) const { return !it.done_; }
+	    bool operator!=(Iterator) const { return !done_; }
 	    Set operator*() const { return Set(subset_); }
 	    const Iterator& operator++() { subset_ = (subset_ - set_) & set_; done_ = subset_ == 0; return *this; }
 	private:
