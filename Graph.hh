@@ -35,6 +35,7 @@ public:
     static Graph ofNauty(word* g, int n);
 
     int n() const { return neighbors_.size(); }
+    Set vertices() const { return Set::ofRange(n()); }
     int m() const {
 	int m = 0;
 	for (int u = 0; u < n(); ++u)
@@ -57,6 +58,14 @@ public:
 	assert(v >= 0 && v < n());
 	neighbors_[u].toggle(v);
 	neighbors_[v].toggle(u);
+    }
+
+    int mSubgraph(Set vs) const {
+	int m = 0;
+	for (int u : vs)
+	    m += (neighbors(u) & vs).size();
+	assert((m % 2) == 0);
+	return m / 2;
     }
 
     typedef std::function<void(const Graph&)> EnumerateCallback;
