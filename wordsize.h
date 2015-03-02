@@ -19,7 +19,7 @@
 #define TINYGRAPH_WORDSIZE_H_INCLUDED
 
 // change to 64 for larger range of n, or 16 for possibly faster processing
-#define WORDSIZE 16
+#define WORDSIZE 32
 
 #if WORDSIZE != 16 && WORDSIZE != 32 && WORDSIZE != 64
 #error WORDSIZE must be 16, 32, or 64
