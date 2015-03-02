@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = tinygraph
+EXECS	  = ssge-approx
 
 CC	  = gcc
 CXX	  = g++
@@ -24,10 +24,11 @@ CFLAGS	  = -Ofast -march=native -g
 CXXFLAGS  = -std=c++11 $(CFLAGS) -W -Wall -Werror
 
 GENG_OBJ = gtools.o nauty1.o nautil1.o naugraph1.o schreier.o naurng.o
+COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 
 all: .deps nauty $(EXECS)
 
-tinygraph: main.o Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
+ssge-approx: ssge-approx.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: testMain
