@@ -81,7 +81,7 @@ std::string graphToString(const Graph& g) {
 
 int main() {
     double max_f = 0;
-    for (int n = 1; n < 11; ++n) {
+    for (int n = 1; n <= MAXN; ++n) {
 	double max_f_n = 0;
 	std::cout << "--- n = " << n << std::endl;
 	Graph::enumerate(n, [&max_f, &max_f_n](const Graph& g) {
