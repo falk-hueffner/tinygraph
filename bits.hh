@@ -22,7 +22,7 @@
 #include <limits>
 
 // change to uint64_t for larger range of n, or uint16_t for possibly faster processing
-typedef uint32_t word;
+typedef uint16_t word;
 
 constexpr int MAXN = std::numeric_limits<word>::digits;
 
@@ -53,6 +53,7 @@ inline int ctz(word x) {
 }
 
 inline word reverseBits(word x) {
+    static_assert(MAXN == 64 || MAXN == 32 || MAXN == 16, "unsupported word size");
     if (MAXN == 64) {
 	x = ((x >> 1) & 0x5555555555555555) | ((x & 0x5555555555555555) << 1);
 	x = ((x >> 2) & 0x3333333333333333) | ((x & 0x3333333333333333) << 2);
@@ -63,14 +64,12 @@ inline word reverseBits(word x) {
 	x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
 	x = ((x >> 4) & 0x0f0f0f0f) | ((x & 0x0f0f0f0f) << 4);
 	return __builtin_bswap32(x);
-    } else if (MAXN == 16) {
+    } else { // MAXN == 16
 	x = ((x >> 1) & 0x5555) | ((x & 0x5555) << 1);
 	x = ((x >> 2) & 0x3333) | ((x & 0x3333) << 2);
 	x = ((x >> 4) & 0x0f0f) | ((x & 0x0f0f) << 4);
 	x = ((x >> 8) & 0x00ff) | ((x & 0x00ff) << 8);
 	return x;
-    } else {
-	abort();
     }
 }
 
