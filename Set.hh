@@ -33,11 +33,11 @@ public:
     Set() : bits_(0) { }
     static Set ofBits(word s) { return Set(s); }
     static Set ofRange(int x) {
-	assert(x >= 0 && x <= MAXN);
-	return Set(x == 0 ? 0 : word(-1) >> (MAXN - x));
+	assert(x >= 0 && x <= WORDSIZE);
+	return Set(x == 0 ? 0 : word(-1) >> (WORDSIZE - x));
     }
 
-    static constexpr int MAX_ELEMENT = MAXN - 1;
+    static constexpr int MAX_ELEMENT = WORDSIZE - 1;
 
     bool isEmpty() const { return bits_ == 0; }
     int size() const { return popcount(bits_); }

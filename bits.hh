@@ -19,12 +19,16 @@
 #define TINYGRAPH_BITS_HH_INCLUDED
 
 #include <cstdint>
-#include <limits>
 
-// change to uint64_t for larger range of n, or uint16_t for possibly faster processing
+#include "wordsize.h"
+
+#if WORDSIZE == 16
 typedef uint16_t word;
-
-constexpr int MAXN = std::numeric_limits<word>::digits;
+#elif WORDSIZE == 32
+typedef uint32_t word;
+#elif WORDSIZE == 64
+typedef uint64_t word;
+#endif
 
 inline int popcount(word x) {
     static_assert(sizeof (word) <= sizeof (int) ||
@@ -53,18 +57,17 @@ inline int ctz(word x) {
 }
 
 inline word reverseBits(word x) {
-    static_assert(MAXN == 64 || MAXN == 32 || MAXN == 16, "unsupported word size");
-    if (MAXN == 64) {
+    if (WORDSIZE == 64) {
 	x = ((x >> 1) & 0x5555555555555555) | ((x & 0x5555555555555555) << 1);
 	x = ((x >> 2) & 0x3333333333333333) | ((x & 0x3333333333333333) << 2);
 	x = ((x >> 4) & 0x0f0f0f0f0f0f0f0f) | ((x & 0x0f0f0f0f0f0f0f0f) << 4);
 	return __builtin_bswap64(x);
-    } else if (MAXN == 32) {
+    } else if (WORDSIZE == 32) {
 	x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
 	x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
 	x = ((x >> 4) & 0x0f0f0f0f) | ((x & 0x0f0f0f0f) << 4);
 	return __builtin_bswap32(x);
-    } else { // MAXN == 16
+    } else { // WORDSIZE == 16
 	x = ((x >> 1) & 0x5555) | ((x & 0x5555) << 1);
 	x = ((x >> 2) & 0x3333) | ((x & 0x3333) << 2);
 	x = ((x >> 4) & 0x0f0f) | ((x & 0x0f0f) << 4);

@@ -15,9 +15,16 @@
    with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.  */
 
-#include "wordsize.h"
+#ifndef TINYGRAPH_WORDSIZE_H_INCLUDED
+#define TINYGRAPH_WORDSIZE_H_INCLUDED
 
-#define GENG_MAIN geng_main
-#define OUTPROC geng_outproc
+// change to 64 for larger range of n, or 16 for possibly faster processing
+#define WORDSIZE 16
 
-#include "nauty/geng.c"
+#if WORDSIZE != 16 && WORDSIZE != 32 && WORDSIZE != 64
+#error WORDSIZE must be 16, 32, or 64
+#endif
+
+#define MAXN WORDSIZE
+
+#endif // TINYGRAPH_WORDSIZE_H_INCLUDED

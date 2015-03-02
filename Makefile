@@ -37,12 +37,12 @@ test: testMain
 testMain: testMain.o testBits.o testSet.o Set.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-nauty: nauty25r9.tar.gz
+nauty: nauty25r9.tar.gz wordsize.h
 	rm -rf nauty25r9 nauty
 	tar -xvvzf nauty25r9.tar.gz
 	ln -s nauty25r9 nauty
 	patch -p0 < geng.patch
-	(cd nauty && CFLAGS="$(CFLAGS)" ./configure --enable-wordsize=$$(awk '/typedef.*word/ {print gensub(/uint(.*)_t/, "\\1", "g", $$2)}' ../bits.hh) && make $(GENG_OBJ))
+	(cd nauty && CFLAGS="$(CFLAGS)" ./configure --enable-wordsize=$$(perl -n -e'/define WORDSIZE (\d+)/ && print $$1' ../wordsize.h) && make $(GENG_OBJ))
 
 nauty25r9.tar.gz:
 	wget http://cs.anu.edu.au/~bdm/nauty/nauty25r9.tar.gz
@@ -58,6 +58,6 @@ nauty25r9.tar.gz:
 		rm -f $*.d
 
 clean:
-	rm -f *.o $(EXECS) core gmon.out
+	rm -rf *.o $(EXECS) nauty25r9 nauty core gmon.out
 
 -include $(wildcard .deps/*.P)
