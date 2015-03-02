@@ -67,7 +67,8 @@ inline word reverseBits(word x) {
 	x = ((x >> 1) & 0x5555) | ((x & 0x5555) << 1);
 	x = ((x >> 2) & 0x3333) | ((x & 0x3333) << 2);
 	x = ((x >> 4) & 0x0f0f) | ((x & 0x0f0f) << 4);
-	return __builtin_bswap16(x);
+	x = ((x >> 8) & 0x00ff) | ((x & 0x00ff) << 8);
+	return x;
     } else {
 	abort();
     }
