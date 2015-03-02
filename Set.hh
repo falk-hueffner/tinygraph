@@ -32,6 +32,10 @@ public:
     }
     Set() : bits_(0) { }
     static Set ofBits(word s) { return Set(s); }
+    static Set ofRange(int x) {
+	assert(x >= 0 && x <= MAXN);
+	return Set(x == 0 ? 0 : word(-1) >> (MAXN - x));
+    }
 
     static constexpr int MAX_ELEMENT = MAXN - 1;
 
