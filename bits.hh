@@ -76,6 +76,12 @@ inline word reverseBits(word x) {
     }
 }
 
+inline word delbit(word x, int n) {
+    word mask = (word(1) << n) - 1;
+    word lo = x & mask;
+    word hi = (x >> 1) & ~mask;
+    return hi | lo;
+}
 
 inline word lowestBits(word x, int k) {
     word y = x;

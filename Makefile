@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = ssge-approx
+EXECS	  = ssge-approx p5editing p5s
 
 CC	  = gcc
 CXX	  = g++
@@ -29,6 +29,12 @@ COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 all: .deps nauty $(EXECS)
 
 ssge-approx: ssge-approx.o $(COMMON_OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+p5s: p5s.o $(COMMON_OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+p5editing: p5editing.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: testMain

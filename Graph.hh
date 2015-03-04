@@ -53,11 +53,27 @@ public:
 	neighbors_[u].add(v);
 	neighbors_[v].add(u);
     }
+    void removeEdge(int u, int v) {
+	assert(u >= 0 && u < n());
+	assert(v >= 0 && v < n());
+	neighbors_[u].remove(v);
+	neighbors_[v].remove(u);
+    }
     void toggleEdge(int u, int v) {
 	assert(u >= 0 && u < n());
 	assert(v >= 0 && v < n());
 	neighbors_[u].toggle(v);
 	neighbors_[v].toggle(u);
+    }
+    void deleteVertex(int u) {
+	assert(u >= 0 && u < n());
+	int i = 0;
+	for (int v = 0; v < n(); ++v) {
+	    if (v == u)
+		continue;
+	    neighbors_[i++] = Set::ofBits(delbit(neighbors(v).bits(), u));
+	}
+	neighbors_.pop_back();
     }
 
     int mSubgraph(Set vs) const {
