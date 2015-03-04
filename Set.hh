@@ -45,6 +45,7 @@ public:
 	assert(x >= 0 && x <= MAX_ELEMENT);
 	return bits_ & (word(1) << x);
     }
+    word bits() const { return bits_; }
 
     void add(int x)     { assert(x >= 0 && x <= MAX_ELEMENT); bits_ |=  (word(1) << x); }
     void discard(int x) { assert(x >= 0 && x <= MAX_ELEMENT); bits_ &= ~(word(1) << x); }
