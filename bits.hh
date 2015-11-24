@@ -56,6 +56,19 @@ inline int ctz(word x) {
 	return __builtin_ctzll(x);
 }
 
+inline int clz(word x) {
+    static_assert(sizeof (word) <= sizeof (int) ||
+		  sizeof (word) == sizeof (long) ||
+		  sizeof (word) == sizeof (long long),
+		  "cannot determine clz intrinsic");
+    if (sizeof (word) <= sizeof (int))
+	return __builtin_clz(x);
+    else if (sizeof (word) == sizeof (long))
+	return __builtin_clzl(x);
+    else
+	return __builtin_clzll(x);
+}
+
 inline word reverseBits(word x) {
     if (WORDSIZE == 64) {
 	x = ((x >> 1) & 0x5555555555555555) | ((x & 0x5555555555555555) << 1);
