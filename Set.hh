@@ -126,11 +126,21 @@ public:
 		    comb_ = 1;
 		    return *this;
 		}
-		word h = (-comb_ & (comb_ ^ set_)) - 1;
-		word l = set_;
-		for (int i = 0; i < popcount(h & comb_) - 1; ++i)
-		    l &= l - 1;
-		comb_ = (set_ & h) ^ l;
+		// slightly improved from
+		// http://chessprogramming.wikispaces.com/Traversing+Subsets+of+a+Set
+		// by Gerd Isenberg
+		// The loop is executed on average less than once. Therefore, versions
+		// using popcount or pdep, which tend to have long latencies, have not
+		// yielded a speedup for me.
+		word sub = comb_;
+		word set = set_;
+		word tmp = sub - 1;
+		word rip = set & ((tmp | sub) - set);
+		for (sub = (tmp ^ rip) & sub; sub; rip ^= tmp, set ^= tmp) {
+		    tmp = set & -set;
+		    sub &= sub - 1;
+		}
+		comb_ = rip;
 		return *this;
 	    }
 	private:
