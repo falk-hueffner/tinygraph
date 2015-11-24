@@ -52,6 +52,18 @@ uint64_t countSubgraphs(const Graph& g, const Graph& f) {
     return numF / numAutomorphisms;
 }
 
+uint64_t countP3s(const Graph& g) {
+    int n = g.n();
+    uint64_t num = 0;
+    for (int u = 0; u < n; ++u) {
+        // count non-edges within G[N(u)]
+        Set n_u = g.neighbors(u);
+        int n_n = n_u.size();
+        num += (n_n * (n_n - 1)) / 2 - g.mSubgraph(n_u);
+    }
+    return num;
+}
+
 uint64_t countP5s(const Graph& g) {
     int n = g.n();
     uint64_t count = 0;
