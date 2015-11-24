@@ -31,7 +31,7 @@ all: .deps nauty $(EXECS)
 ssge-approx: ssge-approx.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-extremal: extremal.o $(COMMON_OBJ)
+extremal: extremal.o Subgraph.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 p5editing: p5editing.o $(COMMON_OBJ)
