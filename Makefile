@@ -64,6 +64,6 @@ nauty25r9.tar.gz:
 		rm -f $*.d
 
 clean:
-	rm -rf *.o $(EXECS) nauty25r9 nauty core gmon.out
+	rm -rf *.o $(EXECS) testMain nauty25r9 nauty core gmon.out
 
 -include $(wildcard .deps/*.P)
