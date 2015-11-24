@@ -33,6 +33,7 @@ public:
     }
 
     static Graph ofNauty(word* g, int n);
+    static Graph byName(std::string name);
 
     int n() const { return neighbors_.size(); }
     Set vertices() const { return Set::ofRange(n()); }

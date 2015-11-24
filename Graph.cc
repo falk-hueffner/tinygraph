@@ -24,6 +24,21 @@ Graph Graph::ofNauty(word* nautyg, int n) {
     return g;
 }
 
+Graph Graph::byName(std::string name) {
+    auto DIGITS = "0123456789";
+    if (name.empty())
+	throw std::invalid_argument("Graph::byName: empty name");
+    if (name[0] == 'P' && name.find_first_not_of(DIGITS, 1) == std::string::npos) {
+	name.erase(name.begin());
+	int n = std::stoi(name);
+	Graph g(n);
+	for (int u = 0; u + 1 < n; ++u)
+	    g.addEdge(u, u + 1);
+	return g;
+    }
+    throw std::invalid_argument("Graph::byName: unknown graph " + name);
+}
+
 extern "C" {
     int geng_main(int argc, char* argv[]);
     void geng_outproc(FILE* f, word* nautyg, int n);
