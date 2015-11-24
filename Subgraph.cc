@@ -51,3 +51,19 @@ uint64_t countSubgraphs(const Graph& g, const Graph& f) {
     assert(numF % numAutomorphisms == 0);
     return numF / numAutomorphisms;
 }
+
+uint64_t countP5s(const Graph& g) {
+    int n = g.n();
+    uint64_t count = 0;
+    // u--v--w--x--y
+    for (int w = 0; w < n; ++w) {
+	for (int v : g.neighbors(w)) {
+	    for (int x : (g.neighbors(w) - g.neighbors(v)).above(v)) {
+		for (int u : g.neighbors(v) - g.neighbors(w) - g.neighbors(x)) {
+		    count += (g.neighbors(x) - g.neighbors(w) - g.neighbors(v) - g.neighbors(u)).size();
+		}
+	    }
+	}
+    }
+    return count;
+}

@@ -20,16 +20,26 @@
 
 int main() {
     auto p5 = Graph::byName("P5");
-    uint64_t maxNum = 0;
+    std::vector<uint64_t> maxCounts;
     for (int n = 1; n <= MAXN; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
-	Graph::enumerate(n, [&maxNum, &p5](const Graph& g) {
-		uint64_t num = countSubgraphs(g, p5);
-                if (num > maxNum) {
-		    std::cout << num << ": " << g.toString() << std::endl;
-		    maxNum = num;
+	uint64_t maxCount = 0;
+	Graph::enumerate(n, [&maxCount, &p5](const Graph& g) {
+		uint64_t count = countP5s(g);
+		//assert(count == countSubgraphs(g, p5));
+                if (count > maxCount) {
+		    std::cout << count << ": " << g.toString() << std::endl;
+		    maxCount = count;
 		}
 	    });
+	maxCounts.push_back(maxCount);
+	std::cout << "sequence: " << std::endl;
+	for (size_t i = 0; i < maxCounts.size(); ++i) {
+	    if (i)
+		std::cout << ", ";
+	    std::cout << maxCounts[i];
+	}
+	std::cout << std::endl;
     }
 
     return 0;
