@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = ssge-approx p5editing p5s
+EXECS	  = ssge-approx p5editing extremal
 
 CC	  = gcc
 CXX	  = g++
@@ -31,7 +31,7 @@ all: .deps nauty $(EXECS)
 ssge-approx: ssge-approx.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-p5s: p5s.o $(COMMON_OBJ)
+extremal: extremal.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 p5editing: p5editing.o $(COMMON_OBJ)
