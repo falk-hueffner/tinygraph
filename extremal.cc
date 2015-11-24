@@ -18,22 +18,26 @@
 #include "Graph.hh"
 #include "Subgraph.hh"
 
+auto subgraphName = "P3";
+auto countSubgraph = countP3s;
+
 int main() {
-    auto p5 = Graph::byName("P5");
+    auto subgraph = Graph::byName(subgraphName);
     std::vector<uint64_t> maxCounts;
     for (int n = 1; n <= MAXN; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t maxCount = 0;
-	Graph::enumerate(n, [&maxCount, &p5](const Graph& g) {
-		uint64_t count = countP5s(g);
-		//assert(count == countSubgraphs(g, p5));
+	Graph::enumerate(n, [&maxCount, &subgraph](const Graph& g) {
+		uint64_t count = countSubgraph(g);
+		//assert(count == countSubgraphs(g, subgraph));
                 if (count > maxCount) {
-		    std::cout << count << ": " << g.toString() << std::endl;
+		    std::cerr << count << ": " << g.toString() << std::endl;
 		    maxCount = count;
 		}
 	    });
 	maxCounts.push_back(maxCount);
-	std::cout << "sequence: " << std::endl;
+	std::cout << "maximum number of induced " << subgraphName
+		  << " in an undirected unlabeled graph on n vertices:" << std::endl;
 	for (size_t i = 0; i < maxCounts.size(); ++i) {
 	    if (i)
 		std::cout << ", ";
