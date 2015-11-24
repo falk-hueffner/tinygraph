@@ -32,6 +32,7 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(Set::ofRange(0).isEmpty());
 	REQUIRE(Set::ofRange(Set::MAX_ELEMENT + 1) == all);
 	REQUIRE(Set::ofRange(9).size() == 9);
+	REQUIRE(Set::ofRange(9).max() == 8);
     }
     SECTION("size") {
 	REQUIRE(empty.size() == 0);
@@ -51,6 +52,14 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(!s2.contains(3));
 	REQUIRE(s2.contains(Set::MAX_ELEMENT));
 	REQUIRE(all.contains(Set::MAX_ELEMENT));
+    }
+    SECTION("minmax") {
+	REQUIRE(s2.min() == 0);
+	REQUIRE(s2.max() == Set::MAX_ELEMENT);
+	REQUIRE(s3.min() == 1);
+	REQUIRE(s3.max() == 5);
+	REQUIRE(all.min() == 0);
+	REQUIRE(all.max() == Set::MAX_ELEMENT);
     }
     SECTION("operations") {
 	REQUIRE(empty == Set());
