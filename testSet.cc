@@ -26,11 +26,13 @@ TEST_CASE("Set", "[Set]") {
     s2.add(1);
     s2.add(Set::MAX_ELEMENT);
     Set s3 = {1, 2, 4, 5};
+    Set all = Set::ofRange(Set::MAX_ELEMENT + 1);
 
     SECTION("size") {
 	REQUIRE(empty.size() == 0);
         REQUIRE(s1.size() == 3);
         REQUIRE(s2.size() == 5);
+        REQUIRE(all.size() == Set::MAX_ELEMENT + 1);
     }
     SECTION("contains") {
 	REQUIRE(s1.contains(0));
@@ -43,6 +45,7 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(s2.contains(2));
 	REQUIRE(!s2.contains(3));
 	REQUIRE(s2.contains(Set::MAX_ELEMENT));
+	REQUIRE(all.contains(Set::MAX_ELEMENT));
     }
     SECTION("operations") {
 	REQUIRE(empty == Set());
@@ -88,9 +91,14 @@ TEST_CASE("Set", "[Set]") {
 	    ++n;
 	}
 	REQUIRE(n == s2.size());
+	n = 0;
+	for (int x : all) {
+	    REQUIRE(all.contains(x));
+	    ++n;
+	}
+	REQUIRE(n == all.size());
 	for (int x : empty)
 	    REQUIRE(false);
-
     }
     SECTION("subsets") {
 	int n = 0;
@@ -146,6 +154,18 @@ TEST_CASE("Set", "[Set]") {
 	    CAPTURE(s);
 	    REQUIRE(false);
 	}
+	n = 0;
+	for (Set s : all.combinations(1)) {
+	    REQUIRE(s.size() == 1);
+	    ++n;
+	}
+	REQUIRE(n == all.size());
+	n = 0;
+	for (Set s : all.combinations(2)) {
+	    REQUIRE(s.size() == 2);
+	    ++n;
+	}
+	REQUIRE(n == (all.size() * (all.size() - 1)) / 2);
     }
     SECTION("toggle") {
 	s2.toggle(Set::MAX_ELEMENT);
@@ -160,5 +180,13 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(s2.pop() == 2);
 	REQUIRE(s2.pop() == 6);
 	REQUIRE(s2.pop() == Set::MAX_ELEMENT);
+	int n = 0;
+	Set all1 = all, all2;
+	while (!all1.isEmpty()) {
+	    all2.add(all1.pop());
+	    ++n;
+	}
+	REQUIRE(n == all.size());
+	REQUIRE(all2 == all);
     }
 }
