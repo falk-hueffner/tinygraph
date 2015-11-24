@@ -98,6 +98,15 @@ TEST_CASE("Set", "[Set]") {
 	REQUIRE(!s1.isSuperset(s2));
 	REQUIRE(s2.isSuperset(s1));
     }
+    SECTION("above") {
+	REQUIRE(s2.above(0) == s2 - 0);
+	REQUIRE(s2.above(Set::MAX_ELEMENT).isEmpty());
+	REQUIRE(s2.above(6) == Set({Set::MAX_ELEMENT}));
+	REQUIRE(s2.above(2) == Set({6, Set::MAX_ELEMENT}));
+	REQUIRE(all.above(0) == all - 0);
+	REQUIRE(all.above(Set::MAX_ELEMENT).isEmpty());
+	REQUIRE(all.above(9).size() == all.size() - 10);
+    }
     SECTION("enumerate") {
 	int n = 0;
 	for (int x : s2) {
