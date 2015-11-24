@@ -28,6 +28,11 @@ TEST_CASE("Set", "[Set]") {
     Set s3 = {1, 2, 4, 5};
     Set all = Set::ofRange(Set::MAX_ELEMENT + 1);
 
+    SECTION("ofRange") {
+	REQUIRE(Set::ofRange(0).isEmpty());
+	REQUIRE(Set::ofRange(Set::MAX_ELEMENT + 1) == all);
+	REQUIRE(Set::ofRange(9).size() == 9);
+    }
     SECTION("size") {
 	REQUIRE(empty.size() == 0);
         REQUIRE(s1.size() == 3);
