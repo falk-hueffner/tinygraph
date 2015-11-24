@@ -50,6 +50,23 @@ void Graph::enumerate(int n, EnumerateCallback f, int flags) {
 
 Graph::EnumerateCallback Graph::enumerateCallback_;
 
+std::string Graph::toString() const {
+    std::string r = "{";
+    bool start = true;
+    for (int u = 0; u < n(); ++u) {
+        for (int v = u + 1; v < n(); ++v) {
+            if (hasEdge(u, v)) {
+                if (!start)
+                    r += ',';
+                start = false;
+                r += '{' + std::to_string(u) + ',' + std::to_string(v) + '}';
+            }
+        }
+    }
+    r += '}';
+    return r;
+}
+
 std::ostream& operator<<(std::ostream& out, const Graph& g) {
     out << "# n = " << g.n() << std::endl;
     for (int u = 0; u < g.n(); ++u)

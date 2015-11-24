@@ -89,6 +89,8 @@ public:
     static void enumerate(int n, EnumerateCallback f, int flags = 0);
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
 
+    std::string toString() const;
+
 private:
     std::vector<Set> neighbors_;
     static EnumerateCallback enumerateCallback_;

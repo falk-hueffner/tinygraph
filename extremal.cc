@@ -40,23 +40,6 @@ uint64_t numP5s(const Graph& g) {
     return num;
 }
 
-std::string graphToString(const Graph& g) {
-    std::string r = "{[" + std::to_string(g.n()) + "] ";
-    bool start = true;
-    for (int u = 0; u < g.n(); ++u) {
-        for (int v = u + 1; v < g.n(); ++v) {
-            if (g.hasEdge(u, v)) {
-                if (!start)
-                    r += ", ";
-                start = false;
-                r += std::string("{") + std::to_string(u) + ", " + std::to_string(v) + '}';
-            }
-        }
-    }
-    r += '}';
-    return r;
-}
-
 int main() {
     uint64_t maxNum = 0;
     for (int n = 1; n <= MAXN; ++n) {
@@ -64,7 +47,7 @@ int main() {
 	Graph::enumerate(n, [&maxNum](const Graph& g) {
 		uint64_t num = numP5s(g);
                 if (num > maxNum) {
-		    std::cout << num << ": " << graphToString(g) << std::endl;
+		    std::cout << num << ": " << g.toString() << std::endl;
 		    maxNum = num;
 		}
 	    });
