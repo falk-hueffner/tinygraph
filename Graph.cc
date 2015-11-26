@@ -17,6 +17,8 @@
 
 #include "Graph.hh"
 
+#include <map>
+
 Graph Graph::ofNauty(word* nautyg, int n) {
     Graph g(n);
     for (int i = 0; i < n; ++i)
@@ -24,7 +26,46 @@ Graph Graph::ofNauty(word* nautyg, int n) {
     return g;
 }
 
+Graph Graph::ofGraph6(std::string g6) {
+    for (size_t i = 0; i < g6.size(); ++i)
+        g6[i] -= 63;
+    int n = g6[0];
+    Graph g(n);
+    int b = 0;
+    for (int j = 0 ; j < n; ++j) {
+        for (int i = 0; i < j; ++i) {
+            int byte = 1 + (b / 6);
+            int bit = 5 - (b % 6);
+            if ((g6[byte] >> bit) & 1)
+                g.addEdge(i, j);
+            ++b;
+        }
+    }
+    return g;
+}
+
 Graph Graph::byName(std::string name) {
+    static const std::map<std::string, Graph> namedGraphs = {
+	{"diamond", Graph::ofGraph6("Cz")},
+	{"paw",     Graph::ofGraph6("Cx")},
+	{"claw",    Graph::ofGraph6("Cs")},
+	{"gem",     Graph::ofGraph6("Dh{")},
+	{"bowtie",  Graph::ofGraph6("D{c")},
+	{"fork",    Graph::ofGraph6("DiC")},
+	{"kite",    Graph::ofGraph6("DTw")},
+	{"dart",    Graph::ofGraph6("DvC")},
+	{"house",   Graph::ofGraph6("DUw")},
+	{"banner",  Graph::ofGraph6("DrG")},
+	{"tadpole", Graph::ofGraph6("DKs")},
+	{"bull",    Graph::ofGraph6("D{O")},
+	{"cricket", Graph::ofGraph6("DiS")},
+    };
+    // claw, paw etc.
+    auto p = namedGraphs.find(name);
+    if (p != namedGraphs.end())
+	return p->second;
+
+    // Pn, Cn
     auto DIGITS = "0123456789";
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
