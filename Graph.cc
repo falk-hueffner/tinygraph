@@ -87,6 +87,7 @@ Graph Graph::byName(std::string name) {
 extern "C" {
     int geng_main(int argc, char* argv[]);
     void geng_outproc(FILE* f, word* nautyg, int n);
+    int geng_prune(word* nautyg, int n, int maxn);
 }
 
 void geng_outproc(FILE*, word* nautyg, int n) {
@@ -94,7 +95,14 @@ void geng_outproc(FILE*, word* nautyg, int n) {
     Graph::enumerateCallback()(g);
 }
 
-void Graph::enumerate(int n, EnumerateCallback f, int flags) {
+int geng_prune(word* nautyg, int n, int /*maxn*/) {
+    if (!Graph::pruneCallback())
+	return false;
+    Graph g = Graph::ofNauty(nautyg, n);
+    return Graph::pruneCallback()(g);
+}
+
+void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
     if (enumerateCallback_)
 	throw std::runtime_error("generating graphs is not reentrant");
     if (n == 0) {
@@ -102,6 +110,7 @@ void Graph::enumerate(int n, EnumerateCallback f, int flags) {
 	return;
     }
     enumerateCallback_ = f;
+    pruneCallback_ = p;
     std::vector<const char*> argv = {"geng", "-q" };
     if (flags & CONNECTED)
 	argv.push_back("-c");
@@ -110,9 +119,19 @@ void Graph::enumerate(int n, EnumerateCallback f, int flags) {
     argv.push_back(nullptr);
     geng_main(argv.size() - 1, const_cast<char**>(argv.data()));
     enumerateCallback_ = nullptr;
+    pruneCallback_ = nullptr;
+}
+
+void Graph::enumerate(int n, EnumerateCallback f, int flags) {
+    doEnumerate(n, f, nullptr, flags);
+}
+
+void Graph::enumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
+    doEnumerate(n, f, p, flags);
 }
 
 Graph::EnumerateCallback Graph::enumerateCallback_;
+Graph::PruneCallback Graph::pruneCallback_;
 
 std::string Graph::toString() const {
     std::string r = "{";

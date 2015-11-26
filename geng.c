@@ -19,5 +19,6 @@
 
 #define GENG_MAIN geng_main
 #define OUTPROC geng_outproc
+#define PRUNE geng_prune
 
 #include "nauty/geng.c"

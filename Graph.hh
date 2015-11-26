@@ -87,15 +87,20 @@ public:
     }
 
     typedef std::function<void(const Graph&)> EnumerateCallback;
+    typedef std::function<bool(const Graph&)> PruneCallback;
     enum { CONNECTED = 1 };
     static void enumerate(int n, EnumerateCallback f, int flags = 0);
+    static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0);
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
+    static PruneCallback pruneCallback() { return pruneCallback_; }
 
     std::string toString() const;
 
 private:
+    static void doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags);
     std::vector<Set> neighbors_;
     static EnumerateCallback enumerateCallback_;
+    static PruneCallback pruneCallback_;
 };
 
 std::ostream& operator<<(std::ostream& out, const Graph& g);
