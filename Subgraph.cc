@@ -99,6 +99,18 @@ bool containsP3(const Graph& g) {
     return false;
 }
 
+bool containsClaw(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.nonneighbors(u).above(u)) {
+	    for (int w : (g.nonneighbors(u) & g.nonneighbors(v)).above(v)) {
+		if (!(g.neighbors(u) & g.neighbors(v) & g.neighbors(w)).isEmpty())
+		    return true;
+	    }
+	}
+    }
+    return false;
+}
+
 uint64_t countP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;

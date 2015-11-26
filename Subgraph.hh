@@ -28,6 +28,7 @@ uint64_t countP5s(const Graph& g);
 
 bool contains(const Graph &g, const Graph& f);
 bool containsP3(const Graph &g);
+bool containsClaw(const Graph &g);
 
 }  // namespace Subgraph
 
