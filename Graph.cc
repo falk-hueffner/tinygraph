@@ -28,12 +28,16 @@ Graph Graph::byName(std::string name) {
     auto DIGITS = "0123456789";
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
-    if (name[0] == 'P' && name.find_first_not_of(DIGITS, 1) == std::string::npos) {
+    if ((name[0] == 'P' || name[0] == 'C')
+	&& name.find_first_not_of(DIGITS, 1) == std::string::npos) {
+	bool isC = name[0] == 'C';
 	name.erase(name.begin());
 	int n = std::stoi(name);
 	Graph g(n);
 	for (int u = 0; u + 1 < n; ++u)
 	    g.addEdge(u, u + 1);
+	if (isC)
+	    g.addEdge(n - 1, 0);
 	return g;
     }
     throw std::invalid_argument("Graph::byName: unknown graph " + name);
