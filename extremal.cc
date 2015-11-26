@@ -19,17 +19,17 @@
 #include "Subgraph.hh"
 
 auto subgraphName = "P3";
+auto subgraph = Graph::byName(subgraphName);
+//auto countSubgraph = [](const Graph& g) { return Subgraph::count(g, subgraph); };
 auto countSubgraph = Subgraph::countP3s;
 
 int main() {
-    auto subgraph = Graph::byName(subgraphName);
     std::vector<uint64_t> maxCounts;
-    for (int n = 1; n <= MAXN; ++n) {
+    for (int n = 0; n <= MAXN; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t maxCount = 0;
-	Graph::enumerate(n, [&maxCount, &subgraph](const Graph& g) {
+	Graph::enumerate(n, [&maxCount](const Graph& g) {
 		uint64_t count = countSubgraph(g);
-		//assert(count == Subgraph::count(g, subgraph));
                 if (count > maxCount) {
 		    std::cerr << count << ": " << g.toString() << std::endl;
 		    maxCount = count;
