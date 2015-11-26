@@ -15,32 +15,66 @@
    with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.	*/
 
+// Count the number of graphs on n nodes with a certain property.
+
 #include "Graph.hh"
 #include "Subgraph.hh"
+#include "EulerTransform.hh"
 
-auto subgraphName = "P3";
-auto subgraph = Graph::byName(subgraphName);
-//auto containsSubgraph = [](const Graph& g){ return Subgraph::contains(g, subgraph); };
-auto containsSubgraph = Subgraph::containsP3;
+#include <map>
+
+auto propertyName = "claw-free";
+
+using PropertyTest = std::function<bool(const Graph&)>;
+
+struct Property {
+    Property(PropertyTest t, bool d) : test(t), determinedByConnectedComponents(d) { }
+    PropertyTest test;
+    bool determinedByConnectedComponents;
+};
+
+bool clawFree(const Graph& g) {
+    static const Graph claw = Graph::byName("claw");
+    return !Subgraph::contains(g, claw);
+}
+
+std::map<std::string, Property> properties = {
+    {"claw-free", {clawFree, true}},
+};
+
+auto property = properties.at(propertyName);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+    for (size_t i = 0; i < v.size(); ++i) {
+	if (i)
+	    out << ", ";
+	out << v[i];
+    }
+    return out;
+}
 
 int main() {
     std::vector<uint64_t> counts;
     for (int n = 0; n <= MAXN; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t count = 0;
-	Graph::enumerate(n, [&count](const Graph& g) {
-		if (!containsSubgraph(g))
-		    ++count;
-	    });
+	Graph::enumerate(n, [&count](const Graph& g) {if (property.test(g)) ++count; },
+			 property.determinedByConnectedComponents ? Graph::CONNECTED : 0);
 	counts.push_back(count);
-	std::cout << "number of undirected unlabeled graph on n vertices that do not contain a "
-		  << subgraphName << " as an induced subgraph" << std::endl;
-	for (size_t i = 0; i < counts.size(); ++i) {
-	    if (i)
-		std::cout << ", ";
-	    std::cout << counts[i];
+	if (!property.determinedByConnectedComponents) {
+	    std::cout << "number of " << propertyName
+		      << " undirected unlabeled graph on n vertices:\n"
+		      << counts << std::endl;
+	} else {
+	    auto countsGeneral = EulerTransform::transform(counts);
+	    std::cout << "number of " << propertyName
+		      << " undirected unlabeled graph on n vertices:\n"
+		      << countsGeneral << std::endl;
+	    std::cout << "number of " << propertyName
+		      << " connected undirected unlabeled graph on n vertices:\n"
+		      << counts << std::endl;
 	}
-	std::cout << std::endl;
     }
 
     return 0;
