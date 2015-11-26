@@ -20,8 +20,8 @@
 
 auto subgraphName = "P3";
 auto subgraph = Graph::byName(subgraphName);
-// auto hasSubgraph = hasP3;
-auto hasSubgraph = [](const Graph& g){ return Subgraph::contains(g, subgraph); };
+//auto containsSubgraph = [](const Graph& g){ return Subgraph::contains(g, subgraph); };
+auto containsSubgraph = Subgraph::containsP3;
 
 int main() {
     std::vector<uint64_t> counts;
@@ -29,7 +29,7 @@ int main() {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t count = 0;
 	Graph::enumerate(n, [&count](const Graph& g) {
-		if (!hasSubgraph(g))
+		if (!containsSubgraph(g))
 		    ++count;
 	    });
 	counts.push_back(count);
