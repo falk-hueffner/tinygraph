@@ -20,8 +20,14 @@
 
 #include "Graph.hh"
 
-uint64_t countSubgraphs(const Graph &g, const Graph& f);
+namespace Subgraph {
+
+uint64_t count(const Graph &g, const Graph& f);
 uint64_t countP3s(const Graph& g);
 uint64_t countP5s(const Graph& g);
+
+bool contains(const Graph &g, const Graph& f);
+
+}  // namespace Subgraph
 
 #endif  // TINYGRAPH_SUBGRAPH_HH_INCLUDED

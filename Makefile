@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = ssge-approx p5editing extremal
+EXECS	  = count extremal ssge-approx p5editing
 
 CC	  = gcc
 CXX	  = g++
@@ -28,10 +28,13 @@ COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 
 all: .deps nauty $(EXECS)
 
-ssge-approx: ssge-approx.o $(COMMON_OBJ)
+count: count.o Subgraph.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 extremal: extremal.o Subgraph.o $(COMMON_OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+ssge-approx: ssge-approx.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 p5editing: p5editing.o $(COMMON_OBJ)

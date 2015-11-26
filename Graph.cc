@@ -52,6 +52,10 @@ void geng_outproc(FILE*, word* nautyg, int n) {
 void Graph::enumerate(int n, EnumerateCallback f, int flags) {
     if (enumerateCallback_)
 	throw std::runtime_error("generating graphs is not reentrant");
+    if (n == 0) {
+	f(Graph(0));
+	return;
+    }
     enumerateCallback_ = f;
     std::vector<const char*> argv = {"geng", "-q" };
     if (flags & CONNECTED)

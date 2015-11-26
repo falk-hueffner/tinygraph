@@ -19,29 +19,26 @@
 #include "Subgraph.hh"
 
 auto subgraphName = "P3";
-auto countSubgraph = Subgraph::countP3s;
+auto subgraph = Graph::byName(subgraphName);
+// auto hasSubgraph = hasP3;
+auto hasSubgraph = [](const Graph& g){ return Subgraph::contains(g, subgraph); };
 
 int main() {
-    auto subgraph = Graph::byName(subgraphName);
-    std::vector<uint64_t> maxCounts;
-    for (int n = 1; n <= MAXN; ++n) {
+    std::vector<uint64_t> counts;
+    for (int n = 0; n <= MAXN; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
-	uint64_t maxCount = 0;
-	Graph::enumerate(n, [&maxCount, &subgraph](const Graph& g) {
-		uint64_t count = countSubgraph(g);
-		//assert(count == Subgraph::count(g, subgraph));
-                if (count > maxCount) {
-		    std::cerr << count << ": " << g.toString() << std::endl;
-		    maxCount = count;
-		}
+	uint64_t count = 0;
+	Graph::enumerate(n, [&count](const Graph& g) {
+		if (!hasSubgraph(g))
+		    ++count;
 	    });
-	maxCounts.push_back(maxCount);
-	std::cout << "maximum number of induced " << subgraphName
-		  << " in an undirected unlabeled graph on n vertices:" << std::endl;
-	for (size_t i = 0; i < maxCounts.size(); ++i) {
+	counts.push_back(count);
+	std::cout << "number of undirected unlabeled graph on n vertices that do not contain a "
+		  << subgraphName << " as an induced subgraph" << std::endl;
+	for (size_t i = 0; i < counts.size(); ++i) {
 	    if (i)
 		std::cout << ", ";
-	    std::cout << maxCounts[i];
+	    std::cout << counts[i];
 	}
 	std::cout << std::endl;
     }

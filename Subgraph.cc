@@ -17,6 +17,8 @@
 
 #include "Subgraph.hh"
 
+namespace Subgraph {
+
 // simple and unoptimized subgraph isomorphism
 static uint64_t extendCount(const Graph& g, const Graph& f,
 			    Set unassigned, std::vector<int>& assignment) {
@@ -41,7 +43,7 @@ static uint64_t extendCount(const Graph& g, const Graph& f,
     return count;
 }
 
-uint64_t countSubgraphs(const Graph& g, const Graph& f) {
+uint64_t count(const Graph& g, const Graph& f) {
     if (g.n() < f.n())
 	return 0;
     std::vector<int> assignment;
@@ -50,6 +52,37 @@ uint64_t countSubgraphs(const Graph& g, const Graph& f) {
     auto numF = extendCount(g, f, g.vertices(), assignment);
     assert(numF % numAutomorphisms == 0);
     return numF / numAutomorphisms;
+}
+
+// simple and unoptimized subgraph isomorphism
+static bool extendContains(const Graph& g, const Graph& f,
+			   Set unassigned, std::vector<int>& assignment) {
+    if (assignment.size() == size_t(f.n()))
+        return true;
+    int u_f = assignment.size();
+    for (int u_g : unassigned) {
+        bool fits = true;
+        for (int v_f = 0; v_f < u_f; ++v_f) {
+            if (f.hasEdge(u_f, v_f) != g.hasEdge(u_g, assignment[v_f])) {
+                fits = false;
+                break;
+            }
+        }
+        if (fits) {
+            assignment.push_back(u_g);
+            if (extendContains(g, f, unassigned - u_g, assignment))
+		return true;
+            assignment.pop_back();
+        }
+    }
+    return false;
+}
+
+bool contains(const Graph& g, const Graph& f) {
+    if (g.n() < f.n())
+	return false;
+    std::vector<int> assignment;
+    return extendContains(g, f, g.vertices(), assignment);
 }
 
 uint64_t countP3s(const Graph& g) {
@@ -79,3 +112,5 @@ uint64_t countP5s(const Graph& g) {
     }
     return count;
 }
+
+}  // namespace Subgraph
