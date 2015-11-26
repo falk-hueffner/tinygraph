@@ -22,14 +22,17 @@
 #include "EulerTransform.hh"
 
 #include <map>
+#include <functional>
 
 auto propertyName = "claw-free";
 
 using PropertyTest = std::function<bool(const Graph&)>;
 
 struct Property {
-    Property(PropertyTest t, bool d) : test(t), determinedByConnectedComponents(d) { }
+    Property(PropertyTest t, bool h, bool d)
+	: test(t), hereditary(h), determinedByConnectedComponents(d) { }
     PropertyTest test;
+    bool hereditary;
     bool determinedByConnectedComponents;
 };
 
@@ -39,7 +42,7 @@ bool clawFree(const Graph& g) {
 }
 
 std::map<std::string, Property> properties = {
-    {"claw-free", {clawFree, true}},
+    {"claw-free", {clawFree, true, true}},
 };
 
 auto property = properties.at(propertyName);
@@ -59,8 +62,13 @@ int main() {
     for (int n = 0; n <= MAXN; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t count = 0;
-	Graph::enumerate(n, [&count](const Graph& g) {if (property.test(g)) ++count; },
-			 property.determinedByConnectedComponents ? Graph::CONNECTED : 0);
+	auto counter = [&count](const Graph& g) { if (property.test(g)) ++count; };
+	auto flags = property.determinedByConnectedComponents ? Graph::CONNECTED : 0;
+	if (property.hereditary) {
+	    Graph::enumerate(n, counter, std::not1(property.test), flags);
+	} else {
+	    Graph::enumerate(n, counter, flags);
+	}
 	counts.push_back(count);
 	if (!property.determinedByConnectedComponents) {
 	    std::cout << "number of " << propertyName
