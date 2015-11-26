@@ -85,6 +85,20 @@ bool contains(const Graph& g, const Graph& f) {
     return extendContains(g, f, g.vertices(), assignment);
 }
 
+bool containsP3(const Graph& g) {
+    Set todo = g.vertices();
+    while (!todo.isEmpty()) {
+	int u = todo.pop();
+	Set s = g.neighbors(u) + u;
+	for (int v : g.neighbors(u)) {
+	    if (g.neighbors(v) + v != s)
+		return true;
+	    todo.discard(v);
+	}
+    }
+    return false;
+}
+
 uint64_t countP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;
