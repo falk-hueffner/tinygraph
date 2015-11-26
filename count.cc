@@ -36,13 +36,8 @@ struct Property {
     bool determinedByConnectedComponents;
 };
 
-bool clawFree(const Graph& g) {
-    static const Graph claw = Graph::byName("claw");
-    return !Subgraph::contains(g, claw);
-}
-
 std::map<std::string, Property> properties = {
-    {"claw-free", {clawFree, true, true}},
+    {"claw-free", {[](const Graph& g) { return !Subgraph::containsClaw(g); }, true, true}},
 };
 
 auto property = properties.at(propertyName);
