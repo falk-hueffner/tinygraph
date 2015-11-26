@@ -22,6 +22,7 @@ CXX	  = g++
 
 CFLAGS	  = -Ofast -march=native -g
 CXXFLAGS  = -std=c++11 $(CFLAGS) -W -Wall -Werror
+GMP_LIBS  = -lgmp -lgmpxx
 
 GENG_OBJ = gtools.o nauty1.o nautil1.o naugraph1.o schreier.o naurng.o
 COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
