@@ -21,7 +21,7 @@
 auto subgraphName = "P3";
 auto subgraph = Graph::byName(subgraphName);
 //auto countSubgraph = [](const Graph& g) { return Subgraph::count(g, subgraph); };
-auto countSubgraph = Subgraph::countP3s;
+auto countSubgraph = Subgraph::countInducedP3s;
 
 int main() {
     std::vector<uint64_t> maxCounts;

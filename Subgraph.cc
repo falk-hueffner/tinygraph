@@ -20,7 +20,7 @@
 namespace Subgraph {
 
 // simple and unoptimized subgraph isomorphism
-static uint64_t extendCount(const Graph& g, const Graph& f,
+uint64_t extendCountInduced(const Graph& g, const Graph& f,
 			    Set unassigned, std::vector<int>& assignment) {
     if (assignment.size() == size_t(f.n()))
         return 1;
@@ -36,27 +36,27 @@ static uint64_t extendCount(const Graph& g, const Graph& f,
         }
         if (fits) {
             assignment.push_back(u_g);
-            count += extendCount(g, f, unassigned - u_g, assignment);
+            count += extendCountInduced(g, f, unassigned - u_g, assignment);
             assignment.pop_back();
         }
     }
     return count;
 }
 
-uint64_t count(const Graph& g, const Graph& f) {
+uint64_t countInduced(const Graph& g, const Graph& f) {
     if (g.n() < f.n())
 	return 0;
     std::vector<int> assignment;
-    auto numAutomorphisms = extendCount(f, f, f.vertices(), assignment);
+    auto numAutomorphisms = extendCountInduced(f, f, f.vertices(), assignment);
     assignment.clear();
-    auto numF = extendCount(g, f, g.vertices(), assignment);
+    auto numF = extendCountInduced(g, f, g.vertices(), assignment);
     assert(numF % numAutomorphisms == 0);
     return numF / numAutomorphisms;
 }
 
 // simple and unoptimized subgraph isomorphism
-static bool extendContains(const Graph& g, const Graph& f,
-			   Set unassigned, std::vector<int>& assignment) {
+bool extendHasInduced(const Graph& g, const Graph& f,
+		      Set unassigned, std::vector<int>& assignment) {
     if (assignment.size() == size_t(f.n()))
         return true;
     int u_f = assignment.size();
@@ -70,7 +70,7 @@ static bool extendContains(const Graph& g, const Graph& f,
         }
         if (fits) {
             assignment.push_back(u_g);
-            if (extendContains(g, f, unassigned - u_g, assignment))
+            if (extendHasInduced(g, f, unassigned - u_g, assignment))
 		return true;
             assignment.pop_back();
         }
@@ -78,14 +78,14 @@ static bool extendContains(const Graph& g, const Graph& f,
     return false;
 }
 
-bool contains(const Graph& g, const Graph& f) {
+bool hasInduced(const Graph& g, const Graph& f) {
     if (g.n() < f.n())
 	return false;
     std::vector<int> assignment;
-    return extendContains(g, f, g.vertices(), assignment);
+    return extendHasInduced(g, f, g.vertices(), assignment);
 }
 
-bool containsP3(const Graph& g) {
+bool hasInducedP3(const Graph& g) {
     Set todo = g.vertices();
     while (!todo.isEmpty()) {
 	int u = todo.pop();
@@ -99,7 +99,7 @@ bool containsP3(const Graph& g) {
     return false;
 }
 
-bool containsK3(const Graph& g) {
+bool hasK3(const Graph& g) {
     for (int u = 0; u < g.n(); ++u) {
 	for (int v : g.neighbors(u).above(u)) {
 	    if (!(g.neighbors(u) & g.neighbors(v)).isEmpty())
@@ -109,7 +109,7 @@ bool containsK3(const Graph& g) {
     return false;
 }
 
-bool containsClaw(const Graph& g) {
+bool hasInducedClaw(const Graph& g) {
     for (int u = 0; u < g.n(); ++u) {
 	for (int v : g.nonneighbors(u).above(u)) {
 	    for (int w : (g.nonneighbors(u) & g.nonneighbors(v)).above(v)) {
@@ -121,7 +121,7 @@ bool containsClaw(const Graph& g) {
     return false;
 }
 
-uint64_t countP3s(const Graph& g) {
+uint64_t countInducedP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;
     for (int u = 0; u < n; ++u) {
@@ -133,7 +133,7 @@ uint64_t countP3s(const Graph& g) {
     return num;
 }
 
-uint64_t countP5s(const Graph& g) {
+uint64_t countInducedP5s(const Graph& g) {
     int n = g.n();
     uint64_t count = 0;
     // u--v--w--x--y

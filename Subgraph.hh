@@ -22,14 +22,14 @@
 
 namespace Subgraph {
 
-uint64_t count(const Graph &g, const Graph& f);
-uint64_t countP3s(const Graph& g);
-uint64_t countP5s(const Graph& g);
+uint64_t countInduced(const Graph &g, const Graph& f);
+uint64_t countInducedP3s(const Graph& g);
+uint64_t countInducedP5s(const Graph& g);
 
-bool contains(const Graph &g, const Graph& f);
-bool containsP3(const Graph &g);
-bool containsK3(const Graph &g);
-bool containsClaw(const Graph &g);
+bool hasInduced(const Graph &g, const Graph& f);
+bool hasInducedP3(const Graph &g);
+bool hasK3(const Graph &g);
+bool hasInducedClaw(const Graph &g);
 
 }  // namespace Subgraph
 
