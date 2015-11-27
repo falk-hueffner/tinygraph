@@ -21,6 +21,7 @@
 #include "Subgraph.hh"
 #include "EulerTransform.hh"
 
+#include <chrono>
 #include <map>
 #include <functional>
 
@@ -54,8 +55,17 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 
 int main() {
     std::vector<uint64_t> counts;
+    std::vector<double> times;
     for (int n = 0; n <= MAXN; ++n) {
-	std::cerr << "--- n = " << n << std::endl;
+	auto tStart = std::chrono::steady_clock::now();
+	std::cerr << "--- n = " << n;
+	if (times.size() >= 2) {
+	    auto tn = times.back();
+	    auto tn1 = times[times.size() - 2];
+	    std::cerr << " estimated time: " << tn * (tn / tn1) << 's' << std::endl;
+	} else {
+	    std::cerr << std::endl;
+	}
 	uint64_t count = 0;
 	auto counter = [&count](const Graph& g) { if (property.test(g)) ++count; };
 	auto flags = property.determinedByConnectedComponents ? Graph::CONNECTED : 0;
@@ -65,6 +75,10 @@ int main() {
 	    Graph::enumerate(n, counter, flags);
 	}
 	counts.push_back(count);
+	auto tEnd = std::chrono::steady_clock::now();
+	double t =  (std::chrono::duration_cast<std::chrono::duration<double>>(tEnd - tStart)).count();
+	times.push_back(t);
+	std::cerr << "time: " << t << 's' << std::endl;
 	if (!property.determinedByConnectedComponents) {
 	    std::cout << "number of " << propertyName
 		      << " undirected unlabeled graph on n vertices:\n"
