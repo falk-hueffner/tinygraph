@@ -56,9 +56,11 @@ Graph Graph::byName(std::string name) {
 	{"dart",    Graph::ofGraph6("DvC")},
 	{"house",   Graph::ofGraph6("DUw")},
 	{"banner",  Graph::ofGraph6("DrG")},
+	{"K2,3",    Graph::ofGraph6("D]o")},
 	{"tadpole", Graph::ofGraph6("DKs")},
 	{"bull",    Graph::ofGraph6("D{O")},
 	{"cricket", Graph::ofGraph6("DiS")},
+	{"W4",      Graph::ofGraph6("Dl{")},
     };
     // claw, paw etc.
     auto p = namedGraphs.find(name);
