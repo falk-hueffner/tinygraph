@@ -17,15 +17,16 @@
 
 // Count the number of graphs on n nodes with a certain property.
 
+#include "Classes.hh"
+#include "EulerTransform.hh"
 #include "Graph.hh"
 #include "Subgraph.hh"
-#include "EulerTransform.hh"
 
 #include <chrono>
 #include <map>
 #include <functional>
 
-auto propertyName = "has-no-C4";
+auto propertyName = "chordal";
 
 using PropertyTest = std::function<bool(const Graph&)>;
 
@@ -40,8 +41,8 @@ struct Property {
 std::map<std::string, Property> properties = {
     {"claw-free",     {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); }, true,  true}},
     {"triangle-free", {[](const Graph& g) { return !Subgraph::hasK3(g); },          true,  true}},
-    {"has-C4",        {Subgraph::hasC4,                                             false, false}},
-    {"has-no-C4",     {[](const Graph& g) { return !Subgraph::hasC4(g); },          true,  true}},
+    {"squarefree",    {[](const Graph& g) { return !Subgraph::hasC4(g); },          true,  true}},
+    {"chordal",       {[](const Graph& g) { return Classes::isChordal(g); },        true,  true}},
 };
 
 auto property = properties.at(propertyName);

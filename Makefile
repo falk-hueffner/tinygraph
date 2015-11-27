@@ -29,7 +29,7 @@ COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 
 all: .deps nauty $(EXECS)
 
-count: count.o Subgraph.o EulerTransform.o $(COMMON_OBJ)
+count: count.o Classes.o Subgraph.o EulerTransform.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $(GMP_LIBS) $^ -o $@
 
 extremal: extremal.o Subgraph.o $(COMMON_OBJ)
@@ -44,7 +44,8 @@ p5editing: p5editing.o $(COMMON_OBJ)
 test: testMain
 	./testMain
 
-testMain: testMain.o testBits.o testSet.o Set.o
+testMain: testMain.o testBits.o testSet.o testClasses.o \
+		$(COMMON_OBJ) Classes.o Subgraph.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 nauty: nauty25r9.tar.gz wordsize.h
