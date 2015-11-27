@@ -25,7 +25,7 @@
 #include <map>
 #include <functional>
 
-auto propertyName = "triangle-free";
+auto propertyName = "has-no-C4";
 
 using PropertyTest = std::function<bool(const Graph&)>;
 
@@ -38,8 +38,10 @@ struct Property {
 };
 
 std::map<std::string, Property> properties = {
-    {"claw-free",     {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); }, true, true}},
-    {"triangle-free", {[](const Graph& g) { return !Subgraph::hasK3(g); },          true, true}},
+    {"claw-free",     {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); }, true,  true}},
+    {"triangle-free", {[](const Graph& g) { return !Subgraph::hasK3(g); },          true,  true}},
+    {"has-C4",        {Subgraph::hasC4,                                             false, false}},
+    {"has-no-C4",     {[](const Graph& g) { return !Subgraph::hasC4(g); },          true,  true}},
 };
 
 auto property = properties.at(propertyName);
