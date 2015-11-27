@@ -121,6 +121,18 @@ bool hasInducedClaw(const Graph& g) {
     return false;
 }
 
+bool hasC4(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u)) {
+	    for (int w : g.neighbors(u).above(v)) {
+		if (!((g.neighbors(v) & g.neighbors(w)) - u).isEmpty())
+		    return true;
+	    }
+	}
+    }
+    return false;
+}
+
 uint64_t countInducedP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;
