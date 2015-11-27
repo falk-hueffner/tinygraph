@@ -1,9 +1,13 @@
 *.o
 *~
 .deps
+count
+extremal
 nauty
 nauty25r9
 nauty25r9.tar.gz
+p5editing
+perf.data
+ssge-approx
 test
 testMain
-tinygraph
