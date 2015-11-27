@@ -99,6 +99,16 @@ bool containsP3(const Graph& g) {
     return false;
 }
 
+bool containsK3(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u).above(u)) {
+	    if (!(g.neighbors(u) & g.neighbors(v)).isEmpty())
+		return true;
+	}
+    }
+    return false;
+}
+
 bool containsClaw(const Graph& g) {
     for (int u = 0; u < g.n(); ++u) {
 	for (int v : g.nonneighbors(u).above(u)) {
