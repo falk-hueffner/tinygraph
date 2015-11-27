@@ -25,19 +25,6 @@ bool isTriviallyPerfect(const Graph& g) {
     return !Subgraph::hasInduced(g, p4) && !Subgraph::hasInduced(g, c4);
 }
 
-int max_cardinality_node(const Graph& g, Set choices, Set wanna_connect) {
-    int max_number = -1;
-    int node = 0;		// suppress warning
-    for (int x : choices) {
-        int number = (g.neighbors(x) & wanna_connect).size();
-        if (number > max_number) {
-            max_number = number;
-            node = x;
-	}
-    }
-    return node;
-}
-
 bool isChordal(const Graph& g) {
     if (g.n() == 0)
 	return true;
