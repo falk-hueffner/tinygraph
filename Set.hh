@@ -40,6 +40,7 @@ public:
     static constexpr int MAX_ELEMENT = WORDSIZE - 1;
 
     bool isEmpty() const { return bits_ == 0; }
+    bool nonempty() const { return !isEmpty(); }
     int size() const { return popcount(bits_); }
     bool contains(int x) const {
 	assert(x >= 0 && x <= MAX_ELEMENT);
