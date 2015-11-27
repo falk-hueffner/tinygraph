@@ -39,10 +39,10 @@ struct Property {
 };
 
 std::map<std::string, Property> properties = {
-    {"claw-free",     {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); }, true,  true}},
-    {"triangle-free", {[](const Graph& g) { return !Subgraph::hasK3(g); },          true,  true}},
-    {"squarefree",    {[](const Graph& g) { return !Subgraph::hasC4(g); },          true,  true}},
-    {"chordal",       {[](const Graph& g) { return Classes::isChordal(g); },        true,  true}},
+    {"(induced) claw-free", {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); }, true,  true}},
+    {"triangle-free",       {[](const Graph& g) { return !Subgraph::hasK3(g); },          true,  true}},
+    {"squarefree",          {[](const Graph& g) { return !Subgraph::hasC4(g); },          true,  true}},
+    {"chordal",             {Classes::isChordal,					  true,  true}},
 };
 
 auto property = properties.at(propertyName);
