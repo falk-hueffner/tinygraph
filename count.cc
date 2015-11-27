@@ -26,7 +26,7 @@
 #include <map>
 #include <functional>
 
-auto propertyName = "chordal";
+auto propertyName = "induced-P5-free";
 
 using PropertyTest = std::function<bool(const Graph&)>;
 
@@ -38,11 +38,44 @@ struct Property {
     bool determinedByConnectedComponents;
 };
 
+static Graph p4 = Graph::byName("P4");
+static Graph paw = Graph::byName("paw");
+static Graph diamond = Graph::byName("diamond");
+static Graph k4 = Graph::byName("K4");
+static Graph fork = Graph::byName("fork");
+static Graph p5 = Graph::byName("P5");
+static Graph banner = Graph::byName("banner");
+static Graph bull = Graph::byName("bull");
+static Graph c5 = Graph::byName("C5");
+static Graph house = Graph::byName("house");
+static Graph k23 = Graph::byName("K2,3");
+static Graph dart = Graph::byName("dart");
+static Graph bowtie = Graph::byName("bowtie");
+static Graph gem = Graph::byName("gem");
+static Graph w4 = Graph::byName("W4");
+static Graph k5 = Graph::byName("K5");
+
 std::map<std::string, Property> properties = {
-    {"(induced) claw-free", {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); }, true,  true}},
-    {"triangle-free",       {[](const Graph& g) { return !Subgraph::hasK3(g); },          true,  true}},
-    {"squarefree",          {[](const Graph& g) { return !Subgraph::hasC4(g); },          true,  true}},
-    {"chordal",             {Classes::isChordal,					  true,  true}},
+    {"triangle-free",         {[](const Graph& g) { return !Subgraph::hasK3(g); },               true,  true}},
+    {"squarefree",            {[](const Graph& g) { return !Subgraph::hasC4(g); },               true,  true}},
+    {"chordal",               {Classes::isChordal,                                               true,  true}},
+    {"induced-claw-free",     {[](const Graph& g) { return !Subgraph::hasInducedClaw(g); },      true,  true}},
+    {"induced-C4-free",       {[](const Graph& g) { return !Subgraph::hasInducedC4(g); },        true,  true}},
+    {"induced-P4-free",       {[](const Graph& g) { return !Subgraph::hasInduced(g, p4); },      true,  true}},
+    {"induced-paw-free",      {[](const Graph& g) { return !Subgraph::hasInduced(g, paw); },     true,  true}},
+    {"induced-diamond-free",  {[](const Graph& g) { return !Subgraph::hasInduced(g, diamond); }, true,  true}},
+    {"K4-free",               {[](const Graph& g) { return !Subgraph::hasInduced(g, k4); },      true,  true}},
+    {"induced-fork-free",     {[](const Graph& g) { return !Subgraph::hasInduced(g, fork); },    true,  true}},
+    {"induced-P5-free",       {[](const Graph& g) { return !Subgraph::hasInducedP5(g); },        true,  true}},
+    {"induced-banner-free",   {[](const Graph& g) { return !Subgraph::hasInduced(g, banner); },  true,  true}},
+    {"induced-bull-free",     {[](const Graph& g) { return !Subgraph::hasInduced(g, bull); },    true,  true}},
+    {"induced-C5-free",       {[](const Graph& g) { return !Subgraph::hasInduced(g, c5); },      true,  true}},
+    {"induced-house-free",    {[](const Graph& g) { return !Subgraph::hasInduced(g, house); },   true,  true}},
+    {"induced-K2,3-free",     {[](const Graph& g) { return !Subgraph::hasInduced(g, k23); },     true,  true}},
+    {"induced-dart-free",     {[](const Graph& g) { return !Subgraph::hasInduced(g, dart); },    true,  true}},
+    {"induced-bowtie-free",   {[](const Graph& g) { return !Subgraph::hasInduced(g, bowtie); },  true,  true}},
+    {"induced-gem-free",      {[](const Graph& g) { return !Subgraph::hasInduced(g, gem); },     true,  true}},
+    {"K5-free",               {[](const Graph& g) { return !Subgraph::hasInduced(g, k5); },      true,  true}},
 };
 
 auto property = properties.at(propertyName);
