@@ -26,7 +26,11 @@ namespace EulerTransform {
 
 typedef mpz_class bignum;
 
-std::vector<bignum> transform(const std::vector<uint64_t>& connectedSeq);
+std::vector<bignum> transform(const std::vector<uint64_t>& seq);
+std::vector<bignum> nonGraphs(const std::vector<uint64_t>& seq);
+std::vector<bignum> nonGraphs(const std::vector<bignum>& seq);
+std::vector<bignum> connectedNonGraphs(const std::vector<uint64_t>& seq);
+std::vector<bignum> connectedNonGraphs(const std::vector<bignum>& seq);
 
 }  // namespace EulerTransform
 

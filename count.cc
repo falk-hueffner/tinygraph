@@ -84,14 +84,23 @@ int main() {
 	    std::cout << "number of " << propertyName
 		      << " undirected unlabeled graph on n vertices:\n"
 		      << counts << std::endl;
+	    std::cout << "number of non-" << propertyName
+		      << " undirected unlabeled graph on n vertices:\n"
+		      << EulerTransform::nonGraphs(counts) << std::endl;
 	} else {
 	    auto countsGeneral = EulerTransform::transform(counts);
 	    std::cout << "number of " << propertyName
 		      << " undirected unlabeled graph on n vertices:\n"
 		      << countsGeneral << std::endl;
+	    std::cout << "number of non-" << propertyName
+		      << " undirected unlabeled graph on n vertices:\n"
+		      << EulerTransform::nonGraphs(countsGeneral) << std::endl;
 	    std::cout << "number of " << propertyName
 		      << " connected undirected unlabeled graph on n vertices:\n"
 		      << counts << std::endl;
+	    std::cout << "number of non-" << propertyName
+		      << " connected undirected unlabeled graph on n vertices:\n"
+		      << EulerTransform::connectedNonGraphs(counts) << std::endl;
 	}
     }
 
