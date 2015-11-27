@@ -69,16 +69,22 @@ Graph Graph::byName(std::string name) {
     auto DIGITS = "0123456789";
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
-    if ((name[0] == 'P' || name[0] == 'C')
+    if ((name[0] == 'P' || name[0] == 'C' || name[0] == 'K')
 	&& name.find_first_not_of(DIGITS, 1) == std::string::npos) {
-	bool isC = name[0] == 'C';
+	auto type = name[0];
 	name.erase(name.begin());
 	int n = std::stoi(name);
 	Graph g(n);
-	for (int u = 0; u + 1 < n; ++u)
-	    g.addEdge(u, u + 1);
-	if (isC)
-	    g.addEdge(n - 1, 0);
+	if (type == 'K') {
+	    for (int u = 0; u < n; ++u)
+		for (int v = u + 1; v < n; ++v)
+		    g.addEdge(u, v);
+	} else {
+	    for (int u = 0; u + 1 < n; ++u)
+		g.addEdge(u, u + 1);
+	    if (type == 'C')
+		g.addEdge(n - 1, 0);
+	}
 	return g;
     }
     throw std::invalid_argument("Graph::byName: unknown graph " + name);
