@@ -133,6 +133,29 @@ bool hasC4(const Graph& g) {
     return false;
 }
 
+bool hasInducedC4(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u)) {
+	    for (int w : (g.neighbors(u) - g.neighbors(v)).above(v)) {
+		if (((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u) - u).nonempty())
+		    return true;
+	    }
+	}
+    }
+    return false;
+}
+
+bool hasInducedP5(const Graph& g) {
+    // u--v--w--x--y
+    for (int w = 0; w < g.n(); ++w)
+	for (int v : g.neighbors(w))
+	    for (int x : (g.neighbors(w) - g.neighbors(v)).above(v))
+		for (int u : g.neighbors(v) - g.neighbors(w) - g.neighbors(x))
+		    if ((g.neighbors(x) - g.neighbors(w) - g.neighbors(v) - g.neighbors(u)).nonempty())
+			return true;
+    return false;
+}
+
 uint64_t countInducedP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;

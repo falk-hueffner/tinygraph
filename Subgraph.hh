@@ -31,6 +31,8 @@ bool hasInducedP3(const Graph &g);
 bool hasK3(const Graph &g);
 bool hasInducedClaw(const Graph &g);
 bool hasC4(const Graph &g);
+bool hasInducedC4(const Graph &g);
+bool hasInducedP5(const Graph &g);
 
 }  // namespace Subgraph
 
