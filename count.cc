@@ -20,13 +20,14 @@
 #include "Classes.hh"
 #include "EulerTransform.hh"
 #include "Graph.hh"
+#include "Invariants.hh"
 #include "Subgraph.hh"
 
 #include <chrono>
 #include <map>
 #include <functional>
 
-auto propertyName = "induced-P5-free";
+auto propertyName = "3-colorable";
 
 using PropertyTest = std::function<bool(const Graph&)>;
 
@@ -76,6 +77,7 @@ std::map<std::string, Property> properties = {
     {"induced-bowtie-free",   {[](const Graph& g) { return !Subgraph::hasInduced(g, bowtie); },  true,  true}},
     {"induced-gem-free",      {[](const Graph& g) { return !Subgraph::hasInduced(g, gem); },     true,  true}},
     {"K5-free",               {[](const Graph& g) { return !Subgraph::hasInduced(g, k5); },      true,  true}},
+    {"3-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 3); },      true,  true}},
 };
 
 auto property = properties.at(propertyName);
