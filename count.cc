@@ -27,7 +27,8 @@
 #include <map>
 #include <functional>
 
-auto propertyName = "3-colorable";
+auto propertyName = "split";
+bool connectedOnly = false;
 
 using PropertyTest = std::function<bool(const Graph&)>;
 
@@ -35,7 +36,9 @@ struct Property {
     Property(PropertyTest t, bool h, bool d)
 	: test(t), hereditary(h), determinedByConnectedComponents(d) { }
     PropertyTest test;
+    // if G has the property, then also every induced subgraph of G has
     bool hereditary;
+    // G has the property if and only if each connected subgraph has the property
     bool determinedByConnectedComponents;
 };
 
@@ -83,6 +86,7 @@ std::map<std::string, Property> properties = {
     {"8-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 8); },      true,  true}},
     {"9-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 9); },      true,  true}},
     {"perfect",               {[](const Graph& g) { return Classes::isPerfect(g); },             true,  true}},
+    {"split",                 {[](const Graph& g) { return Classes::isSplit(g); },               true,  false}},
 };
 
 auto property = properties.at(propertyName);
@@ -98,6 +102,8 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 }
 
 int main() {
+    if (property.determinedByConnectedComponents)
+	connectedOnly = false;
     std::vector<uint64_t> counts;
     std::vector<double> times;
     for (int n = 0; n <= MAXN; ++n) {
@@ -112,7 +118,7 @@ int main() {
 	}
 	uint64_t count = 0;
 	auto counter = [&count](const Graph& g) { if (property.test(g)) ++count; };
-	auto flags = property.determinedByConnectedComponents ? Graph::CONNECTED : 0;
+	auto flags = connectedOnly || property.determinedByConnectedComponents ? Graph::CONNECTED : 0;
 	if (property.hereditary) {
 	    Graph::enumerate(n, counter, std::not1(property.test), flags);
 	} else {
@@ -123,7 +129,14 @@ int main() {
 	double t =  (std::chrono::duration_cast<std::chrono::duration<double>>(tEnd - tStart)).count();
 	times.push_back(t);
 	std::cerr << "time: " << t << 's' << std::endl;
-	if (!property.determinedByConnectedComponents) {
+	if (connectedOnly) {
+	    std::cout << "number of connected " << propertyName
+		      << " undirected unlabeled graph on n vertices:\n"
+		      << counts << std::endl;
+	    std::cout << "number of connected non-" << propertyName
+		      << " undirected unlabeled graph on n vertices:\n"
+		      << EulerTransform::connectedNonGraphs(counts) << std::endl;
+	} else if (!property.determinedByConnectedComponents) {
 	    std::cout << "number of " << propertyName
 		      << " undirected unlabeled graph on n vertices:\n"
 		      << counts << std::endl;

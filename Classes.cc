@@ -17,6 +17,8 @@
 
 #include "Classes.hh"
 
+#include <algorithm>
+
 namespace Classes {
 
 bool isTriviallyPerfect(const Graph& g) {
@@ -53,6 +55,25 @@ bool isChordal(const Graph& g) {
 
 bool isPerfect(const Graph& g) {
     return !Subgraph::hasOddHole(g) && !Subgraph::hasOddHole(g.complement());
+}
+
+bool isSplit(const Graph& g) {
+    int n = g.n();
+    if (n == 0)
+	return true;
+    int degs[n];
+    for (int u = 0; u < n; ++u)
+	degs[u] = g.deg(u);
+    std::sort(degs, degs + n, std::greater<std::size_t>());
+    int sum1 = 0, i;
+    for (i = 0; i < n && degs[i] >= i; ++i)
+        sum1 += degs[i];
+    int m = i;
+    int sum2 = 0;
+    for (; i < n; ++i)
+        sum2 += degs[i];
+    int splittance2 = m * (m-1) + sum2 - sum1;
+    return splittance2 == 0;
 }
 
 }  // namespace Classes
