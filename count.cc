@@ -40,7 +40,6 @@ struct Property {
 };
 
 static Graph p4 = Graph::byName("P4");
-static Graph diamond = Graph::byName("diamond");
 static Graph k4 = Graph::byName("K4");
 static Graph fork = Graph::byName("fork");
 static Graph p5 = Graph::byName("P5");
@@ -63,7 +62,7 @@ std::map<std::string, Property> properties = {
     {"induced-C4-free",       {[](const Graph& g) { return !Subgraph::hasInducedC4(g); },        true,  true}},
     {"induced-P4-free",       {[](const Graph& g) { return !Subgraph::hasInduced(g, p4); },      true,  true}},
     {"induced-paw-free",      {[](const Graph& g) { return !Subgraph::hasInducedPaw(g); },       true,  true}},
-    {"induced-diamond-free",  {[](const Graph& g) { return !Subgraph::hasInduced(g, diamond); }, true,  true}},
+    {"induced-diamond-free",  {[](const Graph& g) { return !Subgraph::hasInducedDiamond(g); },   true,  true}},
     {"K4-free",               {[](const Graph& g) { return !Subgraph::hasInduced(g, k4); },      true,  true}},
     {"induced-fork-free",     {[](const Graph& g) { return !Subgraph::hasInduced(g, fork); },    true,  true}},
     {"induced-P5-free",       {[](const Graph& g) { return !Subgraph::hasInducedP5(g); },        true,  true}},

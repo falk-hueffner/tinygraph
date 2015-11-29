@@ -157,6 +157,18 @@ bool hasInducedC4(const Graph& g) {
     return false;
 }
 
+bool hasInducedDiamond(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u)) {
+	    for (int w : g.neighbors(u).above(v) & g.neighbors(v)) {
+		if (((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u) - u).nonempty())
+		    return true;
+	    }
+	}
+    }
+    return false;
+}
+
 bool hasInducedP5(const Graph& g) {
     // u--v--w--x--y
     for (int w = 0; w < g.n(); ++w)
