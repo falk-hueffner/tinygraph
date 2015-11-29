@@ -100,6 +100,21 @@ Graph Graph::cycle(int n) {
     return g;
 }
 
+bool Graph::isConnected() const {
+    if (n() == 0)
+	return true;
+    Set q = {0};
+    Set seen = {0};
+    while (q.nonempty()) {
+	int u = q.pop();
+	q |= neighbors(u) - seen;
+	seen |= neighbors(u);
+	if (seen == vertices())
+	    return true;
+    }
+    return false;
+}
+
 extern "C" {
     int geng_main(int argc, char* argv[]);
     void geng_outproc(FILE* f, word* nautyg, int n);

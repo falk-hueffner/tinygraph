@@ -51,6 +51,7 @@ public:
     Set neighbors(int u) const { return neighbors_[u]; }
     Set nonneighbors(int u) const { return vertices() - neighbors(u); }
     bool hasEdge(int u, int v) const { return neighbors(u).contains(v); }
+    bool isConnected() const;
 
     void addEdge(int u, int v) {
 	assert(u >= 0 && u < n());
