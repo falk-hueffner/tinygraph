@@ -77,6 +77,12 @@ std::map<std::string, Property> properties = {
     {"induced-gem-free",      {[](const Graph& g) { return !Subgraph::hasInduced(g, gem); },     true,  true}},
     {"K5-free",               {[](const Graph& g) { return !Subgraph::hasInduced(g, k5); },      true,  true}},
     {"3-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 3); },      true,  true}},
+    {"4-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 4); },      true,  true}},
+    {"5-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 5); },      true,  true}},
+    {"6-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 6); },      true,  true}},
+    {"7-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 7); },      true,  true}},
+    {"8-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 8); },      true,  true}},
+    {"9-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 9); },      true,  true}},
 };
 
 auto property = properties.at(propertyName);
