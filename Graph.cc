@@ -92,6 +92,14 @@ Graph Graph::byName(std::string name) {
     throw std::invalid_argument("Graph::byName: unknown graph " + name);
 }
 
+Graph Graph::cycle(int n) {
+    Graph g(n);
+    for (int u = 0; u + 1 < n; ++u)
+	g.addEdge(u, u + 1);
+    g.addEdge(n - 1, 0);
+    return g;
+}
+
 extern "C" {
     int geng_main(int argc, char* argv[]);
     void geng_outproc(FILE* f, word* nautyg, int n);

@@ -36,6 +36,8 @@ public:
     static Graph byName(std::string name);
     static Graph ofGraph6(std::string g6);
 
+    static Graph cycle(int n);
+
     int n() const { return neighbors_.size(); }
     Set vertices() const { return Set::ofRange(n()); }
     int m() const {
@@ -85,6 +87,13 @@ public:
 	    m += (neighbors(u) & vs).size();
 	assert((m % 2) == 0);
 	return m / 2;
+    }
+
+    Graph complement() const {
+	Graph g(n());
+	for (int u = 0; u < n(); ++u)
+	    g.neighbors_[u] = vertices() - neighbors(u) - u;
+	return g;
     }
 
     typedef std::function<void(const Graph&)> EnumerateCallback;
