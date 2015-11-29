@@ -25,6 +25,7 @@ namespace Classes {
 
 bool isTriviallyPerfect(const Graph& g);
 bool isChordal(const Graph& g);
+bool isPerfect(const Graph& g);
 
 }  // namespace Classes
 

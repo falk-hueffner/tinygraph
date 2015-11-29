@@ -51,4 +51,8 @@ bool isChordal(const Graph& g) {
     return true;
 }
 
+bool isPerfect(const Graph& g) {
+    return !Subgraph::hasOddHole(g) && !Subgraph::hasOddHole(g.complement());
+}
+
 }  // namespace Classes

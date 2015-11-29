@@ -208,4 +208,30 @@ uint64_t countInducedP5s(const Graph& g) {
     return count;
 }
 
+bool oddHoleExtend(const Graph& g, int l, int r, Set out) {
+    for (int l2 : g.neighbors(l) - g.neighbors(r) - out) {
+	Set r2s = g.neighbors(r) - g.neighbors(l) - out;
+	if ((g.neighbors(l2) & r2s).nonempty())
+	    return true;
+	for (int r2 : r2s)
+	    if (oddHoleExtend(g, l2, r2, (out + l + r) | g.neighbors(l) | g.neighbors(r)))
+		return true;
+    }
+    return false;
+}
+
+// induced cycle of odd length >= 5 (5, 7, 9, ...)
+bool hasOddHole(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int l : g.neighbors(u).above(u)) {
+	    for (int r : g.neighbors(u).above(l) - g.neighbors(l)) {
+		Set out = g.vertices().belowEq(u) | g.neighbors(u);
+		if (oddHoleExtend(g, l, r, out))
+		    return true;
+	    }
+	}
+    }
+    return false;
+}
+
 }  // namespace Subgraph
