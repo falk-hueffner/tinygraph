@@ -77,6 +77,8 @@ public:
 
     // return only elements > x
     Set above(int x) { return Set(bits_ & ~(word(-1) >> (WORDSIZE - 1 - x)));  }
+    // return only elements <= x
+    Set belowEq(int x) { return Set(bits_ & (word(-1) >> (WORDSIZE - 1 - x)));  }
 
     bool isSubset(Set other) const { return (*this - other).isEmpty(); }
     bool isSuperset(Set other) const { return other.isSubset(*this); }
