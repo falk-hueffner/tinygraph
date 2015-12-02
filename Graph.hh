@@ -142,6 +142,14 @@ public:
 	return g;
     }
 
+    Graph subgraph(Set vs) const {
+	Graph g(vs.size());
+	int i = 0;
+	for (int u : vs)
+	    g.neighbors_[i++] = Set::ofBits(extractBits(neighbors(u).bits(), vs.bits()));
+	return g;
+    }
+
     Graph canonical() const;
 
     typedef std::function<void(const Graph&)> EnumerateCallback;
