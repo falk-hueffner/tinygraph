@@ -138,6 +138,8 @@ public:
 	return g;
     }
 
+    Graph canonical() const;
+
     typedef std::function<void(const Graph&)> EnumerateCallback;
     typedef std::function<bool(const Graph&)> PruneCallback;
     enum { CONNECTED = 1 };

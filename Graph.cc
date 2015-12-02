@@ -17,6 +17,8 @@
 
 #include "Graph.hh"
 
+#include "nauty/nauty.h"
+
 #include <map>
 
 Graph Graph::ofNauty(word* nautyg, int n) {
@@ -131,6 +133,24 @@ int geng_prune(word* nautyg, int n, int /*maxn*/) {
 	return false;
     Graph g = Graph::ofNauty(nautyg, n);
     return Graph::pruneCallback()(g);
+}
+
+Graph Graph::canonical() const {
+    word nautyg[n()];
+    for (int i = 0; i < n(); ++i)
+	nautyg[i] = reverseBits(neighbors(i).bits());
+    int orbits[n()];
+    DEFAULTOPTIONS_GRAPH(options);
+    options.getcanon = true;
+    int lab[n()];
+    int ptn[n()];
+    statsblk stats;
+    word canonical[n()];
+    densenauty(nautyg, lab, ptn, orbits, &options, &stats, 1, n(), canonical);
+    Graph g(n());
+    for (int i = 0; i < n(); ++i)
+	g.neighbors_[i] = Set::ofBits(reverseBits(canonical[i]));
+    return g;
 }
 
 void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
