@@ -49,6 +49,7 @@ public:
     }
     int deg(int u) const { return neighbors(u).size(); }
     Set neighbors(int u) const { return neighbors_[u]; }
+    const Set* neighbors() const { return neighbors_.data(); }
     Set nonneighbors(int u) const { return vertices() - neighbors(u); }
     bool hasEdge(int u, int v) const { return neighbors(u).contains(v); }
     bool isConnected() const;
@@ -81,6 +82,46 @@ public:
 	}
 	neighbors_.pop_back();
     }
+
+    class ConnectedComponents {
+    public:
+	ConnectedComponents(const Graph& g) : g_(g) { }
+	class Iterator {
+	public:
+	    Iterator(const Set* neighbors, Set unseen)
+		: neighbors_(neighbors), unseen_(unseen), cc_({}) {
+		if (!unseen_.isEmpty())
+		    bfs();
+	    }
+	    bool operator!=(const Iterator& other) const { return cc_ != other.cc_; }
+	    Set operator*() const { return cc_; }
+	    const Iterator& operator++() {
+		bfs();
+		return *this;
+	    }
+	    void bfs() {
+		Set oldUnseen = unseen_;
+		int u = unseen_.pop();
+		Set todo = {u};
+		while (!todo.isEmpty()) {
+		    int v = todo.pop();
+		    Set n_v = neighbors_[v];
+		    todo |= n_v & unseen_;
+		    unseen_ -= n_v;
+		}
+		cc_ = oldUnseen ^ unseen_;
+	    }
+	private:
+	    const Set* neighbors_;
+	    Set unseen_;
+	    Set cc_;
+	};
+	Iterator begin() const { return Iterator(g_.neighbors(), g_.vertices()); }
+	Iterator end()   const { return Iterator(g_.neighbors(), {}); }
+    private:
+	const Graph& g_;
+    };
+    ConnectedComponents connectedComponents() const { return ConnectedComponents(*this); }
 
     int mSubgraph(Set vs) const {
 	int m = 0;
