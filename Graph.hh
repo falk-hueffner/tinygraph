@@ -91,14 +91,16 @@ public:
 	class Iterator {
 	public:
 	    Iterator(const Set* neighbors, Set unseen)
-		: neighbors_(neighbors), unseen_(unseen), cc_({}) {
-		if (!unseen_.isEmpty())
-		    bfs();
+		: neighbors_(neighbors), unseen_(unseen) {
+		++*this;
 	    }
 	    bool operator!=(const Iterator& other) const { return cc_ != other.cc_; }
 	    Set operator*() const { return cc_; }
 	    const Iterator& operator++() {
-		bfs();
+		if (unseen_.isEmpty())
+		    cc_  = {};
+		else
+		    bfs();
 		return *this;
 	    }
 	    void bfs() {
