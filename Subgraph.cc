@@ -121,6 +121,16 @@ bool hasInducedClaw(const Graph& g) {
     return false;
 }
 
+bool hasInducedClaw(const Graph& g, int u) {
+    for (int v : g.neighbors(u)) {
+	for (int w : (g.neighbors(u) - g.neighbors(v)).above(v)) {
+	    if ((g.neighbors(u) - g.neighbors(v) - g.neighbors(w)).nonempty())
+		return true;
+	}
+    }
+    return false;
+}
+
 bool hasInducedPaw(const Graph& g) {
     for (int u = 0; u < g.n(); ++u) {
 	for (int v : g.neighbors(u).above(u)) {
