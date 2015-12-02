@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = count extremal ssge-approx p5editing
+EXECS	  = count extremal ssge-approx p5editing forbidden-subgraphs
 
 CC	  = gcc
 CXX	  = g++
@@ -39,6 +39,9 @@ ssge-approx: ssge-approx.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 p5editing: p5editing.o $(COMMON_OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+forbidden-subgraphs: forbidden-subgraphs.o Classes.o Subgraph.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: testMain
