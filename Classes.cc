@@ -76,4 +76,30 @@ bool isSplit(const Graph& g) {
     return splittance2 == 0;
 }
 
+bool isCograph(const Graph& g) {
+    static Graph p4 = Graph::byName("P4");
+    return !Subgraph::hasInduced(g, p4);
+}
+
+bool isThreshold(const Graph& g) {
+    return isSplit(g) && isCograph(g);
+}
+
+bool isP4Sparse(const Graph& g) {
+    static Graph c5 = Graph::byName("C5");
+    static Graph p5 = Graph::byName("P5");
+    static Graph p5C = p5.complement();
+    static Graph p = Graph::byName("banner");
+    static Graph pC = p.complement();
+    static Graph fork = Graph::byName("fork");
+    static Graph forkC = fork.complement();
+    return !Subgraph::hasInduced(g, c5)
+	&& !Subgraph::hasInduced(g, p5)
+	&& !Subgraph::hasInduced(g, p5C)
+	&& !Subgraph::hasInduced(g, p)
+	&& !Subgraph::hasInduced(g, pC)
+	&& !Subgraph::hasInduced(g, fork)
+	&& !Subgraph::hasInduced(g, forkC);
+}
+
 }  // namespace Classes

@@ -27,6 +27,8 @@ bool isTriviallyPerfect(const Graph& g);
 bool isChordal(const Graph& g);
 bool isPerfect(const Graph& g);
 bool isSplit(const Graph& g);
+bool isThreshold(const Graph& g);
+bool isP4Sparse(const Graph& g);
 
 }  // namespace Classes
 
