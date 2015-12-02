@@ -109,4 +109,15 @@ inline word highestBits(word x, int k) {
     return x;
 }
 
+inline word extractBits(word x, word mask) {
+    // available as PEXT in BMI2 (Bit Manipulation Instruction Set 2, Haswell)
+    word r = 0;
+    for (word b = 1; mask; b <<= 1) {
+        if (x & (mask & -mask))
+            r |= b;
+        mask &= mask - 1;
+    }
+    return r;
+}
+
 #endif // TINYGRAPH_BITS_HH_INCLUDED
