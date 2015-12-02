@@ -87,6 +87,8 @@ std::map<std::string, Property> properties = {
     {"9-colorable",           {[](const Graph& g) { return Invariants::kColorable(g, 9); },      true,  true}},
     {"perfect",               {[](const Graph& g) { return Classes::isPerfect(g); },             true,  true}},
     {"split",                 {[](const Graph& g) { return Classes::isSplit(g); },               true,  false}},
+    {"threshold",             {[](const Graph& g) { return Classes::isThreshold(g); },           true,  false}},
+    {"P4-sparse",             {[](const Graph& g) { return Classes::isP4Sparse(g); },            true,  true}},
 };
 
 auto property = properties.at(propertyName);
