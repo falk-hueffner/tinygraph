@@ -54,6 +54,8 @@ public:
     bool hasEdge(int u, int v) const { return neighbors(u).contains(v); }
     bool isConnected() const;
 
+    bool operator==(const Graph& g) const { return neighbors_ == g.neighbors_; }
+
     void addEdge(int u, int v) {
 	assert(u >= 0 && u < n());
 	assert(v >= 0 && v < n());
