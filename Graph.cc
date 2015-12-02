@@ -191,6 +191,34 @@ void Graph::enumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
 Graph::EnumerateCallback Graph::enumerateCallback_;
 Graph::PruneCallback Graph::pruneCallback_;
 
+// Bron--Kerbosch
+void extendCliques(const Graph& g, std::function<void(const Set&)> f,
+		   Set clique, Set cands, Set nots) {
+    if (cands.isEmpty()) {
+	if (nots.isEmpty())
+	    f(clique);
+	return;
+    }
+    Set pivotNeighbors;
+    int pivotScore = 0;
+    for (int u : cands | nots) {
+	int score = (g.neighbors(u) & cands).size();
+	if (score > pivotScore) {
+	    pivotNeighbors = g.neighbors(u);
+	    pivotScore = score;
+	}
+    }
+    for (int u : cands - pivotNeighbors) {
+	extendCliques(g, f, clique + u, cands & g.neighbors(u), nots & g.neighbors(u));
+	cands -= u;
+	nots += u;
+    }
+}
+
+void Graph::maximalCliques(std::function<void(const Set&)> f) const {
+    extendCliques(*this, f, {}, vertices(), {});
+}
+
 static std::string connectedGraphName(Graph g) {
     Graph gCanon = g.canonical();
     for (auto p : namedGraphs) {

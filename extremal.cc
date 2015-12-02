@@ -23,13 +23,20 @@ auto subgraph = Graph::byName(subgraphName);
 //auto countSubgraph = [](const Graph& g) { return Subgraph::count(g, subgraph); };
 auto countSubgraph = Subgraph::countInducedP3s;
 
+size_t numMaximalCliques(const Graph& g) {
+    size_t count = 0;
+    g.maximalCliques([&count](const Set&) { ++count; });
+    return count;
+}
+
 int main() {
     std::vector<uint64_t> maxCounts;
-    for (int n = 0; n <= MAXN; ++n) {
+    for (int n = 0; n <= 11; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t maxCount = 0;
 	Graph::enumerate(n, [&maxCount](const Graph& g) {
-		uint64_t count = countSubgraph(g);
+		//uint64_t count = countSubgraph(g);
+		uint64_t count = numMaximalCliques(g);
                 if (count > maxCount) {
 		    std::cerr << count << ": " << g.toString() << std::endl;
 		    maxCount = count;
