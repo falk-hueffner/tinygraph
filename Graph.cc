@@ -76,10 +76,19 @@ Graph Graph::byName(std::string name) {
     if (p != namedGraphs.end())
 	return p->second;
 
-    // Pn, Cn
     auto DIGITS = "0123456789";
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
+    if (name[0] == 'K' && name.find(',') != std::string::npos) {
+	name.erase(name.begin());
+	int n1 = std::stoi(name.substr(0, name.find(',')));
+	int n2 = std::stoi(name.substr(name.find(',') + 1));
+	Graph g(n1 + n2);
+	for (int u = 0; u < n1; ++u)
+	    for (int v = n1; v < n1 + n2; ++v)
+		g.addEdge(u, v);
+	return g;
+    }
     if ((name[0] == 'P' || name[0] == 'C' || name[0] == 'K')
 	&& name.find_first_not_of(DIGITS, 1) == std::string::npos) {
 	auto type = name[0];
