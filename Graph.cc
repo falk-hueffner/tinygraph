@@ -19,7 +19,31 @@
 
 #include "nauty/nauty.h"
 
+#include <algorithm>
 #include <map>
+
+// A&BvC: an A graph with an extra B vertices, each of which is attached to C vertices of the A
+static const std::map<std::string, Graph> namedGraphs = {
+    {"diamond", Graph::ofGraph6("Cz").canonical()},
+    {"paw",     Graph::ofGraph6("Cx").canonical()},
+    {"claw",    Graph::ofGraph6("Cs").canonical()},
+    {"K5-e",    Graph::ofGraph6("D~k").canonical()},
+    {"K4&v2",   Graph::ofGraph6("DN{").canonical()},
+    {"W4",      Graph::ofGraph6("Dl{").canonical()},
+    {"K4&v1",   Graph::ofGraph6("DJ{").canonical()},
+    {"C4&v3",   Graph::ofGraph6("D]w").canonical()},
+    {"gem",     Graph::ofGraph6("Dh{").canonical()},
+    {"K2&3v2",  Graph::ofGraph6("DF{").canonical()},
+    {"bowtie",  Graph::ofGraph6("D{c").canonical()},
+    {"fork",    Graph::ofGraph6("DiC").canonical()},
+    {"kite",    Graph::ofGraph6("DTw").canonical()},
+    {"dart",    Graph::ofGraph6("DvC").canonical()},
+    {"house",   Graph::ofGraph6("DUw").canonical()},
+    {"banner",  Graph::ofGraph6("DrG").canonical()},
+    {"tadpole", Graph::ofGraph6("DKs").canonical()},
+    {"bull",    Graph::ofGraph6("D{O").canonical()},
+    {"cricket", Graph::ofGraph6("DiS").canonical()},
+};
 
 Graph Graph::ofNauty(word* nautyg, int n) {
     Graph g(n);
@@ -47,23 +71,6 @@ Graph Graph::ofGraph6(std::string g6) {
 }
 
 Graph Graph::byName(std::string name) {
-    static const std::map<std::string, Graph> namedGraphs = {
-	{"diamond", Graph::ofGraph6("Cz")},
-	{"paw",     Graph::ofGraph6("Cx")},
-	{"claw",    Graph::ofGraph6("Cs")},
-	{"gem",     Graph::ofGraph6("Dh{")},
-	{"bowtie",  Graph::ofGraph6("D{c")},
-	{"fork",    Graph::ofGraph6("DiC")},
-	{"kite",    Graph::ofGraph6("DTw")},
-	{"dart",    Graph::ofGraph6("DvC")},
-	{"house",   Graph::ofGraph6("DUw")},
-	{"banner",  Graph::ofGraph6("DrG")},
-	{"K2,3",    Graph::ofGraph6("D]o")},
-	{"tadpole", Graph::ofGraph6("DKs")},
-	{"bull",    Graph::ofGraph6("D{O")},
-	{"cricket", Graph::ofGraph6("DiS")},
-	{"W4",      Graph::ofGraph6("Dl{")},
-    };
     // claw, paw etc.
     auto p = namedGraphs.find(name);
     if (p != namedGraphs.end())
@@ -183,6 +190,82 @@ void Graph::enumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
 
 Graph::EnumerateCallback Graph::enumerateCallback_;
 Graph::PruneCallback Graph::pruneCallback_;
+
+static std::string connectedGraphName(Graph g) {
+    Graph gCanon = g.canonical();
+    for (auto p : namedGraphs) {
+	if (p.second == gCanon)
+	    return p.first;
+    }
+
+    int n = g.n();
+    int degs[n];
+    for (int u = 0; u < n; ++u)
+	degs[u] = g.deg(u);
+    std::sort(degs, degs + n);
+    if (degs[0] == n - 1 && degs[n - 1] == n - 1)
+	return std::string("K") + std::to_string(n);
+    if (degs[n - 1] == 2) {
+	if (degs[0] == 1)
+	    return std::string("P") + std::to_string(n);
+	else
+	    return std::string("C") + std::to_string(n);
+    }
+    Graph gComplement = g.complement();
+    if (gComplement.isConnected()) {
+	for (int u = 0; u < n; ++u)
+	    degs[u] = gComplement.deg(u);
+	std::sort(degs, degs + n);
+	if (degs[n - 1] == 2) {
+	    if (degs[0] == 1)
+		return std::string("cP") + std::to_string(n);
+	    else
+		return std::string("cC") + std::to_string(n);
+	}
+    }
+
+    // complete bipartite graph?
+    Set p1 = g.neighbors(0);
+    if (!p1.isEmpty()) {
+	Set p2 = g.neighbors(p1.min());
+	bool fits = true;
+	for (int u = 0; u < n; ++u) {
+	    if (g.neighbors(u) != p1 && g.neighbors(u) != p2) {
+		fits = false;
+		break;
+	    }
+	}
+	if (fits) {
+	    int s1 = p1.size(), s2 = p2.size();
+	    if (s1 > s2)
+		std::swap(s1, s2);
+	    return std::string("K") + std::to_string(s1) + ',' + std::to_string(s2);
+	}
+    }
+    return g.toString();
+}
+
+std::string Graph::name() const {
+    std::vector<std::string> names;
+    for (auto cc : connectedComponents())
+	names.push_back(connectedGraphName(subgraph(cc)));
+    std::sort(names.begin(), names.end());
+    std::string r;
+    size_t k = 1;
+    for (size_t i = 0; i < names.size(); ++i) {
+	if (i + 1 < names.size() && names[i] == names[i+1]) {
+	    ++k;
+	    continue;
+	}
+	if (i >= k)
+	    r += '+';
+	if (k > 1)
+	    r += std::to_string(k);
+	r += names[i];
+	k = 1;
+    }
+    return r;
+}
 
 std::string Graph::toString() const {
     std::string r = "{";

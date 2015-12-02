@@ -161,6 +161,7 @@ public:
     static PruneCallback pruneCallback() { return pruneCallback_; }
 
     std::string toString() const;
+    std::string name() const;
 
 private:
     static void doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags);

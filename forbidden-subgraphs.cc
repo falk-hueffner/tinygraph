@@ -38,7 +38,7 @@ int main() {
 	std::cerr << "--- n = " << n << std::endl;
 	Graph::enumerate(n, [](const Graph& g) {
 		if (isMinimalForbidden(g, property))
-		    std::cout << g.toString() << std::endl;
+		    std::cout << g.name() << std::endl;
 	    });
     }
     return 0;
