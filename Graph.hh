@@ -160,7 +160,7 @@ public:
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
     static PruneCallback pruneCallback() { return pruneCallback_; }
 
-    void maximalCliques(std::function<void(const Set&)> f) const;
+    void maximalCliques(std::function<void(Set)> f) const;
 
     std::string toString() const;
     std::string name() const;

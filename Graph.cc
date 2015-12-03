@@ -201,7 +201,7 @@ Graph::EnumerateCallback Graph::enumerateCallback_;
 Graph::PruneCallback Graph::pruneCallback_;
 
 // Bron--Kerbosch
-void extendCliques(const Graph& g, std::function<void(const Set&)> f,
+void extendCliques(const Graph& g, std::function<void(Set)> f,
 		   Set clique, Set cands, Set nots) {
     if (cands.isEmpty()) {
 	if (nots.isEmpty())
@@ -224,7 +224,7 @@ void extendCliques(const Graph& g, std::function<void(const Set&)> f,
     }
 }
 
-void Graph::maximalCliques(std::function<void(const Set&)> f) const {
+void Graph::maximalCliques(std::function<void(Set)> f) const {
     extendCliques(*this, f, {}, vertices(), {});
 }
 
