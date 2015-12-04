@@ -50,7 +50,7 @@ public:
     int deg(int u) const { return neighbors(u).size(); }
     Set neighbors(int u) const { return neighbors_[u]; }
     const Set* neighbors() const { return neighbors_.data(); }
-    Set nonneighbors(int u) const { return vertices() - neighbors(u); }
+    Set nonneighbors(int u) const { return vertices() - neighbors(u) - u; }
     bool hasEdge(int u, int v) const { return neighbors(u).contains(v); }
     bool isConnected() const;
 
