@@ -47,7 +47,7 @@ forbidden-subgraphs: forbidden-subgraphs.o Classes.o Subgraph.o $(COMMON_OBJ)
 test: testMain
 	./testMain
 
-testMain: testMain.o testBits.o testSet.o testClasses.o \
+testMain: testMain.o testBits.o testSet.o testClasses.o testSubgraph.o \
 		$(COMMON_OBJ) Classes.o Subgraph.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
