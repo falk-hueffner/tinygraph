@@ -32,7 +32,7 @@ all: .deps nauty $(EXECS)
 count: Classes.o Subgraph.o Invariants.o EulerTransform.o $(COMMON_OBJ) count.o
 	$(CXX) $(CXXFLAGS) $(GMP_LIBS) $^ -o $@
 
-extremal: extremal.o Subgraph.o $(COMMON_OBJ)
+extremal: Subgraph.o $(COMMON_OBJ) extremal.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 ssge-approx: ssge-approx.o $(COMMON_OBJ)
