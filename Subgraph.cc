@@ -87,7 +87,7 @@ bool hasInduced(const Graph& g, const Graph& f) {
 
 bool hasInducedP3(const Graph& g) {
     Set todo = g.vertices();
-    while (!todo.isEmpty()) {
+    while (todo.nonempty()) {
 	int u = todo.pop();
 	Set s = g.neighbors(u) + u;
 	for (int v : g.neighbors(u)) {
@@ -100,82 +100,63 @@ bool hasInducedP3(const Graph& g) {
 }
 
 bool hasK3(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
-	for (int v : g.neighbors(u).above(u)) {
-	    if (!(g.neighbors(u) & g.neighbors(v)).isEmpty())
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u).above(u))
+	    if ((g.neighbors(u) & g.neighbors(v)).nonempty())
 		return true;
-	}
-    }
     return false;
 }
 
 bool hasInducedClaw(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
-	for (int v : g.nonneighbors(u).above(u)) {
-	    for (int w : (g.nonneighbors(u) & g.nonneighbors(v)).above(v)) {
-		if (!(g.neighbors(u) & g.neighbors(v) & g.neighbors(w)).isEmpty())
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.nonneighbors(u).above(u))
+	    for (int w : (g.nonneighbors(u) & g.nonneighbors(v)).above(v))
+		if ((g.neighbors(u) & g.neighbors(v) & g.neighbors(w)).nonempty())
 		    return true;
-	    }
-	}
-    }
     return false;
 }
 
 bool hasInducedClaw(const Graph& g, int u) {
-    for (int v : g.neighbors(u)) {
-	for (int w : (g.neighbors(u) - g.neighbors(v)).above(v)) {
+    for (int v : g.neighbors(u))
+	for (int w : (g.neighbors(u) - g.neighbors(v)).above(v))
 	    if ((g.neighbors(u) - g.neighbors(v) - g.neighbors(w)).nonempty())
 		return true;
-	}
-    }
     return false;
 }
 
 bool hasInducedPaw(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
-	for (int v : g.neighbors(u).above(u)) {
-	    for (int w : (g.neighbors(u) & g.neighbors(v))) {
-		if (!(g.nonneighbors(u) & g.nonneighbors(v) & g.neighbors(w)).isEmpty())
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u).above(u))
+	    for (int w : g.neighbors(u) & g.neighbors(v))
+		if ((g.nonneighbors(u) & g.nonneighbors(v) & g.neighbors(w)).nonempty())
 		    return true;
-	    }
-	}
-    }
     return false;
 }
 
 bool hasC4(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
-	for (int v : g.neighbors(u)) {
-	    for (int w : g.neighbors(u).above(v)) {
-		if (!((g.neighbors(v) & g.neighbors(w)) - u).isEmpty())
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u).above(u))
+	    for (int w : g.neighbors(u).above(v))
+		if (((g.neighbors(v) & g.neighbors(w)) - u).nonempty())
 		    return true;
-	    }
-	}
-    }
     return false;
 }
 
 bool hasInducedC4(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
-	for (int v : g.neighbors(u)) {
-	    for (int w : (g.neighbors(u) - g.neighbors(v)).above(v)) {
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u))
+	    for (int w : (g.neighbors(u) - g.neighbors(v)).above(v))
 		if (((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u) - u).nonempty())
 		    return true;
-	    }
-	}
-    }
     return false;
 }
 
 bool hasInducedDiamond(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
-	for (int v : g.neighbors(u)) {
-	    for (int w : g.neighbors(u).above(v) & g.neighbors(v)) {
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u))
+	    for (int w : g.neighbors(u).above(v) & g.neighbors(v))
 		if (((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u) - u).nonempty())
 		    return true;
-	    }
-	}
-    }
     return false;
 }
 
@@ -200,6 +181,17 @@ uint64_t countInducedP3s(const Graph& g) {
         num += (n_n * (n_n - 1)) / 2 - g.mSubgraph(n_u);
     }
     return num;
+}
+
+uint64_t countInducedP4s(const Graph& g) {
+    int n = g.n();
+    uint64_t count = 0;
+    // u--v--w--x
+    for (int v = 0; v < n; ++v)
+	for (int w : g.neighbors(v).above(v))
+	    for (int u : g.neighbors(v) - g.neighbors(w))
+		count += (g.neighbors(w) - g.neighbors(v) - g.neighbors(u)).size();
+    return count;
 }
 
 uint64_t countInducedP5s(const Graph& g) {

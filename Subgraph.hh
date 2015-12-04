@@ -24,6 +24,7 @@ namespace Subgraph {
 
 uint64_t countInduced(const Graph &g, const Graph& f);
 uint64_t countInducedP3s(const Graph& g);
+uint64_t countInducedP4s(const Graph& g);
 uint64_t countInducedP5s(const Graph& g);
 
 bool hasInduced(const Graph &g, const Graph& f);
