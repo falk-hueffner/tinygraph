@@ -306,6 +306,15 @@ std::string Graph::name() const {
 
 std::string Graph::toString() const {
     std::string r = "{";
+    bool hasDeg0 = false;
+    for (int u = 0; u < n(); ++u) {
+	if (deg(u) == 0) {
+	    hasDeg0 = true;
+	    break;
+	}
+    }
+    if (hasDeg0)
+	r += '[' + std::to_string(n()) + "] ";
     bool start = true;
     for (int u = 0; u < n(); ++u) {
         for (int v = u + 1; v < n(); ++v) {
