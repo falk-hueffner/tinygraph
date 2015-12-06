@@ -102,4 +102,33 @@ bool isP4Sparse(const Graph& g) {
 	&& !Subgraph::hasInduced(g, forkC);
 }
 
+bool isClique(const Graph& g, Set vs) {
+    for (int u : vs)
+	if (!vs.isSubset(g.neighbors(u) + u))
+	    return false;
+    return true;
+}
+
+bool isIndependentSet(const Graph& g, Set vs) {
+    for (int u : vs)
+        if ((g.neighbors(u) & vs).nonempty())
+            return false;
+    return true;
+}
+
+bool isSplitClusterGraph(const Graph& g) {
+    for (Set cc : g.connectedComponents()) {
+	if (!isSplit(g.subgraph(cc)))
+	    return false;
+    }
+    return true;
+}
+
+bool isMonopolar(const Graph& g) {
+    for (Set is : g.vertices().subsets())
+        if (isIndependentSet(g, is) && !Subgraph::hasInducedP3(g.subgraph(g.vertices() - is)))
+	    return true;
+    return false;
+}
+
 }  // namespace Classes

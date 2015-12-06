@@ -29,6 +29,8 @@ bool isPerfect(const Graph& g);
 bool isSplit(const Graph& g);
 bool isThreshold(const Graph& g);
 bool isP4Sparse(const Graph& g);
+bool isMonopolar(const Graph& g);
+bool isSplitClusterGraph(const Graph& g);
 
 }  // namespace Classes
 
