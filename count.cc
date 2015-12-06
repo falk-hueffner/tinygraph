@@ -116,7 +116,10 @@ int main() {
 	if (times.size() >= 2) {
 	    auto tn = times.back();
 	    auto tn1 = times[times.size() - 2];
-	    std::cerr << " estimated time: " << tn * (tn / tn1) << 's' << std::endl;
+	    auto est = tn * (tn / tn1);
+	    std::cerr << " estimated time: " << est << 's' << std::endl;
+	    if (est > 1e6)
+		return 0;
 	} else {
 	    std::cerr << std::endl;
 	}
