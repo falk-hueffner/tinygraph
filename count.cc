@@ -89,6 +89,8 @@ std::map<std::string, Property> properties = {
     {"split",                 {[](const Graph& g) { return Classes::isSplit(g); },               true,  false}},
     {"threshold",             {[](const Graph& g) { return Classes::isThreshold(g); },           true,  false}},
     {"P4-sparse",             {[](const Graph& g) { return Classes::isP4Sparse(g); },            true,  true}},
+    {"monopolar",             {[](const Graph& g) { return Classes::isMonopolar(g); },           true,  true}},
+    {"split-cluster",         {[](const Graph& g) { return Classes::isSplitClusterGraph(g); },   true,  false}},
 };
 
 auto property = properties.at(propertyName);
