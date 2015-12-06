@@ -47,9 +47,9 @@ forbidden-subgraphs: forbidden-subgraphs.o Classes.o Subgraph.o $(COMMON_OBJ)
 test: testMain
 	./testMain
 
-testMain: testMain.o testBits.o testSet.o testClasses.o testSubgraph.o \
-		$(COMMON_OBJ) Classes.o Subgraph.o
-	$(CXX) $(CXXFLAGS) $^ -o $@
+testMain: testMain.o testBits.o testSet.o testClasses.o testSubgraph.o testEulerTransform.o \
+		$(COMMON_OBJ) Classes.o Subgraph.o EulerTransform.o
+	$(CXX) $(CXXFLAGS) $(GMP_LIBS) $^ -o $@
 
 nauty: nauty25r9.tar.gz wordsize.h
 	rm -rf nauty25r9 nauty
