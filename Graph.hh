@@ -163,6 +163,7 @@ public:
     void maximalCliques(std::function<void(Set)> f) const;
 
     std::string toString() const;
+    std::string graph6() const;
     std::string name() const;
 
 private:

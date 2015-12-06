@@ -330,6 +330,29 @@ std::string Graph::toString() const {
     return r;
 }
 
+std::string Graph::graph6() const {
+    std::string s;
+    s += n() + 63;
+    int k = 6;
+    int x = 0;
+    for (int j = 1; j < n(); ++j) {
+        for (int i = 0; i < j; ++i) {
+            x <<= 1;
+            if (hasEdge(i, j))
+                x |= 1;
+            if (--k == 0) {
+                s += x + 63;
+                k = 6;
+                x = 0;
+            }
+        }
+    }
+
+    if (k != 6)
+        s += 63 + (x << k);
+    return s;
+}
+
 std::ostream& operator<<(std::ostream& out, const Graph& g) {
     out << "# n = " << g.n() << std::endl;
     for (int u = 0; u < g.n(); ++u)
