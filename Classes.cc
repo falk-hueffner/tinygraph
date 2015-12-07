@@ -17,9 +17,86 @@
 
 #include "Classes.hh"
 
+#include <cstring>
 #include <algorithm>
 
 namespace Classes {
+
+void dfs(const Graph& g, int dfsNumber[], int dfsParent[], int dfsOrder[], Set backEdges[], int u, int parent, int& d) {
+    dfsOrder[d] = u;
+    dfsNumber[u] = ++d;
+    dfsParent[u] = parent;
+    for (int v : g.neighbors(u) - parent) {
+	//std::cerr << "dfs " << u << " -> " << v << std::endl;
+	if (dfsNumber[v]) {
+	    backEdges[v].add(u);
+	    //std::cerr << "dfs " << u << " -> " << v << std::endl;
+	} else {
+	    dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, v, u, d);
+	}
+    }
+}
+bool isTwoEdgeConnected0(const Graph& g) {
+    if (g.n() < 2 || !g.isConnected())
+	return false;
+    Graph g2 = g;
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u).above(u)) {
+	    g2.removeEdge(u, v);
+	    if (!g2.isConnected())
+		return false;
+	    g2.addEdge(u, v);
+	}
+    }
+    return true;
+}
+
+bool isTwoEdgeConnected(const Graph& g) {
+    int n = g.n();
+    if (n < 2)
+	return false;
+    int dfsNumber[n];
+    int dfsParent[n];
+    Set backEdges[n];
+    int dfsOrder[n];
+    std::memset(dfsNumber, 0, sizeof dfsNumber);
+    std::memset(backEdges, 0, sizeof backEdges);
+    int d = 0;
+    // dfs numbering starts at 1
+    dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, 0, 0, d);
+    if (d != g.n())
+	return false;		// disconnected
+    Set visited;
+    int traversed = 0;
+    for (int i = 0; i < n; ++i) {
+	int u = dfsOrder[i];
+	if (backEdges[u].nonempty()) {
+	    visited.add(u);
+	    for (int v : backEdges[u]) {
+		//std::cerr << "backedge " << u << ' ' << v << std::endl;
+		int w = v;
+		while (!visited.contains(w)) {
+		    visited.add(w);
+		    w = dfsParent[w];
+		    ++traversed;
+		}
+	    }
+	}
+    }
+    return traversed == n - 1;
+}
+
+#if 0
+bool isTwoEdgeConnected3(const Graph& g) {
+    bool r0 = isTwoEdgeConnected0(g);
+    bool r1 = isTwoEdgeConnected1(g);
+    if (r0 != r1) {
+	std::cerr << r0 << r1 << g.toString() << std::endl;
+	abort();
+    }
+    return r0;
+}
+#endif
 
 bool isTriviallyPerfect(const Graph& g) {
     static Graph p4 = Graph::byName("P4");

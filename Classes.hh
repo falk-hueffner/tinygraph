@@ -23,6 +23,7 @@
 
 namespace Classes {
 
+bool isTwoEdgeConnected(const Graph& g);
 bool isTriviallyPerfect(const Graph& g);
 bool isChordal(const Graph& g);
 bool isPerfect(const Graph& g);
