@@ -79,6 +79,16 @@ Graph Graph::byName(std::string name) {
     auto DIGITS = "0123456789";
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
+    if (name.find('+') != std::string::npos) {
+	Graph g1 = byName(name.substr(0, name.find('+')));
+	Graph g2 = byName(name.substr(name.find('+') + 1));
+	Graph g(g1.n() + g2.n());
+	for (int u = 0; u < g1.n(); ++u)
+	    g.neighbors_[u] = g1.neighbors_[u];
+	for (int u = 0; u < g2.n(); ++u)
+	    g.neighbors_[g1.n() + u] = Set::ofBits(g2.neighbors_[u].bits() << g1.n());
+	return g;
+    }
     if (name[0] == 'K' && name.find(',') != std::string::npos) {
 	name.erase(name.begin());
 	int n1 = std::stoi(name.substr(0, name.find(',')));
