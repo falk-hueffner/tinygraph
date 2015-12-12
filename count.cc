@@ -27,7 +27,7 @@
 #include <map>
 #include <functional>
 
-auto propertyName = "split";
+auto propertyName = "minimally-two-edge-connected";
 bool connectedOnly = false;
 
 using PropertyTest = std::function<bool(const Graph&)>;
@@ -56,6 +56,33 @@ static Graph bowtie = Graph::byName("bowtie");
 static Graph gem = Graph::byName("gem");
 static Graph w4 = Graph::byName("W4");
 static Graph k5 = Graph::byName("K5");
+
+bool isMinimallyTwoEdgeConnected(const Graph& g) {
+    if (!Classes::isTwoEdgeConnected(g))
+	return false;
+    Graph g2 = g;
+    for (int u : g.vertices()) {
+	for (int v : g.neighbors(u).above(u)) {
+	    g2.removeEdge(u, v);
+	    if (Classes::isTwoEdgeConnected(g2))
+		return false;
+	    g2.addEdge(u, v);
+	}
+    }
+    return true;
+}
+
+bool isMinimallyTwoVertexConnected(const Graph& g) {
+    if (!Classes::isTwoVertexConnected(g))
+	return false;
+    for (int u : g.vertices()) {
+	Graph g2 = g;
+	g2.deleteVertex(u);
+	if (Classes::isTwoVertexConnected(g2))
+	    return false;
+    }
+    return true;
+}
 
 std::map<std::string, Property> properties = {
     {"triangle-free",         {[](const Graph& g) { return !Subgraph::hasK3(g); },               true,  true}},
@@ -91,6 +118,10 @@ std::map<std::string, Property> properties = {
     {"P4-sparse",             {[](const Graph& g) { return Classes::isP4Sparse(g); },            true,  true}},
     {"monopolar",             {[](const Graph& g) { return Classes::isMonopolar(g); },           true,  true}},
     {"split-cluster",         {[](const Graph& g) { return Classes::isSplitClusterGraph(g); },   true,  false}},
+    {"two-edge-connected",    {[](const Graph& g) { return Classes::isTwoEdgeConnected(g); },    false, false}},
+    {"two-vertex-connected",  {[](const Graph& g) { return Classes::isTwoVertexConnected(g); },  false, false}},
+    {"minimally-two-edge-connected",  {[](const Graph& g) { return isMinimallyTwoEdgeConnected(g); },  false, false}},
+    {"minimally-two-vertex-connected",  {[](const Graph& g) { return isMinimallyTwoVertexConnected(g); },  false, false}},
 };
 
 auto property = properties.at(propertyName);

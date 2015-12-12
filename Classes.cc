@@ -86,6 +86,56 @@ bool isTwoEdgeConnected(const Graph& g) {
     return traversed == n - 1;
 }
 
+
+bool isTwoVertexConnected0(const Graph& g) {
+    if (g.n() < 3 || !g.isConnected())
+	return false;
+    for (int u = 0; u < g.n(); ++u) {
+	Graph g2 = g;
+	g2.deleteVertex(u);
+	if (!g2.isConnected())
+	    return false;
+    }
+    return true;
+}
+
+bool isTwoVertexConnected(const Graph& g) {
+    int n = g.n();
+    if (n < 3)
+	return false;
+    int dfsNumber[n];
+    int dfsParent[n];
+    Set backEdges[n];
+    int dfsOrder[n];
+    std::memset(dfsNumber, 0, sizeof dfsNumber);
+    std::memset(backEdges, 0, sizeof backEdges);
+    int d = 0;
+    dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, 0, 0, d);
+    if (d != g.n())
+	return false;		// disconnected
+    Set visited;
+    int traversed = 0;
+    bool first = true;
+    for (int i = 0; i < n; ++i) {
+	int u = dfsOrder[i];
+	if (backEdges[u].nonempty()) {
+	    visited.add(u);
+	    for (int v : backEdges[u]) {
+		int w = v;
+		while (!visited.contains(w)) {
+		    visited.add(w);
+		    w = dfsParent[w];
+		    if (!first && w == u)
+			return false;
+		    ++traversed;
+		}
+		first = false;
+	    }
+	}
+    }
+    return traversed == n - 1;
+}
+
 #if 0
 bool isTwoEdgeConnected3(const Graph& g) {
     bool r0 = isTwoEdgeConnected0(g);
