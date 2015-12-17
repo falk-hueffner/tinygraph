@@ -72,4 +72,10 @@ int coloringNumber(const Graph& g) {
 	    return k;
 }
 
+int cliqueNumber(const Graph& g) {
+    int omega = 0;
+    g.maximalCliques([&omega](Set clique) { omega = std::max(omega, clique.size()); });
+    return omega;
+}
+
 }  // namespace Invariants

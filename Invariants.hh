@@ -24,6 +24,7 @@
 namespace Invariants {
 
 int coloringNumber(const Graph& g);
+int cliqueNumber(const Graph& g);
 bool kColorable(const Graph& g, int k);
 
 }  // namespace Invariants
