@@ -59,6 +59,8 @@ public:
     bool operator==(Set other) const { return bits_ == other.bits_; }
     bool operator!=(Set other) const { return bits_ != other.bits_; }
 
+    Set operator~() const { return ofBits(~bits_); }
+
     Set& operator&=(Set other) { bits_ &=  other.bits_; return *this; }
     Set& operator|=(Set other) { bits_ |=  other.bits_; return *this; }
     Set& operator^=(Set other) { bits_ ^=  other.bits_; return *this; }
