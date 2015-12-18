@@ -21,6 +21,38 @@
 
 namespace Classes {
 
+Set twoPartition(Graph g) {
+    const Set vertices = g.vertices();
+    Set colored = {};
+    Set black = {};
+    while (colored != vertices) {
+	int u = (vertices - colored).min();
+	colored += u;
+	black += u;
+	Set queue = {u};
+	bool queueIsBlack = true;
+	while (!queue.isEmpty()) {
+	    Set neighbors = {};
+	    for (int u : queue)
+		neighbors |= g.neighbors(u);
+	    if ((neighbors & colored & (queueIsBlack ? black : ~black)).nonempty())
+		return {};
+	    queue = neighbors - colored;
+	    colored |= neighbors;
+	    if (!queueIsBlack)
+		black |= neighbors;
+	    queueIsBlack = !queueIsBlack;
+	}
+    }
+    return black;
+}
+
+bool isBipartite(const Graph& g) {
+    if (g.n() <= 2)
+	return true;
+    return twoPartition(g).nonempty();
+}
+
 bool isTriviallyPerfect(const Graph& g) {
     static Graph p4 = Graph::byName("P4");
     static Graph c4 = Graph::byName("C4");
