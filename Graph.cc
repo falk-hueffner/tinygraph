@@ -24,6 +24,7 @@
 
 // A&BvC: an A graph with an extra B vertices, each of which is attached to C vertices of the A
 static const std::map<std::string, Graph> namedGraphs = {
+    {"triangle",Graph::ofGraph6("Bw").canonical()},
     {"diamond", Graph::ofGraph6("Cz").canonical()},
     {"paw",     Graph::ofGraph6("Cx").canonical()},
     {"claw",    Graph::ofGraph6("Cs").canonical()},
