@@ -16,6 +16,7 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.  */
 
 #include "Classes.hh"
+#include "Invariants.hh"
 
 #include <algorithm>
 
@@ -161,6 +162,19 @@ bool isMonopolar(const Graph& g) {
         if (isIndependentSet(g, is) && !Subgraph::hasInducedP3(g.subgraph(g.vertices() - is)))
 	    return true;
     return false;
+}
+
+bool independencePolynomialHasFactorXPlus1(const Graph& g) {
+    auto p = Invariants::independencePolynomial(g);
+    int64_t s = 0;
+    for (size_t i = 0; i < p.size(); ++i) {
+	if ((i % 2) == 0) {
+	    s += int64_t(p[i]);
+	} else {
+	    s -= int64_t(p[i]);
+	}
+    }
+    return s == 0;
 }
 
 }  // namespace Classes

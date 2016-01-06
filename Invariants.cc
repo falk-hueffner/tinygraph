@@ -78,4 +78,20 @@ int cliqueNumber(const Graph& g) {
     return omega;
 }
 
+void countIndependentSets(const Graph& g, int size, Set ext, uint64_t count[]) {
+    if (ext.nonempty()) {
+	int u = ext.pop();
+	++count[size + 1];
+	countIndependentSets(g, size + 1, ext - g.neighbors(u), count);
+	countIndependentSets(g, size, ext, count);
+    }
+}
+
+std::vector<uint64_t> independencePolynomial(const Graph& g) {
+    std::vector<uint64_t> p(g.n() + 1);
+    ++p[0];
+    countIndependentSets(g, 0, g.vertices(), p.data());
+    return p;
+}
+
 }  // namespace Invariants

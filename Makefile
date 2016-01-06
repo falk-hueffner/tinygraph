@@ -41,7 +41,7 @@ ssge-approx: ssge-approx.o $(COMMON_OBJ)
 p5editing: p5editing.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-forbidden-subgraphs: forbidden-subgraphs.o Classes.o Subgraph.o $(COMMON_OBJ)
+forbidden-subgraphs: forbidden-subgraphs.o Classes.o Invariants.o Subgraph.o $(COMMON_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: testMain

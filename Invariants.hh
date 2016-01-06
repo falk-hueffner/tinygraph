@@ -26,6 +26,7 @@ namespace Invariants {
 int coloringNumber(const Graph& g);
 int cliqueNumber(const Graph& g);
 bool kColorable(const Graph& g, int k);
+std::vector<uint64_t> independencePolynomial(const Graph& g);
 
 }  // namespace Invariants
 
