@@ -89,6 +89,16 @@ Graph Graph::byName(std::string name) {
 	    g.neighbors_[g1.n() + u] = Set::ofBits(g2.neighbors_[u].bits() << g1.n());
 	return g;
     }
+    auto ns = name.find_first_not_of(DIGITS, 0);
+    if (ns) {
+	int n = std::stoi(name.substr(0, ns));
+	Graph g1 = byName(name.substr(ns));
+	Graph g(g1.n() * n);
+	for (int i = 0; i < n; ++i)
+	    for (Edge e : g1.edges())
+		g.addEdge(e.u + g1.n() * i, e.v + g1.n() * i);
+	return g;
+    }
     if (name[0] == 'K' && name.find(',') != std::string::npos) {
 	name.erase(name.begin());
 	int n1 = std::stoi(name.substr(0, name.find(',')));
