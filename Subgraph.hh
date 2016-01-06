@@ -27,6 +27,8 @@ uint64_t countInducedP3s(const Graph& g);
 uint64_t countInducedP4s(const Graph& g);
 uint64_t countInducedP5s(const Graph& g);
 
+std::function<bool(const Graph&)> hasTest(Graph f);
+std::function<bool(const Graph&)> hasInducedTest(Graph f);
 bool hasInduced(const Graph &g, const Graph& f);
 bool hasInducedP3(const Graph &g);
 bool hasK3(const Graph &g);

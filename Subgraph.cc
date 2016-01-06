@@ -85,6 +85,66 @@ bool hasInduced(const Graph& g, const Graph& f) {
     return extendHasInduced(g, f, g.vertices(), assignment);
 }
 
+// simple and unoptimized subgraph homomorphism
+bool extendHas(const Graph& g, const Graph& f,
+	       Set unassigned, std::vector<int>& assignment) {
+    if (assignment.size() == size_t(f.n()))
+        return true;
+    int u_f = assignment.size();
+    for (int u_g : unassigned) {
+        bool fits = true;
+        for (int v_f = 0; v_f < u_f; ++v_f) {
+            if (f.hasEdge(u_f, v_f) && !g.hasEdge(u_g, assignment[v_f])) {
+                fits = false;
+                break;
+            }
+        }
+        if (fits) {
+            assignment.push_back(u_g);
+            if (extendHasInduced(g, f, unassigned - u_g, assignment))
+		return true;
+            assignment.pop_back();
+        }
+    }
+    return false;
+}
+
+bool has(const Graph& g, const Graph& f) {
+    if (g.n() < f.n())
+	return false;
+    std::vector<int> assignment;
+    return extendHas(g, f, g.vertices(), assignment);
+}
+
+std::function<bool(const Graph&)> hasTest(Graph f) {
+    f = f.canonical();
+//    if (f == Graph::byName("K3")     .canonical()) return hasK3;
+//    if (f == Graph::byName("C4")     .canonical()) return hasC4;
+    return [f](const Graph& g) {
+	if (g.n() < f.n())
+	    return false;
+	std::vector<int> assignment;
+	return extendHas(g, f, g.vertices(), assignment);
+    };
+}
+
+std::function<bool(const Graph&)> hasInducedTest(Graph f) {
+    f = f.canonical();
+    if (f == Graph::byName("P3")     .canonical()) return hasInducedP3;
+    if (f == Graph::byName("K3")     .canonical()) return hasK3;
+    if (f == Graph::byName("claw")   .canonical()) return hasInducedClaw;
+    if (f == Graph::byName("paw")    .canonical()) return hasInducedPaw;
+    if (f == Graph::byName("C4")     .canonical()) return hasInducedC4;
+    if (f == Graph::byName("diamond").canonical()) return hasInducedDiamond;
+    if (f == Graph::byName("P5")     .canonical()) return hasInducedP5;
+    return [f](const Graph& g) {
+	if (g.n() < f.n())
+	    return false;
+	std::vector<int> assignment;
+	return extendHasInduced(g, f, g.vertices(), assignment);
+    };
+}
+
 bool hasInducedP3(const Graph& g) {
     Set todo = g.vertices();
     while (todo.nonempty()) {
