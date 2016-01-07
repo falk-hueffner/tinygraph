@@ -177,4 +177,11 @@ bool independencePolynomialHasFactorXPlus1(const Graph& g) {
     return s == 0;
 }
 
+bool isEulerian(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u)
+	if (g.deg(u) % 2)
+	    return false;
+    return true;
+}
+
 }  // namespace Classes

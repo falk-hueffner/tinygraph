@@ -35,6 +35,7 @@ bool isP4Sparse(const Graph& g);
 bool isMonopolar(const Graph& g);
 bool isSplitClusterGraph(const Graph& g);
 bool independencePolynomialHasFactorXPlus1(const Graph& g);
+bool isEulerian(const Graph& g);
 
 }  // namespace Classes
 
