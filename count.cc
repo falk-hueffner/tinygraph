@@ -43,6 +43,10 @@ struct Property {
 
 std::map<std::string, Property> properties = {
     {"chordal",       {Classes::isChordal,                                          true,  true}},
+    {"eulerian",      {Classes::isEulerian,                                         false, true}},
+    {"hamiltonian",   {Classes::isHamiltonian,                                      false, false}},
+    {"nonhamiltonian",   {std::not1(PropertyTest(Classes::isHamiltonian)),          false, false}},
+    {"colnum-3",   {[](const Graph& g) { return Invariants::coloringNumber(g) == 3; }, false,  false}},
     {"3-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 3); }, true,  true}},
     {"4-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 4); }, true,  true}},
     {"5-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 5); }, true,  true}},
@@ -125,7 +129,9 @@ int main(int argc, char* argv[]) {
 	else
 	    propertyTest = [propertyTest, test](const Graph& g) { return propertyTest(g) && test(g); };
     }
-    assert(propertyTest);
+    //assert(propertyTest);
+    if (!propertyTest)
+	propertyTest = [](const Graph&) { return true; };
     std::vector<uint64_t> counts;
     std::vector<double> times;
     for (int n = 0; n <= MAXN; ++n) {

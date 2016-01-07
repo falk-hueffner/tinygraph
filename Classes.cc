@@ -184,4 +184,20 @@ bool isEulerian(const Graph& g) {
     return true;
 }
 
+bool isHamiltonian(const Graph& g, int s, int t, Set path) {
+    if (path.size() == g.n())
+	return g.hasEdge(s, t);
+    for (int u : g.neighbors(t) - path)
+	if (isHamiltonian(g, s, u, path + u))
+	    return true;
+    return false;
+}
+
+bool isHamiltonian(const Graph& g) {
+    for (int u : g.vertices())
+	if (isHamiltonian(g, u, u, {u}))
+	    return true;
+    return false;
+}
+
 }  // namespace Classes
