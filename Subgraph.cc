@@ -101,7 +101,7 @@ bool extendHas(const Graph& g, const Graph& f,
         }
         if (fits) {
             assignment.push_back(u_g);
-            if (extendHasInduced(g, f, unassigned - u_g, assignment))
+            if (extendHas(g, f, unassigned - u_g, assignment))
 		return true;
             assignment.pop_back();
         }
