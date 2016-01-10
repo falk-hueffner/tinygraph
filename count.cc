@@ -92,7 +92,6 @@ int main(int argc, char* argv[]) {
 	} else if (endsWith(type, "-free")) {
 	    if (propertyName != "")
 		propertyName += ' ';
-	    hereditary = true;
 	    type = type.substr(0, type.length() - std::string("-free").length());
 	    bool induced = false;
 	    if (startsWith(type, "induced-")) {
