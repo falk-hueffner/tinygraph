@@ -42,7 +42,6 @@ struct Property {
 };
 
 std::map<std::string, Property> properties = {
-    {"chordal",       {Classes::isChordal,                                          true,  true}},
     {"3-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 3); }, true,  true}},
     {"4-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 4); }, true,  true}},
     {"5-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 5); }, true,  true}},
@@ -50,12 +49,15 @@ std::map<std::string, Property> properties = {
     {"7-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 7); }, true,  true}},
     {"8-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 8); }, true,  true}},
     {"9-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 9); }, true,  true}},
-    {"perfect",       {Classes::isPerfect,                                          true,  true}},
-    {"split",         {Classes::isSplit,                                            true,  false}},
-    {"threshold",     {Classes::isThreshold,                                        true,  false}},
     {"P4-sparse",     {Classes::isP4Sparse,                                         true,  true}},
+    {"bipartite",     {Classes::isBipartite,                                        true,  true}},
+    {"chordal",       {Classes::isChordal,                                          true,  true}},
     {"monopolar",     {Classes::isMonopolar,                                        true,  true}},
+    {"perfect",       {Classes::isPerfect,                                          true,  true}},
+    {"prime",         {Classes::isPrime,                                            false, false}},
+    {"split",         {Classes::isSplit,                                            true,  false}},
     {"split-cluster", {Classes::isSplitClusterGraph,                                true,  false}},
+    {"threshold",     {Classes::isThreshold,                                        true,  false}},
 };
 
 template<typename T>
@@ -101,7 +103,6 @@ int main(int argc, char* argv[]) {
 	    } else {
 		propertyName += "(not necessarily induced) ";
 	    }
-	    std::cout << type << std::endl;
 	    Graph f = Graph::byName(type);
 	    propertyName += f.name() + "-free";
 	    test = std::not1(induced ? Subgraph::hasInducedTest(f) : Subgraph::hasTest(f));
@@ -124,7 +125,8 @@ int main(int argc, char* argv[]) {
 	else
 	    propertyTest = [propertyTest, test](const Graph& g) { return propertyTest(g) && test(g); };
     }
-    assert(propertyTest);
+    if (!propertyTest)
+	propertyTest = [](const Graph&) { return true; };
     std::vector<uint64_t> counts;
     std::vector<double> times;
     for (int n = 0; n <= MAXN; ++n) {
