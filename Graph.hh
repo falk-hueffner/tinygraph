@@ -76,6 +76,7 @@ public:
     bool isConnected() const;
 
     bool operator==(const Graph& g) const { return neighbors_ == g.neighbors_; }
+    bool operator!=(const Graph& g) const { return neighbors_ != g.neighbors_; }
 
     void addEdge(int u, int v) {
 	assert(u >= 0 && u < n());
