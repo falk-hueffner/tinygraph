@@ -216,7 +216,13 @@ public:
 
     typedef std::function<void(const Graph&)> EnumerateCallback;
     typedef std::function<bool(const Graph&)> PruneCallback;
-    enum { CONNECTED = 1 };
+    enum {
+	CONNECTED     = 1 << 0,
+	BICONNECTED   = 1 << 1,
+	TRIANGLE_FREE = 1 << 2,
+	SQUARE_FREE   = 1 << 3,
+	BIPARTITE     = 1 << 4,
+    };
     static void enumerate(int n, EnumerateCallback f, int flags = 0);
     static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0);
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
