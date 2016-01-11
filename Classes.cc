@@ -184,4 +184,24 @@ bool isEulerian(const Graph& g) {
     return true;
 }
 
+bool isModule(const Graph& g, Set vs) {
+    if (vs.size() <= 1 || vs == g.vertices())
+	return false;
+    int u = vs.min();
+    Set ns = g.neighbors(u) - vs;
+    for (int u : vs)
+	if (g.neighbors(u) - vs != ns)
+	    return false;
+    //std::cerr << "module for " << g.name() << ": " << vs << std::endl;
+    return true;
+}
+
+bool isPrime(const Graph& g) {
+    for (Set vs : g.vertices().subsets()) {
+	if (isModule(g, vs))
+	    return false;
+    }
+    return true;
+}
+
 }  // namespace Classes
