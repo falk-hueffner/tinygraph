@@ -139,6 +139,7 @@ std::function<bool(const Graph&)> hasInducedTest(Graph f) {
     if (f == Graph::byName("P5")     .canonical()) return hasInducedP5;
     if (f == Graph::byName("C5")     .canonical()) return hasInducedC5;
     if (f == Graph::byName("fork")   .canonical()) return hasInducedFork;
+    if (f == Graph::byName("house")  .canonical()) return hasInducedHouse;
     return [f](const Graph& g) {
 	if (g.n() < f.n())
 	    return false;
@@ -258,6 +259,16 @@ bool hasInducedFork(const Graph& g) {
 	    }
 	}
     }
+    return false;
+}
+
+bool hasInducedHouse(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u))
+	    for (int w : g.neighbors(u).above(v) & g.neighbors(v))
+		for (int x : g.neighbors(v) - g.neighbors(u) - g.neighbors(w))
+		    if (((g.neighbors(w) & g.neighbors(x)) - g.neighbors(v) - g.neighbors(u)).nonempty())
+			return true;
     return false;
 }
 

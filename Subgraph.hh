@@ -40,6 +40,7 @@ bool hasInducedDiamond(const Graph &g);
 bool hasInducedP5(const Graph &g);
 bool hasInducedC5(const Graph &g);
 bool hasInducedFork(const Graph &g);
+bool hasInducedHouse(const Graph &g);
 bool hasOddHole(const Graph& g);
 
 }  // namespace Subgraph
