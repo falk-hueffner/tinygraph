@@ -58,13 +58,16 @@ std::map<std::string, Property> properties = {
     {"8-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 8); }, true,  true}},
     {"9-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 9); }, true,  true}},
     {"P4-sparse",     {Classes::isP4Sparse,                                         true,  true}},
+    {"bipartite",     {Classes::isBipartite,                                        true,  true}},
     {"chordal",       {Classes::isChordal,                                          true,  true}},
+    {"eulerian",      {Classes::isEulerian,                                         false, true}},
     {"monopolar",     {Classes::isMonopolar,                                        true,  true}},
     {"perfect",       {Classes::isPerfect,                                          true,  true}},
     {"prime",         {Classes::isPrime,                                            false, false}},
     {"split",         {Classes::isSplit,                                            true,  false}},
     {"split-cluster", {Classes::isSplitClusterGraph,                                true,  false}},
     {"threshold",     {Classes::isThreshold,                                        true,  false}},
+    {"trivially-perfect", {Classes::isTriviallyPerfect,                             true,  true}},
 };
 
 std::map<std::string, GengProperty> gengProperties = {
