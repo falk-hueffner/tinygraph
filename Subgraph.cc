@@ -137,6 +137,7 @@ std::function<bool(const Graph&)> hasInducedTest(Graph f) {
     if (f == Graph::byName("C4")     .canonical()) return hasInducedC4;
     if (f == Graph::byName("diamond").canonical()) return hasInducedDiamond;
     if (f == Graph::byName("P5")     .canonical()) return hasInducedP5;
+    if (f == Graph::byName("C5")     .canonical()) return hasInducedC5;
     return [f](const Graph& g) {
 	if (g.n() < f.n())
 	    return false;
@@ -227,6 +228,16 @@ bool hasInducedP5(const Graph& g) {
 	    for (int x : (g.neighbors(w) - g.neighbors(v)).above(v))
 		for (int u : g.neighbors(v) - g.neighbors(w) - g.neighbors(x))
 		    if ((g.neighbors(x) - g.neighbors(w) - g.neighbors(v) - g.neighbors(u)).nonempty())
+			return true;
+    return false;
+}
+
+bool hasInducedC5(const Graph& g) {
+    for (int u = 0; u < g.n() - 4; ++u)
+	for (int l1 : g.neighbors(u).above(u))
+	    for (int r1 : g.neighbors(u).above(l1) - g.neighbors(l1))
+		for (int l2 : g.neighbors(l1) - g.neighbors(u) - g.neighbors(r1))
+		    if (((g.neighbors(l2) - g.neighbors(l1) - g.neighbors(u)) & g.neighbors(r1)).nonempty())
 			return true;
     return false;
 }
