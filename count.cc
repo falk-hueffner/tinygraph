@@ -112,6 +112,7 @@ int main(int argc, char* argv[]) {
 	if (type == "connected") {
 	    connectedOnly = true;
 	    gengFlags |= Graph::CONNECTED;
+	    continue;
 	} else if (gengProperties.find(type) != gengProperties.end()) {
 	    auto p = gengProperties.find(type)->second;
 	    gengFlags |= p.flag;
@@ -120,6 +121,7 @@ int main(int argc, char* argv[]) {
 	    if (propertyName != "")
 		propertyName += ' ';
 	    propertyName += type;
+	    continue;
 	} else if (properties.find(type) != properties.end()) {
 	    auto p = properties.find(type)->second;
 	    test = p.test;
