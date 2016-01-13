@@ -118,8 +118,9 @@ bool has(const Graph& g, const Graph& f) {
 
 std::function<bool(const Graph&)> hasTest(Graph f) {
     f = f.canonical();
-//    if (f == Graph::byName("K3")     .canonical()) return hasK3;
-//    if (f == Graph::byName("C4")     .canonical()) return hasC4;
+    if (f == Graph::byName("K3")     .canonical()) return hasK3;
+    if (f == Graph::byName("C4")     .canonical()) return hasC4;
+    if (f == Graph::byName("K4")     .canonical()) return hasK4;
     return [f](const Graph& g) {
 	if (g.n() < f.n())
 	    return false;
@@ -136,6 +137,7 @@ std::function<bool(const Graph&)> hasInducedTest(Graph f) {
     if (f == Graph::byName("paw")    .canonical()) return hasInducedPaw;
     if (f == Graph::byName("C4")     .canonical()) return hasInducedC4;
     if (f == Graph::byName("diamond").canonical()) return hasInducedDiamond;
+    if (f == Graph::byName("K4")     .canonical()) return hasK4;
     if (f == Graph::byName("P5")     .canonical()) return hasInducedP5;
     if (f == Graph::byName("C5")     .canonical()) return hasInducedC5;
     if (f == Graph::byName("fork")   .canonical()) return hasInducedFork;
@@ -167,6 +169,15 @@ bool hasK3(const Graph& g) {
 	for (int v : g.neighbors(u).above(u))
 	    if ((g.neighbors(u) & g.neighbors(v)).nonempty())
 		return true;
+    return false;
+}
+
+bool hasK4(const Graph& g) {
+    for (int u = 0; u < g.n() - 3; ++u)
+	for (int v : g.neighbors(u).above(u))
+	    for (int w : g.neighbors(v).above(v) & g.neighbors(u))
+		if (((g.neighbors(w) & g.neighbors(u) & g.neighbors(v)).above(w)).nonempty())
+		    return true;
     return false;
 }
 

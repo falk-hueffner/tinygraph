@@ -32,6 +32,7 @@ std::function<bool(const Graph&)> hasInducedTest(Graph f);
 bool hasInduced(const Graph &g, const Graph& f);
 bool hasInducedP3(const Graph &g);
 bool hasK3(const Graph &g);
+bool hasK4(const Graph &g);
 bool hasInducedClaw(const Graph &g);
 bool hasInducedPaw(const Graph &g);
 bool hasC4(const Graph &g);
