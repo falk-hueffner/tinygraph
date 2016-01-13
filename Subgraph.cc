@@ -333,6 +333,32 @@ uint64_t countInducedP5s(const Graph& g) {
     return count;
 }
 
+bool longHoleExtend(const Graph& g, int l, int r, Set out) {
+    for (int l2 : g.neighbors(l) - out) {
+	if (g.hasEdge(l2, r))
+	    return true;
+	if (longHoleExtend(g, l2, r, (out + l) | g.neighbors(l)))
+	    return true;
+    }
+    return false;
+}
+
+// "long" hole: induced cycle of length >= 5 (5, 6, 7, ...)
+bool hasLongHole(const Graph& g) {
+    for (int u = 0; u < g.n() - 4; ++u) {
+	for (int l : g.neighbors(u).above(u)) {
+	    for (int r : g.neighbors(u).above(l) - g.neighbors(l)) {
+		Set out = g.vertices().belowEq(u) | g.neighbors(u);
+		for (int l2 : g.neighbors(l) - g.neighbors(r) - out) {
+		    if (longHoleExtend(g, l2, r, (out | g.neighbors(l)) + l2))
+			return true;
+		}
+	    }
+	}
+    }
+    return false;
+}
+
 bool oddHoleExtend(const Graph& g, int l, int r, Set out) {
     for (int l2 : g.neighbors(l) - g.neighbors(r) - out) {
 	Set r2s = g.neighbors(r) - g.neighbors(l) - out;
