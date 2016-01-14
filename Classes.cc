@@ -197,6 +197,8 @@ bool isModule(const Graph& g, Set vs) {
 }
 
 bool isPrime(const Graph& g) {
+    if (g.n() <= 3)
+	return 0;
     for (Set vs : g.vertices().subsets()) {
 	if (isModule(g, vs))
 	    return false;
