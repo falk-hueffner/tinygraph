@@ -60,6 +60,7 @@ std::map<std::string, Property> properties = {
     {"P4-sparse",     {Classes::isP4Sparse,                                         true,  true}},
     {"bipartite",     {Classes::isBipartite,                                        true,  true}},
     {"chordal",       {Classes::isChordal,                                          true,  true}},
+    {"cochordal",{[](const Graph& g) { return Classes::isChordal(g.complement()); },true,  true}},
     {"eulerian",      {Classes::isEulerian,                                         false, true}},
     {"long-hole-free",{[](const Graph& g) { return !Subgraph::hasLongHole(g); },    true,  true}},
     {"monopolar",     {Classes::isMonopolar,                                        true,  true}},
