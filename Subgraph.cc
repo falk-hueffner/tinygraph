@@ -373,7 +373,7 @@ bool oddHoleExtend(const Graph& g, int l, int r, Set out) {
 
 // induced cycle of odd length >= 5 (5, 7, 9, ...)
 bool hasOddHole(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
+    for (int u = 0; u < g.n() - 4; ++u) {
 	for (int l : g.neighbors(u).above(u)) {
 	    for (int r : g.neighbors(u).above(l) - g.neighbors(l)) {
 		Set out = g.vertices().belowEq(u) | g.neighbors(u);
