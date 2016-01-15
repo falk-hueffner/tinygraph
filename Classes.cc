@@ -119,20 +119,20 @@ bool isThreshold(const Graph& g) {
 }
 
 bool isP4Sparse(const Graph& g) {
-    static Graph c5 = Graph::byName("C5");
-    static Graph p5 = Graph::byName("P5");
-    static Graph p5C = p5.complement();
-    static Graph p = Graph::byName("banner");
-    static Graph pC = p.complement();
-    static Graph fork = Graph::byName("fork");
-    static Graph forkC = fork.complement();
-    return !Subgraph::hasInduced(g, c5)
-	&& !Subgraph::hasInduced(g, p5)
-	&& !Subgraph::hasInduced(g, p5C)
-	&& !Subgraph::hasInduced(g, p)
-	&& !Subgraph::hasInduced(g, pC)
-	&& !Subgraph::hasInduced(g, fork)
-	&& !Subgraph::hasInduced(g, forkC);
+    static auto c5 = Subgraph::hasInducedTest(Graph::byName("C5"));
+    static auto p5 = Subgraph::hasInducedTest(Graph::byName("P5"));
+    static auto p5C = Subgraph::hasInducedTest(Graph::byName("P5").complement());
+    static auto p = Subgraph::hasInducedTest(Graph::byName("banner"));
+    static auto pC = Subgraph::hasInducedTest(Graph::byName("banner").complement());
+    static auto fork = Subgraph::hasInducedTest(Graph::byName("fork"));
+    static auto forkC = Subgraph::hasInducedTest(Graph::byName("fork").complement());
+    return !c5(g)
+	&& !p5(g)
+	&& !p5C(g)
+	&& !p(g)
+	&& !pC(g)
+	&& !fork(g)
+	&& !forkC(g);
 }
 
 bool isClique(const Graph& g, Set vs) {
