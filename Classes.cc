@@ -206,4 +206,8 @@ bool isPrime(const Graph& g) {
     return true;
 }
 
+bool isWeaklyChordal(const Graph& g) {
+    return !Subgraph::hasLongHole(g) && !Subgraph::hasLongHole(g.complement());
+}
+
 }  // namespace Classes

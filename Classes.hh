@@ -43,6 +43,7 @@ bool isSplitClusterGraph(const Graph& g);
 bool independencePolynomialHasFactorXPlus1(const Graph& g);
 bool isEulerian(const Graph& g);
 bool isPrime(const Graph& g);
+bool isWeaklyChordal(const Graph& g);
 
 }  // namespace Classes
 

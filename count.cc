@@ -70,6 +70,7 @@ std::map<std::string, Property> properties = {
     {"split-cluster", {Classes::isSplitClusterGraph,                                true,  false}},
     {"threshold",     {Classes::isThreshold,                                        true,  false}},
     {"trivially-perfect", {Classes::isTriviallyPerfect,                             true,  true}},
+    {"weakly-chordal",{Classes::isWeaklyChordal,                                    true,  true}},
 };
 
 std::map<std::string, GengProperty> gengProperties = {
