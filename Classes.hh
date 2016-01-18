@@ -24,6 +24,12 @@
 namespace Classes {
 
 inline bool isClique(const Graph& g) { return g.m() == (g.n() * (g.n() - 1)) / 2; }
+inline bool isIndependentSet(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u)
+	if (g.neighbors(u).nonempty())
+	    return false;
+    return true;
+}
 bool isBipartite(const Graph& g);
 inline bool isClusterGraph(const Graph& g) { return !Subgraph::hasInducedP3(g); }
 bool isTriviallyPerfect(const Graph& g);
@@ -36,7 +42,14 @@ bool isMonopolar(const Graph& g);
 bool isSplitClusterGraph(const Graph& g);
 bool independencePolynomialHasFactorXPlus1(const Graph& g);
 bool isEulerian(const Graph& g);
+bool isPrime(const Graph& g);
+bool isWeaklyChordal(const Graph& g);
 bool isHamiltonian(const Graph& g);
+
+bool isTwoVertexConnected(const Graph& g);
+bool isTwoEdgeConnected(const Graph& g);
+bool isMinimallyTwoEdgeConnected(const Graph&);
+bool isMinimallyTwoVertexConnected(const Graph&);
 
 }  // namespace Classes
 

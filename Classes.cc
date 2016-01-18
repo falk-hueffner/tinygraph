@@ -18,6 +18,7 @@
 #include "Classes.hh"
 #include "Invariants.hh"
 
+#include <cstring>
 #include <algorithm>
 
 namespace Classes {
@@ -119,20 +120,20 @@ bool isThreshold(const Graph& g) {
 }
 
 bool isP4Sparse(const Graph& g) {
-    static Graph c5 = Graph::byName("C5");
-    static Graph p5 = Graph::byName("P5");
-    static Graph p5C = p5.complement();
-    static Graph p = Graph::byName("banner");
-    static Graph pC = p.complement();
-    static Graph fork = Graph::byName("fork");
-    static Graph forkC = fork.complement();
-    return !Subgraph::hasInduced(g, c5)
-	&& !Subgraph::hasInduced(g, p5)
-	&& !Subgraph::hasInduced(g, p5C)
-	&& !Subgraph::hasInduced(g, p)
-	&& !Subgraph::hasInduced(g, pC)
-	&& !Subgraph::hasInduced(g, fork)
-	&& !Subgraph::hasInduced(g, forkC);
+    static auto c5 = Subgraph::hasInducedTest(Graph::byName("C5"));
+    static auto p5 = Subgraph::hasInducedTest(Graph::byName("P5"));
+    static auto p5C = Subgraph::hasInducedTest(Graph::byName("P5").complement());
+    static auto p = Subgraph::hasInducedTest(Graph::byName("banner"));
+    static auto pC = Subgraph::hasInducedTest(Graph::byName("banner").complement());
+    static auto fork = Subgraph::hasInducedTest(Graph::byName("fork"));
+    static auto forkC = Subgraph::hasInducedTest(Graph::byName("fork").complement());
+    return !c5(g)
+	&& !p5(g)
+	&& !p5C(g)
+	&& !p(g)
+	&& !pC(g)
+	&& !fork(g)
+	&& !forkC(g);
 }
 
 bool isClique(const Graph& g, Set vs) {
@@ -181,6 +182,169 @@ bool isEulerian(const Graph& g) {
     for (int u = 0; u < g.n(); ++u)
 	if (g.deg(u) % 2)
 	    return false;
+    return true;
+}
+
+bool isModule(const Graph& g, Set vs) {
+    if (vs.size() <= 1 || vs == g.vertices())
+	return false;
+    int u = vs.min();
+    Set ns = g.neighbors(u) - vs;
+    for (int u : vs)
+	if (g.neighbors(u) - vs != ns)
+	    return false;
+    return true;
+}
+
+bool isPrime(const Graph& g) {
+    if (g.n() <= 3)
+	return 0;
+    for (Set vs : g.vertices().subsets()) {
+	if (isModule(g, vs))
+	    return false;
+    }
+    return true;
+}
+
+bool isWeaklyChordal(const Graph& g) {
+    return !Subgraph::hasLongHole(g) && !Subgraph::hasLongHole(g.complement());
+}
+
+void dfs(const Graph& g, int dfsNumber[], int dfsParent[], int dfsOrder[], Set backEdges[], int u, int parent, int& d) {
+    dfsOrder[d] = u;
+    dfsNumber[u] = ++d;
+    dfsParent[u] = parent;
+    for (int v : g.neighbors(u) - parent) {
+	if (dfsNumber[v]) {
+	    backEdges[v].add(u);
+	} else {
+	    dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, v, u, d);
+	}
+    }
+}
+
+bool isTwoEdgeConnected0(const Graph& g) {
+    if (g.n() < 2 || !g.isConnected())
+	return false;
+    Graph g2 = g;
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u).above(u)) {
+	    g2.removeEdge(u, v);
+	    if (!g2.isConnected())
+		return false;
+	    g2.addEdge(u, v);
+	}
+    }
+    return true;
+}
+
+bool isTwoEdgeConnected(const Graph& g) {
+    int n = g.n();
+    if (n < 2)
+	return false;
+    int dfsNumber[n];
+    int dfsParent[n];
+    Set backEdges[n];
+    int dfsOrder[n];
+    std::memset(dfsNumber, 0, sizeof dfsNumber);
+    std::memset(backEdges, 0, sizeof backEdges);
+    int d = 0;
+    // dfs numbering starts at 1
+    dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, 0, 0, d);
+    if (d != g.n())
+	return false;		// disconnected
+    Set visited;
+    int traversed = 0;
+    for (int i = 0; i < n; ++i) {
+	int u = dfsOrder[i];
+	if (backEdges[u].nonempty()) {
+	    visited.add(u);
+	    for (int v : backEdges[u]) {
+		int w = v;
+		while (!visited.contains(w)) {
+		    visited.add(w);
+		    w = dfsParent[w];
+		    ++traversed;
+		}
+	    }
+	}
+    }
+    return traversed == n - 1;
+}
+
+bool isTwoVertexConnected0(const Graph& g) {
+    if (g.n() < 3 || !g.isConnected())
+	return false;
+    for (int u = 0; u < g.n(); ++u) {
+	Graph g2 = g;
+	g2.deleteVertex(u);
+	if (!g2.isConnected())
+	    return false;
+    }
+    return true;
+}
+
+bool isTwoVertexConnected(const Graph& g) {
+    int n = g.n();
+    if (n < 3)
+	return false;
+    int dfsNumber[n];
+    int dfsParent[n];
+    Set backEdges[n];
+    int dfsOrder[n];
+    std::memset(dfsNumber, 0, sizeof dfsNumber);
+    std::memset(backEdges, 0, sizeof backEdges);
+    int d = 0;
+    dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, 0, 0, d);
+    if (d != g.n())
+	return false;		// disconnected
+    Set visited;
+    int traversed = 0;
+    bool first = true;
+    for (int i = 0; i < n; ++i) {
+	int u = dfsOrder[i];
+	if (backEdges[u].nonempty()) {
+	    visited.add(u);
+	    for (int v : backEdges[u]) {
+		int w = v;
+		while (!visited.contains(w)) {
+		    visited.add(w);
+		    w = dfsParent[w];
+		    if (!first && w == u)
+			return false;
+		    ++traversed;
+		}
+		first = false;
+	    }
+	}
+    }
+    return traversed == n - 1;
+}
+
+bool isMinimallyTwoEdgeConnected(const Graph& g) {
+    if (!Classes::isTwoEdgeConnected(g))
+	return false;
+    Graph g2 = g;
+    for (int u : g.vertices()) {
+	for (int v : g.neighbors(u).above(u)) {
+	    g2.removeEdge(u, v);
+	    if (Classes::isTwoEdgeConnected(g2))
+		return false;
+	    g2.addEdge(u, v);
+	}
+    }
+    return true;
+}
+
+bool isMinimallyTwoVertexConnected(const Graph& g) {
+    if (!Classes::isTwoVertexConnected(g))
+	return false;
+    for (int u : g.vertices()) {
+	Graph g2 = g;
+	g2.deleteVertex(u);
+	if (Classes::isTwoVertexConnected(g2))
+	    return false;
+    }
     return true;
 }
 

@@ -44,6 +44,7 @@ static const std::map<std::string, Graph> namedGraphs = {
     {"tadpole", Graph::ofGraph6("DKs").canonical()},
     {"bull",    Graph::ofGraph6("D{O").canonical()},
     {"cricket", Graph::ofGraph6("DiS").canonical()},
+    {"R",       Graph::ofGraph6("ElCO").canonical()},
 };
 
 Graph Graph::ofNauty(word* nautyg, int n) {
@@ -199,9 +200,12 @@ void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) 
     }
     enumerateCallback_ = f;
     pruneCallback_ = p;
-    std::vector<const char*> argv = {"geng", "-q" };
-    if (flags & CONNECTED)
-	argv.push_back("-c");
+    std::vector<const char*> argv = {"geng", "-q"};
+    if (flags & CONNECTED)     argv.push_back("-c");
+    if (flags & BICONNECTED)   argv.push_back("-C");
+    if (flags & TRIANGLE_FREE) argv.push_back("-t");
+    if (flags & SQUARE_FREE)   argv.push_back("-f");
+    if (flags & BIPARTITE)     argv.push_back("-b");
     std::string sn = std::to_string(n);
     argv.push_back(sn.c_str());
     argv.push_back(nullptr);

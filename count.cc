@@ -41,12 +41,15 @@ struct Property {
     bool determinedByConnectedComponents;
 };
 
+struct GengProperty {
+    GengProperty(int f, bool h, bool d)
+	: flag(f), hereditary(h), determinedByConnectedComponents(d) { }
+    int flag;
+    bool hereditary;
+    bool determinedByConnectedComponents;
+};
+
 std::map<std::string, Property> properties = {
-    {"chordal",       {Classes::isChordal,                                          true,  true}},
-    {"eulerian",      {Classes::isEulerian,                                         false, true}},
-    {"hamiltonian",   {Classes::isHamiltonian,                                      false, false}},
-    {"nonhamiltonian",   {std::not1(PropertyTest(Classes::isHamiltonian)),          false, false}},
-    {"colnum-3",   {[](const Graph& g) { return Invariants::coloringNumber(g) == 3; }, false,  false}},
     {"3-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 3); }, true,  true}},
     {"4-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 4); }, true,  true}},
     {"5-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 5); }, true,  true}},
@@ -54,12 +57,35 @@ std::map<std::string, Property> properties = {
     {"7-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 7); }, true,  true}},
     {"8-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 8); }, true,  true}},
     {"9-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 9); }, true,  true}},
-    {"perfect",       {Classes::isPerfect,                                          true,  true}},
-    {"split",         {Classes::isSplit,                                            true,  false}},
-    {"threshold",     {Classes::isThreshold,                                        true,  false}},
     {"P4-sparse",     {Classes::isP4Sparse,                                         true,  true}},
+    {"bipartite",     {Classes::isBipartite,                                        true,  true}},
+    {"chordal",       {Classes::isChordal,                                          true,  true}},
+    {"cochordal",{[](const Graph& g) { return Classes::isChordal(g.complement()); },true,  true}},
+    {"eulerian",      {Classes::isEulerian,                                         false, true}},
+    {"hamiltonian",   {Classes::isHamiltonian,                                      false, false}},
+    {"long-hole-free",{[](const Graph& g) { return !Subgraph::hasLongHole(g); },    true,  true}},
     {"monopolar",     {Classes::isMonopolar,                                        true,  true}},
+    {"odd-hole-free", {[](const Graph& g) { return !Subgraph::hasOddHole(g); },     true,  true}},
+    {"perfect",       {Classes::isPerfect,                                          true,  true}},
+    {"prime",         {Classes::isPrime,                                            false, false}},
+    {"split",         {Classes::isSplit,                                            true,  false}},
     {"split-cluster", {Classes::isSplitClusterGraph,                                true,  false}},
+    {"threshold",     {Classes::isThreshold,                                        true,  false}},
+    {"trivially-perfect", {Classes::isTriviallyPerfect,                             true,  true}},
+    {"weakly-chordal",{Classes::isWeaklyChordal,                                    true,  true}},
+    {"two-edge-connected",              {Classes::isTwoEdgeConnected,               false, false}},
+    {"minimally-two-edge-connected",    {Classes::isMinimallyTwoEdgeConnected,      false, false}},
+    {"minimally-two-vertex-connected",  {Classes::isMinimallyTwoVertexConnected,    false, false}},
+};
+
+std::map<std::string, GengProperty> gengProperties = {
+    {"biconnected",           {Graph::BICONNECTED,   false, false}},
+    {"two-vertex-connected",  {Graph::BICONNECTED,   false, false}},
+    {"triangle-free",         {Graph::TRIANGLE_FREE, true,  true}},
+    {"induced-triangle-free", {Graph::TRIANGLE_FREE, true,  true}},
+    {"square-free",           {Graph::SQUARE_FREE,   true,  true}},
+    {"C4-free",               {Graph::SQUARE_FREE,   true,  true}},
+    {"bipartite",             {Graph::BIPARTITE,     true,  true}},
 };
 
 template<typename T>
@@ -88,15 +114,34 @@ int main(int argc, char* argv[]) {
     bool connectedOnly = false;
     PropertyTest propertyTest = 0;
     std::string propertyName = "";
+    int gengFlags = 0;
     for (int i = 1; i < argc; ++i) {
 	std::string type = argv[i];
 	PropertyTest test = 0;
 	if (type == "connected") {
 	    connectedOnly = true;
+	    gengFlags |= Graph::CONNECTED;
+	    continue;
+	} else if (gengProperties.find(type) != gengProperties.end()) {
+	    auto p = gengProperties.find(type)->second;
+	    gengFlags |= p.flag;
+	    hereditary &= p.hereditary;
+	    determinedByConnectedComponents &= p.determinedByConnectedComponents;
+	    if (propertyName != "")
+		propertyName += ' ';
+	    propertyName += type;
+	    continue;
+	} else if (properties.find(type) != properties.end()) {
+	    auto p = properties.find(type)->second;
+	    test = p.test;
+	    hereditary &= p.hereditary;
+	    determinedByConnectedComponents &= p.determinedByConnectedComponents;
+	    if (propertyName != "")
+		propertyName += ' ';
+	    propertyName += type;
 	} else if (endsWith(type, "-free")) {
 	    if (propertyName != "")
 		propertyName += ' ';
-	    hereditary = true;
 	    type = type.substr(0, type.length() - std::string("-free").length());
 	    bool induced = false;
 	    if (startsWith(type, "induced-")) {
@@ -106,30 +151,22 @@ int main(int argc, char* argv[]) {
 	    } else {
 		propertyName += "(not necessarily induced) ";
 	    }
-	    std::cout << type << std::endl;
 	    Graph f = Graph::byName(type);
 	    propertyName += f.name() + "-free";
 	    test = std::not1(induced ? Subgraph::hasInducedTest(f) : Subgraph::hasTest(f));
 	    determinedByConnectedComponents &= f.isConnected();
 	} else {
-	    auto p = properties.find(type);
-	    if (p == properties.end()) {
-		std::cerr << "unknown graph class\n";
-		exit(1);
-	    }
-	    test = p->second.test;
-	    hereditary &= p->second.hereditary;
-	    determinedByConnectedComponents &= p->second.determinedByConnectedComponents;
-	    if (propertyName != "")
-		propertyName += ' ';
-	    propertyName += type;
+	    std::cerr << "unknown graph class\n";
+	    exit(1);
 	}
 	if (!propertyTest)
 	    propertyTest = test;
 	else
 	    propertyTest = [propertyTest, test](const Graph& g) { return propertyTest(g) && test(g); };
     }
-    //assert(propertyTest);
+    if (determinedByConnectedComponents)
+	gengFlags |= Graph::CONNECTED;
+    bool doPrune = hereditary && propertyTest;
     if (!propertyTest)
 	propertyTest = [](const Graph&) { return true; };
     std::vector<uint64_t> counts;
@@ -149,11 +186,10 @@ int main(int argc, char* argv[]) {
 	}
 	uint64_t count = 0;
 	auto counter = [&count,&propertyTest](const Graph& g) { if (propertyTest(g)) ++count; };
-	auto flags = connectedOnly || determinedByConnectedComponents ? Graph::CONNECTED : 0;
-	if (hereditary) {
-	    Graph::enumerate(n, counter, std::not1(propertyTest), flags);
+	if (doPrune) {
+	    Graph::enumerate(n, counter, std::not1(propertyTest), gengFlags);
 	} else {
-	    Graph::enumerate(n, counter, flags);
+	    Graph::enumerate(n, counter, gengFlags);
 	}
 	counts.push_back(count);
 	auto tEnd = double(std::clock()) / CLOCKS_PER_SEC;
