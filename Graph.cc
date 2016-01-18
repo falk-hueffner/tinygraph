@@ -24,6 +24,7 @@
 
 // A&BvC: an A graph with an extra B vertices, each of which is attached to C vertices of the A
 static const std::map<std::string, Graph> namedGraphs = {
+    {"triangle",Graph::ofGraph6("Bw").canonical()},
     {"diamond", Graph::ofGraph6("Cz").canonical()},
     {"paw",     Graph::ofGraph6("Cx").canonical()},
     {"claw",    Graph::ofGraph6("Cs").canonical()},
@@ -43,6 +44,7 @@ static const std::map<std::string, Graph> namedGraphs = {
     {"tadpole", Graph::ofGraph6("DKs").canonical()},
     {"bull",    Graph::ofGraph6("D{O").canonical()},
     {"cricket", Graph::ofGraph6("DiS").canonical()},
+    {"R",       Graph::ofGraph6("ElCO").canonical()},
 };
 
 Graph Graph::ofNauty(word* nautyg, int n) {
@@ -79,6 +81,26 @@ Graph Graph::byName(std::string name) {
     auto DIGITS = "0123456789";
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
+    if (name.find('+') != std::string::npos) {
+	Graph g1 = byName(name.substr(0, name.find('+')));
+	Graph g2 = byName(name.substr(name.find('+') + 1));
+	Graph g(g1.n() + g2.n());
+	for (int u = 0; u < g1.n(); ++u)
+	    g.neighbors_[u] = g1.neighbors_[u];
+	for (int u = 0; u < g2.n(); ++u)
+	    g.neighbors_[g1.n() + u] = Set::ofBits(g2.neighbors_[u].bits() << g1.n());
+	return g;
+    }
+    auto ns = name.find_first_not_of(DIGITS, 0);
+    if (ns) {
+	int n = std::stoi(name.substr(0, ns));
+	Graph g1 = byName(name.substr(ns));
+	Graph g(g1.n() * n);
+	for (int i = 0; i < n; ++i)
+	    for (Edge e : g1.edges())
+		g.addEdge(e.u + g1.n() * i, e.v + g1.n() * i);
+	return g;
+    }
     if (name[0] == 'K' && name.find(',') != std::string::npos) {
 	name.erase(name.begin());
 	int n1 = std::stoi(name.substr(0, name.find(',')));
@@ -178,9 +200,12 @@ void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) 
     }
     enumerateCallback_ = f;
     pruneCallback_ = p;
-    std::vector<const char*> argv = {"geng", "-q" };
-    if (flags & CONNECTED)
-	argv.push_back("-c");
+    std::vector<const char*> argv = {"geng", "-q"};
+    if (flags & CONNECTED)     argv.push_back("-c");
+    if (flags & BICONNECTED)   argv.push_back("-C");
+    if (flags & TRIANGLE_FREE) argv.push_back("-t");
+    if (flags & SQUARE_FREE)   argv.push_back("-f");
+    if (flags & BIPARTITE)     argv.push_back("-b");
     std::string sn = std::to_string(n);
     argv.push_back(sn.c_str());
     argv.push_back(nullptr);

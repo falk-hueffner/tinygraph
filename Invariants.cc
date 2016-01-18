@@ -15,6 +15,7 @@
    with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.  */
 
+#include "Classes.hh"
 #include "Graph.hh"
 #include "Subgraph.hh"
 
@@ -23,20 +24,19 @@
 namespace Invariants {
 
 bool kColorable(const Graph& g, int k, const Set options[], Set uncolored) {
+    if (uncolored.isEmpty())
+	return true;
     int leastOptions = k + 1;
     int v = -1;
     for (int u : uncolored) {
 	int o = options[u].size();
-	//std::cerr << u << ' ' << options[u] << o << std::endl;
 	assert(o);
 	if (o < leastOptions) {
 	    leastOptions = o;
 	    v = u;
 	}
     }
-    if (v == -1)
-	return true;
-    //std::cerr << "branch on " << v << options[v] << std::endl;
+    assert(v != -1);
     for (int c : options[v]) {
 	Set options2[g.n()];
 	std::memcpy(options2, options, sizeof options2);
@@ -55,7 +55,9 @@ bool kColorable(const Graph& g, int k, const Set options[], Set uncolored) {
 bool kColorable(const Graph& g, int k) {
     if (k == 0)
 	return g.n() == 0;
-    if (g.n() == 0)
+    if (k == 1)
+	return Classes::isIndependentSet(g);
+    if (g.n() <= k)
 	return true;
     Set options[g.n()];
     for (int u = 0; u < g.n(); ++u)
@@ -70,6 +72,28 @@ int coloringNumber(const Graph& g) {
     for (int k = 0; ; ++k)
 	if (kColorable(g, k))
 	    return k;
+}
+
+int cliqueNumber(const Graph& g) {
+    int omega = 0;
+    g.maximalCliques([&omega](Set clique) { omega = std::max(omega, clique.size()); });
+    return omega;
+}
+
+void countIndependentSets(const Graph& g, int size, Set ext, uint64_t count[]) {
+    if (ext.nonempty()) {
+	int u = ext.pop();
+	++count[size + 1];
+	countIndependentSets(g, size + 1, ext - g.neighbors(u), count);
+	countIndependentSets(g, size, ext, count);
+    }
+}
+
+std::vector<uint64_t> independencePolynomial(const Graph& g) {
+    std::vector<uint64_t> p(g.n() + 1);
+    ++p[0];
+    countIndependentSets(g, 0, g.vertices(), p.data());
+    return p;
 }
 
 }  // namespace Invariants

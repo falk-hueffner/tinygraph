@@ -24,6 +24,27 @@
 
 #include "Set.hh"
 
+struct Edge {
+    Edge() { }
+    Edge(int nu, int nv) {
+	if (nu < nv) {
+	    u = nu;
+	    v = nv;
+	} else {
+	    u = nv;
+	    v = nu;
+	}
+    }
+    bool operator==(const Edge& other) const { return u == other.u && v == other.v; }
+    bool operator<(const Edge& other) const {
+	if (u != other.u)
+	    return u < other.u;
+	else
+	    return v < other.v;
+    }
+    int u, v;
+};
+
 class Graph {
 public:
     explicit Graph(int n, std::initializer_list<std::pair<int, int>> es = {}) : neighbors_(n) {
@@ -55,6 +76,7 @@ public:
     bool isConnected() const;
 
     bool operator==(const Graph& g) const { return neighbors_ == g.neighbors_; }
+    bool operator!=(const Graph& g) const { return neighbors_ != g.neighbors_; }
 
     void addEdge(int u, int v) {
 	assert(u >= 0 && u < n());
@@ -84,6 +106,46 @@ public:
 	}
 	neighbors_.pop_back();
     }
+
+    class Edges {
+    public:
+        Edges(const Graph& g) : g_(g) { }
+        class Iterator {
+        public:
+            Iterator(const Graph& g, int u = 0) : g_(g), u_(u) {
+		while (u_ < g_.n()) {
+		    n_u_ = g_.neighbors(u_).above(u_);
+		    if (n_u_.nonempty())
+			break;
+		    ++u_;
+                }
+            }
+            bool operator!=(const Iterator& other) const {
+                return u_ != other.u_ || n_u_ != other.n_u_;
+            }
+	    Edge operator*() const { return {u_, n_u_.min()}; }
+            const Iterator& operator++() {
+		n_u_.pop();
+		while (n_u_.isEmpty()) {
+		    if (++u_ >= g_.n())
+			return *this;
+		    n_u_ = g_.neighbors(u_).above(u_);
+                }
+                return *this;
+            }
+        private:
+	    const Graph& g_;
+	    int u_;
+	    Set n_u_;
+        };
+
+        Iterator begin() const { return Iterator(g_); }
+        Iterator end() const { return Iterator(g_, g_.n()); }
+
+    private:
+        const Graph& g_;
+    };
+    Edges edges() const { return Edges(*this); }
 
     class ConnectedComponents {
     public:
@@ -154,7 +216,13 @@ public:
 
     typedef std::function<void(const Graph&)> EnumerateCallback;
     typedef std::function<bool(const Graph&)> PruneCallback;
-    enum { CONNECTED = 1 };
+    enum {
+	CONNECTED     = 1 << 0,
+	BICONNECTED   = 1 << 1,
+	TRIANGLE_FREE = 1 << 2,
+	SQUARE_FREE   = 1 << 3,
+	BIPARTITE     = 1 << 4,
+    };
     static void enumerate(int n, EnumerateCallback f, int flags = 0);
     static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0);
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }

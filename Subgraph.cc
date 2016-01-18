@@ -85,6 +85,72 @@ bool hasInduced(const Graph& g, const Graph& f) {
     return extendHasInduced(g, f, g.vertices(), assignment);
 }
 
+// simple and unoptimized subgraph homomorphism
+bool extendHas(const Graph& g, const Graph& f,
+	       Set unassigned, std::vector<int>& assignment) {
+    if (assignment.size() == size_t(f.n()))
+        return true;
+    int u_f = assignment.size();
+    for (int u_g : unassigned) {
+        bool fits = true;
+        for (int v_f = 0; v_f < u_f; ++v_f) {
+            if (f.hasEdge(u_f, v_f) && !g.hasEdge(u_g, assignment[v_f])) {
+                fits = false;
+                break;
+            }
+        }
+        if (fits) {
+            assignment.push_back(u_g);
+            if (extendHas(g, f, unassigned - u_g, assignment))
+		return true;
+            assignment.pop_back();
+        }
+    }
+    return false;
+}
+
+bool has(const Graph& g, const Graph& f) {
+    if (g.n() < f.n())
+	return false;
+    std::vector<int> assignment;
+    return extendHas(g, f, g.vertices(), assignment);
+}
+
+std::function<bool(const Graph&)> hasTest(Graph f) {
+    f = f.canonical();
+    if (f == Graph::byName("K3")     .canonical()) return hasK3;
+    if (f == Graph::byName("C4")     .canonical()) return hasC4;
+    if (f == Graph::byName("K4")     .canonical()) return hasK4;
+    return [f](const Graph& g) {
+	if (g.n() < f.n())
+	    return false;
+	std::vector<int> assignment;
+	return extendHas(g, f, g.vertices(), assignment);
+    };
+}
+
+std::function<bool(const Graph&)> hasInducedTest(Graph f) {
+    f = f.canonical();
+    if (f == Graph::byName("P3")     .canonical()) return hasInducedP3;
+    if (f == Graph::byName("K3")     .canonical()) return hasK3;
+    if (f == Graph::byName("claw")   .canonical()) return hasInducedClaw;
+    if (f == Graph::byName("paw")    .canonical()) return hasInducedPaw;
+    if (f == Graph::byName("C4")     .canonical()) return hasInducedC4;
+    if (f == Graph::byName("diamond").canonical()) return hasInducedDiamond;
+    if (f == Graph::byName("K4")     .canonical()) return hasK4;
+    if (f == Graph::byName("P5")     .canonical()) return hasInducedP5;
+    if (f == Graph::byName("C5")     .canonical()) return hasInducedC5;
+    if (f == Graph::byName("fork")   .canonical()) return hasInducedFork;
+    if (f == Graph::byName("house")  .canonical()) return hasInducedHouse;
+    if (f == Graph::byName("bull")   .canonical()) return hasInducedBull;
+    return [f](const Graph& g) {
+	if (g.n() < f.n())
+	    return false;
+	std::vector<int> assignment;
+	return extendHasInduced(g, f, g.vertices(), assignment);
+    };
+}
+
 bool hasInducedP3(const Graph& g) {
     Set todo = g.vertices();
     while (todo.nonempty()) {
@@ -104,6 +170,15 @@ bool hasK3(const Graph& g) {
 	for (int v : g.neighbors(u).above(u))
 	    if ((g.neighbors(u) & g.neighbors(v)).nonempty())
 		return true;
+    return false;
+}
+
+bool hasK4(const Graph& g) {
+    for (int u = 0; u < g.n() - 3; ++u)
+	for (int v : g.neighbors(u).above(u))
+	    for (int w : g.neighbors(v).above(v) & g.neighbors(u))
+		if (((g.neighbors(w) & g.neighbors(u) & g.neighbors(v)).above(w)).nonempty())
+		    return true;
     return false;
 }
 
@@ -171,6 +246,54 @@ bool hasInducedP5(const Graph& g) {
     return false;
 }
 
+bool hasInducedC5(const Graph& g) {
+    for (int u = 0; u < g.n() - 4; ++u)
+	for (int l1 : g.neighbors(u).above(u))
+	    for (int r1 : g.neighbors(u).above(l1) - g.neighbors(l1))
+		for (int l2 : g.neighbors(l1) - g.neighbors(u) - g.neighbors(r1))
+		    if (((g.neighbors(l2) - g.neighbors(l1) - g.neighbors(u)) & g.neighbors(r1)).nonempty())
+			return true;
+    return false;
+}
+
+bool hasInducedFork(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u) {
+	for (int v : g.neighbors(u)) {
+	    for (int w : g.neighbors(u).above(v) - g.neighbors(v)) {
+		for (int x : g.neighbors(u).above(w) - g.neighbors(v) - g.neighbors(w)) {
+		    if ((g.neighbors(v) - g.neighbors(u) - g.neighbors(w) - g.neighbors(x)).nonempty())
+			return true;
+		    if ((g.neighbors(w) - g.neighbors(u) - g.neighbors(v) - g.neighbors(x)).nonempty())
+			return true;
+		    if ((g.neighbors(x) - g.neighbors(u) - g.neighbors(v) - g.neighbors(w)).nonempty())
+			return true;
+		}
+	    }
+	}
+    }
+    return false;
+}
+
+bool hasInducedHouse(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u))
+	    for (int w : g.neighbors(u).above(v) & g.neighbors(v))
+		for (int x : g.neighbors(v) - g.neighbors(u) - g.neighbors(w))
+		    if (((g.neighbors(w) & g.neighbors(x)) - g.neighbors(v) - g.neighbors(u)).nonempty())
+			return true;
+    return false;
+}
+
+bool hasInducedBull(const Graph& g) {
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u))
+	    for (int w : g.neighbors(u).above(v) & g.neighbors(v))
+		for (int x : g.neighbors(v) - g.neighbors(u) - g.neighbors(w))
+		    if ((g.neighbors(w) - g.neighbors(x) - g.neighbors(v) - g.neighbors(u)).nonempty())
+			return true;
+    return false;
+}
+
 uint64_t countInducedP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;
@@ -210,6 +333,32 @@ uint64_t countInducedP5s(const Graph& g) {
     return count;
 }
 
+bool longHoleExtend(const Graph& g, int l, int r, Set out) {
+    for (int l2 : g.neighbors(l) - out) {
+	if (g.hasEdge(l2, r))
+	    return true;
+	if (longHoleExtend(g, l2, r, (out + l) | g.neighbors(l)))
+	    return true;
+    }
+    return false;
+}
+
+// "long" hole: induced cycle of length >= 5 (5, 6, 7, ...)
+bool hasLongHole(const Graph& g) {
+    for (int u = 0; u < g.n() - 4; ++u) {
+	for (int l : g.neighbors(u).above(u)) {
+	    for (int r : g.neighbors(u).above(l) - g.neighbors(l)) {
+		Set out = g.vertices().belowEq(u) | g.neighbors(u);
+		for (int l2 : g.neighbors(l) - g.neighbors(r) - out) {
+		    if (longHoleExtend(g, l2, r, (out | g.neighbors(l)) + l2))
+			return true;
+		}
+	    }
+	}
+    }
+    return false;
+}
+
 bool oddHoleExtend(const Graph& g, int l, int r, Set out) {
     for (int l2 : g.neighbors(l) - g.neighbors(r) - out) {
 	Set r2s = g.neighbors(r) - g.neighbors(l) - out;
@@ -224,7 +373,7 @@ bool oddHoleExtend(const Graph& g, int l, int r, Set out) {
 
 // induced cycle of odd length >= 5 (5, 7, 9, ...)
 bool hasOddHole(const Graph& g) {
-    for (int u = 0; u < g.n(); ++u) {
+    for (int u = 0; u < g.n() - 4; ++u) {
 	for (int l : g.neighbors(u).above(u)) {
 	    for (int r : g.neighbors(u).above(l) - g.neighbors(l)) {
 		Set out = g.vertices().belowEq(u) | g.neighbors(u);
