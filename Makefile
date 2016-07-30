@@ -48,18 +48,19 @@ test: testMain
 	./testMain
 
 testMain: testMain.o testBits.o testSet.o testClasses.o testSubgraph.o testEulerTransform.o \
-		$(COMMON_OBJ) Classes.o Subgraph.o EulerTransform.o
+		$(COMMON_OBJ) Invariants.o Classes.o Subgraph.o EulerTransform.o
 	$(CXX) $(CXXFLAGS) $(GMP_LIBS) $^ -o $@
 
-nauty: nauty25r9.tar.gz wordsize.h
-	rm -rf nauty25r9 nauty
-	tar -xvvzf nauty25r9.tar.gz
-	ln -s nauty25r9 nauty
-	patch -p0 < geng.patch
+Graph.o: nauty
+
+nauty: nauty26r6.tar.gz wordsize.h
+	rm -rf nauty26r6 nauty
+	tar -xvvzf nauty26r6.tar.gz
+	ln -s nauty26r6 nauty
 	(cd nauty && CFLAGS="$(CFLAGS)" ./configure --enable-wordsize=$$(perl -n -e'/define WORDSIZE (\d+)/ && print $$1' ../wordsize.h) && make $(GENG_OBJ))
 
-nauty25r9.tar.gz:
-	wget http://cs.anu.edu.au/~bdm/nauty/nauty25r9.tar.gz
+nauty26r6.tar.gz:
+	wget http://users.cecs.anu.edu.au/~bdm/nauty/nauty26r6.tar.gz
 
 .deps:
 	mkdir -p .deps
@@ -72,6 +73,6 @@ nauty25r9.tar.gz:
 		rm -f $*.d
 
 clean:
-	rm -rf *.o $(EXECS) testMain nauty25r9 nauty core gmon.out
+	rm -rf *.o $(EXECS) testMain nauty26r6 nauty core gmon.out
 
 -include $(wildcard .deps/*.P)
