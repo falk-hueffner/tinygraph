@@ -24,6 +24,7 @@
 
 // A&BvC: an A graph with an extra B vertices, each of which is attached to C vertices of the A
 static const std::map<std::string, Graph> namedGraphs = {
+    {"empty",   Graph(0).canonical()},
     {"triangle",Graph::ofGraph6("Bw").canonical()},
     {"diamond", Graph::ofGraph6("Cz").canonical()},
     {"paw",     Graph::ofGraph6("Cx").canonical()},
@@ -78,24 +79,43 @@ Graph Graph::byName(std::string name) {
     if (p != namedGraphs.end())
 	return p->second;
 
-    auto DIGITS = "0123456789";
+    auto stoi = [](const std::string& s) -> int {
+	int r = 0;
+	for (std::size_t i = 0; i < s.size(); ++i) {
+	    if (!('0' <= s[i] && i <= '9'))
+		throw std::invalid_argument("Graph::byName: invalid number");
+	    r *= 10;
+	    r += s[i] - '0';
+	    if (r > 10000)
+		throw std::invalid_argument("Graph::byName: number too large");
+	}
+	return r;
+    };
+
     if (name.empty())
 	throw std::invalid_argument("Graph::byName: empty name");
     if (name.find('+') != std::string::npos) {
 	Graph g1 = byName(name.substr(0, name.find('+')));
 	Graph g2 = byName(name.substr(name.find('+') + 1));
-	Graph g(g1.n() + g2.n());
+	int n = g1.n() + g2.n();
+	if (n > maxn())
+	    throw std::invalid_argument("Graph too large");
+	Graph g(n);
 	for (int u = 0; u < g1.n(); ++u)
 	    g.neighbors_[u] = g1.neighbors_[u];
 	for (int u = 0; u < g2.n(); ++u)
 	    g.neighbors_[g1.n() + u] = Set::ofBits(g2.neighbors_[u].bits() << g1.n());
 	return g;
     }
+    auto DIGITS = "0123456789";
     auto ns = name.find_first_not_of(DIGITS, 0);
-    if (ns) {
-	int n = std::stoi(name.substr(0, ns));
+    if (ns != std::string::npos && ns > 0) {
+	int n = stoi(name.substr(0, ns));
 	Graph g1 = byName(name.substr(ns));
-	Graph g(g1.n() * n);
+	int n2 = g1.n() * n;
+	if (n2 > maxn())
+	    throw std::invalid_argument("Graph too large");
+	Graph g(n2);
 	for (int i = 0; i < n; ++i)
 	    for (Edge e : g1.edges())
 		g.addEdge(e.u + g1.n() * i, e.v + g1.n() * i);
@@ -103,8 +123,11 @@ Graph Graph::byName(std::string name) {
     }
     if (name[0] == 'K' && name.find(',') != std::string::npos) {
 	name.erase(name.begin());
-	int n1 = std::stoi(name.substr(0, name.find(',')));
-	int n2 = std::stoi(name.substr(name.find(',') + 1));
+	int n1 = stoi(name.substr(0, name.find(',')));
+	int n2 = stoi(name.substr(name.find(',') + 1));
+	int n = n1 + n2;
+	if (n > maxn())
+	    throw std::invalid_argument("Graph too large");
 	Graph g(n1 + n2);
 	for (int u = 0; u < n1; ++u)
 	    for (int v = n1; v < n1 + n2; ++v)
@@ -115,16 +138,20 @@ Graph Graph::byName(std::string name) {
 	&& name.find_first_not_of(DIGITS, 1) == std::string::npos) {
 	auto type = name[0];
 	name.erase(name.begin());
-	int n = std::stoi(name);
+	int n = stoi(name);
+	if (n > maxn())
+	    throw std::invalid_argument("Graph too large");
 	Graph g(n);
 	if (type == 'K') {
 	    for (int u = 0; u < n; ++u)
 		for (int v = u + 1; v < n; ++v)
 		    g.addEdge(u, v);
 	} else {
+	    if (type == 'C' && n == 1)
+		throw std::invalid_argument("Graph::byName: self-loops not supported");
 	    for (int u = 0; u + 1 < n; ++u)
 		g.addEdge(u, u + 1);
-	    if (type == 'C')
+	    if (type == 'C' && n != 0)
 		g.addEdge(n - 1, 0);
 	}
 	return g;

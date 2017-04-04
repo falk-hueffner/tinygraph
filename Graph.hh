@@ -48,7 +48,7 @@ struct Edge {
 class Graph {
 public:
     explicit Graph(int n, std::initializer_list<std::pair<int, int>> es = {}) : neighbors_(n) {
-	assert(n <= Set::MAX_ELEMENT + 1);
+	assert(n >= 0 && n <= maxn());
 	for (auto e : es)
 	    addEdge(e.first, e.second);
     }
@@ -60,6 +60,7 @@ public:
     static Graph cycle(int n);
 
     int n() const { return neighbors_.size(); }
+    static constexpr int maxn() { return Set::MAX_ELEMENT + 1; }
     Set vertices() const { return Set::ofRange(n()); }
     int m() const {
 	int m = 0;
@@ -81,6 +82,7 @@ public:
     void addEdge(int u, int v) {
 	assert(u >= 0 && u < n());
 	assert(v >= 0 && v < n());
+	assert(u != v);
 	neighbors_[u].add(v);
 	neighbors_[v].add(u);
     }
