@@ -23,6 +23,58 @@
 
 namespace Invariants {
 
+// return value MAXN indicates disconnected graph
+int diameter(const Graph& g) {
+    if (g.n() == 0)
+	return g.n();
+    int diameter = 0;
+    for (int u : g.vertices()) {
+	Set seen = {u};
+	Set layer = {u};
+	int d = 0;
+	for (; ; ++d) {
+	    Set nextLayer;
+	    for (int v : layer)
+		nextLayer |= g.neighbors(v);
+	    nextLayer -= seen;
+	    if (nextLayer.isEmpty())
+		break;
+	    seen |= nextLayer;
+	    layer = nextLayer;
+	}
+	if (seen != g.vertices())
+	    return Graph::maxn();
+	diameter = std::max(diameter, d);
+    }
+    return diameter;
+}
+
+// return value MAXN indicates disconnected graph
+int radius(const Graph& g) {
+    if (g.n() == 0)
+	return g.n();
+    int radius = Graph::maxn();
+    for (int u : g.vertices()) {
+	Set seen = {u};
+	Set layer = {u};
+	int d = 0;
+	for (; ; ++d) {
+	    Set nextLayer;
+	    for (int v : layer)
+		nextLayer |= g.neighbors(v);
+	    nextLayer -= seen;
+	    if (nextLayer.isEmpty())
+		break;
+	    seen |= nextLayer;
+	    layer = nextLayer;
+	}
+	if (seen != g.vertices())
+	    return 0;
+	radius = std::min(radius, d);
+    }
+    return radius;
+}
+
 bool kColorable(const Graph& g, int k, const Set options[], Set uncolored, Set freshColors) {
     if (uncolored.isEmpty())
 	return true;
