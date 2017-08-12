@@ -364,4 +364,8 @@ bool isHamiltonian(const Graph& g) {
     return false;
 }
 
+bool isWeaklyPerfect(const Graph& g) {
+  return Invariants::cliqueNumber(g) == Invariants::coloringNumber(g);
+}
+
 }  // namespace Classes

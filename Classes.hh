@@ -35,6 +35,7 @@ inline bool isClusterGraph(const Graph& g) { return !Subgraph::hasInducedP3(g); 
 bool isTriviallyPerfect(const Graph& g);
 bool isChordal(const Graph& g);
 bool isPerfect(const Graph& g);
+bool isWeaklyPerfect(const Graph& g);
 bool isSplit(const Graph& g);
 bool isThreshold(const Graph& g);
 bool isP4Sparse(const Graph& g);
@@ -48,8 +49,8 @@ bool isHamiltonian(const Graph& g);
 
 bool isTwoVertexConnected(const Graph& g);
 bool isTwoEdgeConnected(const Graph& g);
-bool isMinimallyTwoEdgeConnected(const Graph&);
-bool isMinimallyTwoVertexConnected(const Graph&);
+bool isMinimallyTwoEdgeConnected(const Graph& g);
+bool isMinimallyTwoVertexConnected(const Graph& g);
 
 }  // namespace Classes
 
