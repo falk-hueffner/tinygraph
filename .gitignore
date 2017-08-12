@@ -3,6 +3,7 @@
 .deps
 count
 extremal
+forbidden-subgraphs
 nauty
 nauty26r6
 nauty26r6.tar.gz
