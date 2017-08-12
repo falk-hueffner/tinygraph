@@ -30,7 +30,7 @@ COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 all: .deps nauty $(EXECS)
 
 count: Classes.o Subgraph.o Invariants.o EulerTransform.o $(COMMON_OBJ) count.o
-	$(CXX) $(CXXFLAGS) $(GMP_LIBS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ $(GMP_LIBS) -o $@
 
 extremal: Subgraph.o $(COMMON_OBJ) extremal.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
