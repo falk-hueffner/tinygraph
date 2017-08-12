@@ -368,4 +368,24 @@ bool isWeaklyPerfect(const Graph& g) {
   return Invariants::cliqueNumber(g) == Invariants::coloringNumber(g);
 }
 
+bool isWellCovered(const Graph& g) {
+    int isSize = -1;
+    for (Set vs : g.vertices().subsets()) {
+	if (!isIndependentSet(g, vs))
+	    continue;
+	Set possibleExtensions = g.vertices() - vs;
+	for (int u : vs)
+	    possibleExtensions -= g.neighbors(u);
+	if (!possibleExtensions.isEmpty())
+	    continue;
+	if (isSize == -1) {
+	    isSize = vs.size();
+	} else {
+	    if (isSize != vs.size())
+		return false;
+	}
+    }
+    return true;
+}
+
 }  // namespace Classes
