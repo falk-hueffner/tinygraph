@@ -358,6 +358,12 @@ bool isHamiltonian(const Graph& g, int s, int t, Set path) {
 }
 
 bool isHamiltonian(const Graph& g) {
+    if (g.n() == 0)
+	return false; // could also be considered true
+    else if (g.n() == 1)
+	return true;  // could also be considered false
+    else if (g.n() == 2)
+	return false; // needs to be special-cased, code below would give wrong result
     for (int u : g.vertices())
 	if (isHamiltonian(g, u, u, {u}))
 	    return true;
