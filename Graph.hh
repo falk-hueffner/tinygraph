@@ -224,6 +224,7 @@ public:
 	TRIANGLE_FREE = 1 << 2,
 	SQUARE_FREE   = 1 << 3,
 	BIPARTITE     = 1 << 4,
+	TREE          = 1 << 5,
     };
     static void enumerate(int n, EnumerateCallback f, int flags = 0);
     static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0);

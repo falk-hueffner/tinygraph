@@ -229,12 +229,16 @@ void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) 
     pruneCallback_ = p;
     std::vector<const char*> argv = {"geng", "-q"};
     if (flags & CONNECTED)     argv.push_back("-c");
+    if (flags & TREE)          argv.push_back("-c");
     if (flags & BICONNECTED)   argv.push_back("-C");
     if (flags & TRIANGLE_FREE) argv.push_back("-t");
     if (flags & SQUARE_FREE)   argv.push_back("-f");
     if (flags & BIPARTITE)     argv.push_back("-b");
     std::string sn = std::to_string(n);
+    std::string sm = std::to_string(n - 1) + ':' + std::to_string(n - 1);
     argv.push_back(sn.c_str());
+    if (flags & TREE)
+	argv.push_back(sm.c_str());
     argv.push_back(nullptr);
     geng_main(argv.size() - 1, const_cast<char**>(argv.data()));
     enumerateCallback_ = nullptr;

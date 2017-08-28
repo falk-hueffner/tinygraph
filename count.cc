@@ -124,6 +124,10 @@ int main(int argc, char* argv[]) {
 	    connectedOnly = true;
 	    gengFlags |= Graph::CONNECTED;
 	    continue;
+	} else if (type == "tree") {
+	    connectedOnly = true;
+	    gengFlags |= Graph::TREE;
+	    continue;
 	} else if (gengProperties.find(type) != gengProperties.end()) {
 	    auto p = gengProperties.find(type)->second;
 	    gengFlags |= p.flag;

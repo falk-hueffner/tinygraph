@@ -47,6 +47,7 @@ bool isPrime(const Graph& g);
 bool isWeaklyChordal(const Graph& g);
 bool isHamiltonian(const Graph& g);
 bool isWellCovered(const Graph& g);
+bool isTree(const Graph& g);
 
 bool isTwoVertexConnected(const Graph& g);
 bool isTwoEdgeConnected(const Graph& g);
