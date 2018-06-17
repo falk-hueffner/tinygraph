@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <map>
+#include <numeric>
 
 // A&BvC: an A graph with an extra B vertices, each of which is attached to C vertices of the A
 static const std::map<std::string, Graph> namedGraphs = {
@@ -216,6 +217,33 @@ Graph Graph::canonical() const {
     for (int i = 0; i < n(); ++i)
 	g.neighbors_[i] = Set::ofBits(reverseBits(canonical[i]));
     return g;
+}
+
+uint64_t factorial(int x) {
+    assert(x <= 20);
+    uint64_t r = 1;
+    for (int i = 2; i <= x; ++i)
+	r *= i;
+    return r;
+}
+
+uint64_t Graph::numLabeledGraphs() const {
+    if (n() == 0)
+	return 1;
+    word nautyg[n()];
+    for (int i = 0; i < n(); ++i)
+	nautyg[i] = reverseBits(neighbors(i).bits());
+    int orbits[n()];
+    DEFAULTOPTIONS_GRAPH(options);
+    options.getcanon = true;
+    int lab[n()];
+    int ptn[n()];
+    statsblk stats;
+    word canonical[n()];
+    densenauty(nautyg, lab, ptn, orbits, &options, &stats, 1, n(), canonical);
+    assert(stats.grpsize1 <= (uint64_t(1) << 53));
+    assert(stats.grpsize2 == 0);
+    return factorial(n()) / stats.grpsize1;
 }
 
 void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {

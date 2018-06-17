@@ -232,6 +232,7 @@ public:
     static PruneCallback pruneCallback() { return pruneCallback_; }
 
     void maximalCliques(std::function<void(Set)> f) const;
+    uint64_t numLabeledGraphs() const;
 
     std::string toString() const;
     std::string graph6() const;

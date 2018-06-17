@@ -111,13 +111,19 @@ bool endsWith(const std::string& s, const std::string& e) {
 }
 
 int main(int argc, char* argv[]) {
-    bool determinedByConnectedComponents = true;
     bool hereditary = true;
     bool connectedOnly = false;
     PropertyTest propertyTest = 0;
     std::string propertyName = "";
     int gengFlags = 0;
-    for (int i = 1; i < argc; ++i) {
+    int i = 1;
+    bool countLabelled = false;
+    if (i < argc && std::string(argv[i]) == "-l") {
+	countLabelled = true;
+	++i;
+    }
+    bool determinedByConnectedComponents = !countLabelled;
+    for (; i < argc; ++i) {
 	std::string type = argv[i];
 	PropertyTest test = 0;
 	if (type == "connected") {
@@ -191,7 +197,10 @@ int main(int argc, char* argv[]) {
 	    std::cerr << std::endl;
 	}
 	uint64_t count = 0;
-	auto counter = [&count,&propertyTest](const Graph& g) { if (propertyTest(g)) ++count; };
+	auto counter = [&count,&propertyTest,&countLabelled](const Graph& g) {
+			   if (propertyTest(g))
+			       count += countLabelled ? g.numLabeledGraphs() : 1;
+		       };
 	if (doPrune) {
 	    Graph::enumerate(n, counter, std::not1(propertyTest), gengFlags);
 	} else {
@@ -202,34 +211,39 @@ int main(int argc, char* argv[]) {
 	double t = tEnd - tStart;
 	times.push_back(t);
 	std::cerr << "time: " << t << 's' << std::endl;
+	std::string un = countLabelled ? "" : "un";
 	if (connectedOnly && !determinedByConnectedComponents) {
 	    std::cout << "number of connected " << propertyName
-		      << " undirected unlabeled graph on n vertices:\n"
+		      << " undirected " << un << "labeled graph on n vertices:\n"
 		      << counts << std::endl;
-	    std::cout << "number of connected non-" << propertyName
-		      << " undirected unlabeled graph on n vertices:\n"
-		      << EulerTransform::connectedNonGraphs(counts) << std::endl;
+	    if (!countLabelled)
+		std::cout << "number of connected non-" << propertyName
+			  << " undirected " << un << "labeled graph on n vertices:\n"
+			  << EulerTransform::connectedNonGraphs(counts) << std::endl;
 	} else if (!determinedByConnectedComponents) {
 	    std::cout << "number of " << propertyName
-		      << " undirected unlabeled graph on n vertices:\n"
+		      << " undirected " << un << "labeled graph on n vertices:\n"
 		      << counts << std::endl;
-	    std::cout << "number of non-" << propertyName
-		      << " undirected unlabeled graph on n vertices:\n"
-		      << EulerTransform::nonGraphs(counts) << std::endl;
+	    if (!countLabelled)
+		std::cout << "number of non-" << propertyName
+			  << " undirected " << un << "labeled graph on n vertices:\n"
+			  << EulerTransform::nonGraphs(counts) << std::endl;
 	} else {
 	    auto countsGeneral = EulerTransform::transform(counts);
 	    std::cout << "number of " << propertyName
-		      << " undirected unlabeled graph on n vertices:\n"
+		      << " undirected " << un << "labeled graph on n vertices:\n"
 		      << countsGeneral << std::endl;
-	    std::cout << "number of non-" << propertyName
-		      << " undirected unlabeled graph on n vertices:\n"
-		      << EulerTransform::nonGraphs(countsGeneral) << std::endl;
-	    std::cout << "number of " << propertyName
-		      << " connected undirected unlabeled graph on n vertices:\n"
-		      << counts << std::endl;
-	    std::cout << "number of non-" << propertyName
-		      << " connected undirected unlabeled graph on n vertices:\n"
-		      << EulerTransform::connectedNonGraphs(counts) << std::endl;
+	    if (!countLabelled) {
+		std::cout << "number of non-" << propertyName
+			  << " undirected " << un << "labeled graph on n vertices:\n"
+			  << EulerTransform::nonGraphs(countsGeneral) << std::endl;
+		std::cout << "number of " << propertyName
+			  << " connected undirected " << un << "labeled graph on n vertices:\n"
+			  << counts << std::endl;
+		std::cout << "number of non-" << propertyName
+			  << " connected undirected " << un << "labeled graph on n vertices:\n"
+			  << EulerTransform::connectedNonGraphs(counts) << std::endl;
+	    }
 	}
     }
 
