@@ -75,6 +75,7 @@ std::map<std::string, Property> properties = {
     {"trivially-perfect", {Classes::isTriviallyPerfect,                             true,  true}},
     {"weakly-chordal",{Classes::isWeaklyChordal,                                    true,  true}},
     {"weakly-perfect",{Classes::isWeaklyPerfect,                                    false, false}},
+    {"distance-hereditary", {Classes::isDistanceHereditary,                         true,  true}},
     {"two-edge-connected",              {Classes::isTwoEdgeConnected,               false, false}},
     {"minimally-two-edge-connected",    {Classes::isMinimallyTwoEdgeConnected,      false, false}},
     {"minimally-two-vertex-connected",  {Classes::isMinimallyTwoVertexConnected,    false, false}},

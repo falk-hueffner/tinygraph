@@ -394,4 +394,54 @@ bool isWellCovered(const Graph& g) {
     return true;
 }
 
+int dist(const Graph& g, int u, int v) {
+    if (u == v)
+	return 0;
+    Set reached = {u};
+    Set expanded = {};
+    int d = 1;
+    while (true) {
+	Set toExpand = reached - expanded;
+	if (toExpand.isEmpty())
+	    return 1000000;
+	for (int w : toExpand) {
+	    reached |= g.neighbors(w);
+	    if (reached.contains(v))
+		return d;
+	}
+	++d;
+	expanded |= toExpand;
+    }
+}
+
+bool isDistanceHereditary(const Graph& g) {
+    int d[g.n()][g.n()];
+    for (int u : g.vertices())
+	for (int v : g.vertices().above(u))
+	    d[u][v] = d[v][u] =  dist(g, u, v);
+    // for every four vertices u, v, w, and x, at least two of the
+    // three sums of distances d(u,v)+d(w,x), d(u,w)+d(v,x), and
+    // d(u,x)+d(v,w) are equal to each other
+    for (int u : g.vertices()) {
+	for (int v : g.vertices().above(u)) {
+	    for (int w : g.vertices().above(v)) {
+		for (int x : g.vertices().above(w)) {
+		    int d1 = d[u][v] + d[w][x];
+		    if (d1 > g.n()) continue;
+		    int d2 = d[u][w] + d[v][x];
+		    if (d2 > g.n()) continue;
+		    int d3 = d[u][x] + d[v][w];
+		    if (d3 > g.n()) continue;
+		    int eq1 = d1 == d2;
+		    int eq2 = d1 == d3;
+		    int eq3 = d2 == d3;
+		    if (!(eq1 || eq2 || eq3))
+			return false;
+		}
+	    }
+	}
+    }
+    return true;
+}
+
 }  // namespace Classes
