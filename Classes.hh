@@ -49,6 +49,7 @@ bool isHamiltonian(const Graph& g);
 bool isWellCovered(const Graph& g);
 bool isTree(const Graph& g);
 bool isDistanceHereditary(const Graph& g);
+bool isATFree(const Graph& g);
 
 bool isTwoVertexConnected(const Graph& g);
 bool isTwoEdgeConnected(const Graph& g);

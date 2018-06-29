@@ -444,4 +444,32 @@ bool isDistanceHereditary(const Graph& g) {
     return true;
 }
 
+// An asteroidal triple is an independent set of three vertices such
+// that each pair is joined by a path that avoids the neighborhood of
+// the third.
+bool isAsteroidalTriple(const Graph& g, int u, int v, int w) {
+    if (g.hasEdge(u, v) || g.hasEdge(u, w) || g.hasEdge(v, w))
+	return false;
+    auto vs_u = g.vertices() - g.neighbors(u);
+    auto g_u = g.subgraph(vs_u);
+    if (dist(g_u, vs_u.below(v).size(), vs_u.below(w).size()) > g.n()) return false;
+    auto vs_v = g.vertices() - g.neighbors(v);
+    auto g_v = g.subgraph(vs_v);
+    if (dist(g_v, vs_v.below(u).size(), vs_v.below(w).size()) > g.n()) return false;
+    auto vs_w = g.vertices() - g.neighbors(w);
+    auto g_w = g.subgraph(vs_w);
+    if (dist(g_w, vs_w.below(u).size(), vs_w.below(v).size()) > g.n()) return false;
+    return true;
+}
+
+
+bool isATFree(const Graph& g) {
+    for (auto u : g.vertices())
+	for (auto v : g.nonneighbors(u).above(u))
+	    for (auto w : (g.nonneighbors(u) & g.nonneighbors(v)).above(v))
+		if (isAsteroidalTriple(g, u, v, w))
+		    return false;
+    return true;
+}
+
 }  // namespace Classes
