@@ -578,4 +578,11 @@ bool isHoang(const Graph& g) {
     return true;
 }
 
+bool isTwoSplit(const Graph& g) {
+    for (auto vs : g.vertices().subsets())
+	if (isSplit(g.subgraph(vs)) && isSplit(g.subgraph(g.vertices() - vs)))
+	    return true;
+    return false;
+}
+
 }  // namespace Classes
