@@ -47,6 +47,7 @@ static const std::map<std::string, Graph> namedGraphs = {
     {"bull",    Graph::ofGraph6("D{O").canonical()},
     {"cricket", Graph::ofGraph6("DiS").canonical()},
     {"R",       Graph::ofGraph6("ElCO").canonical()},
+    {"domino",  Graph::ofGraph6("ErGW").canonical()},
 };
 
 Graph Graph::ofNauty(word* nautyg, int n) {
