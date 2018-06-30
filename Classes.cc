@@ -527,4 +527,55 @@ bool isElementary(const Graph& g) {
     return true;
 }
 
+bool isHoang(const Graph& g) {
+    Edge edges[g.n() * g.n()];
+    int es[g.n()][g.n()];
+    int m = 0;
+    for (auto e : g.edges()) {
+	edges[m] = e;
+	es[e.u][e.v] = es[e.v][e.u] = m;
+	++m;
+    }
+    bool isColored[m];
+    bool isBlack[m];
+    memset(isColored, 0, sizeof isColored);
+    for (int e = 0; e < m; ++e) {
+	if (isColored[e])
+	    continue;
+	isBlack[e] = true;
+	isColored[e] = true;
+	int queue[m];
+	auto qbegin = queue;
+	auto qend = queue;
+	*qend++ = e;
+	while (qbegin != qend) {
+	    const auto f = *qbegin++;
+	    const auto u = edges[f].u;
+	    const auto v = edges[f].v;
+	    assert(g.hasEdge(u, v));
+	    assert(isColored[f]);
+	    const auto nextIsBlack = !isBlack[f];
+	    for (int f2 = 0; f2 < m; ++f2) {
+		const auto u2 = edges[f2].u;
+		if (u2 == u || u2 == v)
+		    continue;
+		const auto v2 = edges[f2].v;
+		if (v2 == u || v2 == v)
+		    continue;
+		if (g.hasEdge(u, u2) + g.hasEdge(u, v2) + g.hasEdge(v, u2) + g.hasEdge(v, v2) != 1)
+		    continue;
+		if (isColored[f2]) {
+		    if (isBlack[f2] != nextIsBlack)
+			return false;
+		} else {
+		    isBlack[f2] = nextIsBlack;
+		    isColored[f2] = true;
+		    *qend++ = f2;
+		}
+	    }
+	}
+    }
+    return true;
+}
+
 }  // namespace Classes
