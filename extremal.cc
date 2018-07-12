@@ -18,10 +18,49 @@
 #include "Graph.hh"
 #include "Subgraph.hh"
 
-auto subgraphName = "P3";
+#if 1
+
+const auto subgraphName = "paw";
+const auto subgraph = Graph::byName(subgraphName);
+const auto subgraphTest = Subgraph::hasTest(subgraph);
+struct Out {};
+
+int main() {
+    std::vector<std::uint64_t> result;
+    for (int n = 0; ; ++n) {
+        std::cerr << "n = " << n << std::endl;
+        int m;
+        for (m = 0; m <= n * (n-1)/2; ++m) {
+            if (subgraph.isConnected() && m < n - 1)
+                continue;
+            std::cerr << "m = " << m << std::endl;
+            try {
+                Graph::enumerateEdges(n, [](const Graph& g) {
+                        if (!subgraphTest(g))
+                            throw Out();
+                    }, m, subgraph.isConnected() ? Graph::CONNECTED : 0);
+            } catch (Out o) {
+                continue;
+            }
+            break;
+        }
+        result.push_back(m - 1);
+	std::cout << "maximum number of edges in an n-vertex graph which does not have a subgraph isomorphic to "
+                  << subgraph.name() << ":" << std::endl;
+	for (size_t i = 0; i < result.size(); ++i) {
+	    if (i)
+		std::cout << ", ";
+	    std::cout << result[i];
+	}
+	std::cout << std::endl;        
+    }
+}
+#else
+
+auto subgraphName = "C4";
 auto subgraph = Graph::byName(subgraphName);
-//auto countSubgraph = [](const Graph& g) { return Subgraph::count(g, subgraph); };
-auto countSubgraph = Subgraph::countInducedP3s;
+//auto countSubgraph = [](const Graph& g) { return Subgraph::countInduced(g, subgraph); };
+auto countSubgraph = Subgraph::countInducedC4s;
 
 size_t numMaximalCliques(const Graph& g) {
     size_t count = 0;
@@ -31,12 +70,12 @@ size_t numMaximalCliques(const Graph& g) {
 
 int main() {
     std::vector<uint64_t> maxCounts;
-    for (int n = 0; n <= 11; ++n) {
+    for (int n = 0; n <= 110; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t maxCount = 0;
 	Graph::enumerate(n, [&maxCount](const Graph& g) {
-		//uint64_t count = countSubgraph(g);
-		uint64_t count = numMaximalCliques(g);
+                uint64_t count = countSubgraph(g);
+		//uint64_t count = numMaximalCliques(g);
                 if (count > maxCount) {
 		    std::cerr << count << ": " << g.toString() << std::endl;
 		    maxCount = count;
@@ -55,3 +94,4 @@ int main() {
 
     return 0;
 }
+#endif

@@ -248,15 +248,28 @@ uint64_t Graph::numLabeledGraphs() const {
     return factorial(n()) / stats.grpsize1;
 }
 
-void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
-    if (enumerateCallback_)
-	throw std::runtime_error("generating graphs is not reentrant");
+template<typename T>
+class Nuller {
+public:
+    Nuller(T& x) : x_(x) {}
+    ~Nuller() { x_ = nullptr; }
+private:
+    T& x_;
+};
+
+void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags, int m) {
     if (n == 0) {
 	f(Graph(0));
 	return;
     }
+
+    if (enumerateCallback_)
+	throw std::runtime_error("generating graphs is not reentrant");
+    Nuller<EnumerateCallback> n1(enumerateCallback_);
+    Nuller<PruneCallback> n2(pruneCallback_);
     enumerateCallback_ = f;
     pruneCallback_ = p;
+
     std::vector<const char*> argv = {"geng", "-q"};
     if (flags & CONNECTED)     argv.push_back("-c");
     if (flags & TREE)          argv.push_back("-c");
@@ -265,14 +278,20 @@ void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) 
     if (flags & SQUARE_FREE)   argv.push_back("-f");
     if (flags & BIPARTITE)     argv.push_back("-b");
     std::string sn = std::to_string(n);
-    std::string sm = std::to_string(n - 1) + ':' + std::to_string(n - 1);
+    std::string sm;
     argv.push_back(sn.c_str());
-    if (flags & TREE)
+    if (m) {
+      sm = std::to_string(m) + ':' + std::to_string(m);
+      argv.push_back(sm.c_str());
+    }
+    if (flags & TREE) {
+        sm = std::to_string(n - 1) + ':' + std::to_string(n - 1);
 	argv.push_back(sm.c_str());
+    }
     argv.push_back(nullptr);
     geng_main(argv.size() - 1, const_cast<char**>(argv.data()));
-    enumerateCallback_ = nullptr;
-    pruneCallback_ = nullptr;
+    //enumerateCallback_ = nullptr;
+    //pruneCallback_ = nullptr;
 }
 
 void Graph::enumerate(int n, EnumerateCallback f, int flags) {
@@ -282,6 +301,11 @@ void Graph::enumerate(int n, EnumerateCallback f, int flags) {
 void Graph::enumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
     doEnumerate(n, f, p, flags);
 }
+
+void Graph::enumerateEdges(int n, EnumerateCallback f, int m, int flags) {
+    doEnumerate(n, f, nullptr, flags, m);
+}
+
 
 Graph::EnumerateCallback Graph::enumerateCallback_;
 Graph::PruneCallback Graph::pruneCallback_;

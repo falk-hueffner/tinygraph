@@ -226,6 +226,15 @@ bool hasInducedC4(const Graph& g) {
     return false;
 }
 
+std::uint64_t countInducedC4s(const Graph& g) {
+    std::uint64_t count = 0;
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u))
+	    for (int w : (g.neighbors(u) - g.neighbors(v)).above(v))
+              count += ((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u) - u).size();
+    return count;
+}
+
 bool hasInducedDiamond(const Graph& g) {
     for (int u = 0; u < g.n(); ++u)
 	for (int v : g.neighbors(u))

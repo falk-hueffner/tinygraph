@@ -228,6 +228,7 @@ public:
     };
     static void enumerate(int n, EnumerateCallback f, int flags = 0);
     static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0);
+    static void enumerateEdges(int n, EnumerateCallback f, int m, int flags);
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
     static PruneCallback pruneCallback() { return pruneCallback_; }
 
@@ -239,7 +240,7 @@ public:
     std::string name() const;
 
 private:
-    static void doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags);
+  static void doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags, int m = 0);
     std::vector<Set> neighbors_;
     static EnumerateCallback enumerateCallback_;
     static PruneCallback pruneCallback_;
