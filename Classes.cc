@@ -21,6 +21,11 @@
 #include <cstring>
 #include <algorithm>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#include "nauty/planarity.h"
+#pragma GCC diagnostic pop
+
 namespace Classes {
 
 Set twoPartition(Graph g) {
@@ -583,6 +588,50 @@ bool isTwoSplit(const Graph& g) {
 	if (isSplit(g.subgraph(vs)) && isSplit(g.subgraph(g.vertices() - vs)))
 	    return true;
     return false;
+}
+
+bool isPlanar(const Graph& g) {
+    int n = g.n();
+    if (n == 0)
+	return true;
+    std::vector<t_ver_sparse_rep> V(n);
+    std::vector<t_adjl_sparse_rep> A(2 * g.m() + 1);
+
+    for (int i = 0, k = 0; i < n; ++i) {
+	if (g.deg(i) == 0) {
+	    V[i].first_edge = NIL;
+	} else {
+	     V[i].first_edge = k;
+	     for (int j : g.neighbors(i)) {
+		 A[k].end_vertex = j;
+		 A[k].next = k + 1;
+		 ++k;
+		 if (A[k - 1].end_vertex == i) {  // loops go in twice
+		     A[k].end_vertex = i;
+		     A[k].next = k + 1;
+		     k++;
+		 }
+	     }
+	     A[k-1].next = NIL;
+	}
+    }
+
+    int c;
+    t_dlcl **dfs_tree, **back_edges, **mult_edges;
+    int edge_pos, v, w;
+    boolean ans;
+    t_ver_edge *embed_graph;
+
+    ans = sparseg_adjl_is_planar(V.data(), n, A.data(), &c,
+                                 &dfs_tree, &back_edges, &mult_edges,
+                                 &embed_graph, &edge_pos, &v, &w);
+
+    sparseg_dlcl_delete(dfs_tree, n);
+    sparseg_dlcl_delete(back_edges, n);
+    sparseg_dlcl_delete(mult_edges, n);
+    embedg_VES_delete(embed_graph, n);
+
+    return ans;
 }
 
 }  // namespace Classes

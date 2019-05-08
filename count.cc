@@ -80,6 +80,7 @@ std::map<std::string, Property> properties = {
     {"elementary",    {Classes::isElementary,                                       true,  true}},
     {"Hoang",         {Classes::isHoang,                                            true,  true}},
     {"two-split",     {Classes::isTwoSplit,                                         true,  false}},
+    {"planar",        {Classes::isPlanar,                                           true,  true}},
     {"two-edge-connected",              {Classes::isTwoEdgeConnected,               false, false}},
     {"minimally-two-edge-connected",    {Classes::isMinimallyTwoEdgeConnected,      false, false}},
     {"minimally-two-vertex-connected",  {Classes::isMinimallyTwoVertexConnected,    false, false}},

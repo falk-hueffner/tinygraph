@@ -53,6 +53,7 @@ bool isATFree(const Graph& g);
 bool isElementary(const Graph& g);
 bool isHoang(const Graph& g);
 bool isTwoSplit(const Graph& g);
+bool isPlanar(const Graph& g);
 
 bool isTwoVertexConnected(const Graph& g);
 bool isTwoEdgeConnected(const Graph& g);
