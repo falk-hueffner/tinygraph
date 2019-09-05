@@ -15,7 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-EXECS	  = count extremal ssge-approx p5editing forbidden-subgraphs
+EXECS	  = count count-table extremal ssge-approx p5editing forbidden-subgraphs
 
 CC	  = gcc
 CXX	  = g++
@@ -30,6 +30,9 @@ COMMON_OBJ = Set.o Graph.o geng.o $(addprefix nauty/,$(GENG_OBJ))
 all: .deps nauty $(EXECS)
 
 count: Classes.o Subgraph.o Invariants.o EulerTransform.o $(COMMON_OBJ) count.o
+	$(CXX) $(CXXFLAGS) $^ $(GMP_LIBS) -o $@
+
+count-table: Classes.o Subgraph.o Invariants.o EulerTransform.o $(COMMON_OBJ) count-table.o
 	$(CXX) $(CXXFLAGS) $^ $(GMP_LIBS) -o $@
 
 extremal: Subgraph.o $(COMMON_OBJ) extremal.o
