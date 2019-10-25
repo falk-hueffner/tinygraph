@@ -22,7 +22,11 @@
 #include <stdexcept>
 #include <vector>
 
+#include <gmpxx.h>
+
 #include "Set.hh"
+
+using bignum = mpz_class;
 
 struct Edge {
     Edge() { }
@@ -232,7 +236,7 @@ public:
     static PruneCallback pruneCallback() { return pruneCallback_; }
 
     void maximalCliques(std::function<void(Set)> f) const;
-    uint64_t numLabeledGraphs() const;
+    bignum numLabeledGraphs() const;
 
     std::string toString() const;
     std::string graph6() const;

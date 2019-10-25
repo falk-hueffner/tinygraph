@@ -221,15 +221,20 @@ Graph Graph::canonical() const {
     return g;
 }
 
-uint64_t factorial(int x) {
-    assert(x <= 20);
-    uint64_t r = 1;
+bignum factorial(int x) {
+    bignum r = 1;
     for (int i = 2; i <= x; ++i)
 	r *= i;
     return r;
 }
 
-uint64_t Graph::numLabeledGraphs() const {
+static bignum grpsize;
+void groupsize(int* /*lab*/, int* /*ptn*/, int /*level*/, int* /*orbits*/, statsblk* /*stats*/,
+	       int /*tv*/, int index, int /*tcellsize*/, int /*numcells*/, int /*cc*/, int /*n*/) {
+    grpsize *= index;
+}
+
+bignum Graph::numLabeledGraphs() const {
     if (n() == 0)
 	return 1;
     word nautyg[n()];
@@ -237,15 +242,17 @@ uint64_t Graph::numLabeledGraphs() const {
 	nautyg[i] = reverseBits(neighbors(i).bits());
     int orbits[n()];
     DEFAULTOPTIONS_GRAPH(options);
+    options.userlevelproc = groupsize;
+    grpsize = 1;
     options.getcanon = true;
     int lab[n()];
     int ptn[n()];
     statsblk stats;
     word canonical[n()];
     densenauty(nautyg, lab, ptn, orbits, &options, &stats, 1, n(), canonical);
-    assert(stats.grpsize1 <= (uint64_t(1) << 53));
-    assert(stats.grpsize2 == 0);
-    return factorial(n()) / stats.grpsize1;
+    if (stats.grpsize1 <= (uint64_t(1) << 53) && stats.grpsize2 == 0)
+	assert(stats.grpsize1 == grpsize);
+    return factorial(n()) / grpsize;
 }
 
 void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
