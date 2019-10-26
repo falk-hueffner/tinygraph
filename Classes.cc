@@ -115,9 +115,20 @@ bool isSplit(const Graph& g) {
     return splittance2 == 0;
 }
 
+static bool isCograph(const Graph& g, const bool mustBeDisconnected) {
+    if (g.n() < 4)
+	return true;
+    for (const auto c : g.connectedComponents()) {
+	if (c.size() == g.n() && mustBeDisconnected)
+	    return false;
+	if (c.size() >= 4 && !isCograph(g.subgraph(c).complement(), true))
+	    return false;
+    }
+    return true;
+}
+
 bool isCograph(const Graph& g) {
-    static Graph p4 = Graph::byName("P4");
-    return !Subgraph::hasInduced(g, p4);
+    return isCograph(g, false);
 }
 
 bool isThreshold(const Graph& g) {
