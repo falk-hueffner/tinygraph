@@ -645,4 +645,8 @@ bool isPlanar(const Graph& g) {
     return ans;
 }
 
+bool isAsymmetric (const Graph& g) {
+    return g.numLabeledGraphs() == 1;
+}
+
 }  // namespace Classes

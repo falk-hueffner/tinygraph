@@ -55,6 +55,7 @@ bool isHoang(const Graph& g);
 bool isTwoSplit(const Graph& g);
 bool isPlanar(const Graph& g);
 bool isCograph(const Graph& g);
+bool isAsymmetric(const Graph& g);
 
 bool isTwoVertexConnected(const Graph& g);
 bool isTwoEdgeConnected(const Graph& g);

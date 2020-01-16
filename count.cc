@@ -99,6 +99,7 @@ std::map<std::string, Property> properties = {
     {"two-split",     {Classes::isTwoSplit,                                         true,  false}},
     {"planar",        {Classes::isPlanar,                                           true,  true}},
     {"cograph",       {Classes::isCograph,                                          true,  true}},
+    {"asymmetric",    {Classes::isAsymmetric,                                       false, false}},
     {"two-edge-connected",              {Classes::isTwoEdgeConnected,               false, false}},
     {"minimally-two-edge-connected",    {Classes::isMinimallyTwoEdgeConnected,      false, false}},
     {"minimally-two-vertex-connected",  {Classes::isMinimallyTwoVertexConnected,    false, false}},
