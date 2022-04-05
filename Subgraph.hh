@@ -22,10 +22,15 @@
 
 namespace Subgraph {
 
+std::function<uint64_t(const Graph&)> countInducedFunction(Graph f);
 uint64_t countInduced(const Graph &g, const Graph& f);
 uint64_t countInducedP3s(const Graph& g);
 uint64_t countInducedP4s(const Graph& g);
 uint64_t countInducedP5s(const Graph& g);
+uint64_t countInducedClaws(const Graph& g);
+uint64_t countInducedPaws(const Graph& g);
+uint64_t countInducedC4s(const Graph& g);
+uint64_t countInducedCycles(const Graph& g);
 
 std::function<bool(const Graph&)> hasTest(Graph f);
 std::function<bool(const Graph&)> hasInducedTest(Graph f);

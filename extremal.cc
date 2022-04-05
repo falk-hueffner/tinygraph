@@ -18,32 +18,32 @@
 #include "Graph.hh"
 #include "Subgraph.hh"
 
-auto subgraphName = "P3";
-auto subgraph = Graph::byName(subgraphName);
-//auto countSubgraph = [](const Graph& g) { return Subgraph::count(g, subgraph); };
-auto countSubgraph = Subgraph::countInducedP3s;
-
-size_t numMaximalCliques(const Graph& g) {
-    size_t count = 0;
-    g.maximalCliques([&count](const Set&) { ++count; });
-    return count;
-}
-
-int main() {
+int main(int argc, char* argv[]) {
+    assert(argc == 2);
+    std::function<uint64_t(Graph)> countSubgraphs;
+    std::string name;
+    const std::string arg = argv[1];
+    if (arg == "cycles") {
+	name = arg;
+	countSubgraphs = Subgraph::countInducedCycles;
+    } else {
+	const auto subgraph = Graph::byName(arg);
+	name = subgraph.name();
+	countSubgraphs = Subgraph::countInducedFunction(subgraph);
+    }
     std::vector<uint64_t> maxCounts;
-    for (int n = 0; n <= 11; ++n) {
+    for (int n = 0; ; ++n) {
 	std::cerr << "--- n = " << n << std::endl;
 	uint64_t maxCount = 0;
-	Graph::enumerate(n, [&maxCount](const Graph& g) {
-		//uint64_t count = countSubgraph(g);
-		uint64_t count = numMaximalCliques(g);
+	Graph::enumerate(n, [&maxCount, &countSubgraphs](const Graph& g) {
+		uint64_t count = countSubgraphs(g);
                 if (count > maxCount) {
 		    std::cerr << count << ": " << g.toString() << std::endl;
 		    maxCount = count;
 		}
 	    });
 	maxCounts.push_back(maxCount);
-	std::cout << "maximum number of induced " << subgraphName
+	std::cout << "maximum number of induced " << name
 		  << " in an undirected unlabeled graph on n vertices:" << std::endl;
 	for (size_t i = 0; i < maxCounts.size(); ++i) {
 	    if (i)

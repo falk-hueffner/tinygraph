@@ -8,7 +8,7 @@ provided.
 
 ## Extremal graphs
 
-* In `extremal.cc`, the maximum number of *P*<sub>3</sub> that a graph
+* In `extremal.cc`, the maximum number of a subgraph such as *P*<sub>3</sub> that a graph
   on *n* vertices can have as induced subgraph is determined. Here, a
   *P*<sub>3</sub> is a path with 3 vertices. It turns out that the
   numbers are

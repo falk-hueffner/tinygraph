@@ -219,7 +219,7 @@ bool hasC4(const Graph& g) {
 
 bool hasInducedC4(const Graph& g) {
     for (int u = 0; u < g.n(); ++u)
-	for (int v : g.neighbors(u))
+	for (int v : g.neighbors(u)) // TODO above u?
 	    for (int w : (g.neighbors(u) - g.neighbors(v)).above(v))
 		if (((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u) - u).nonempty())
 		    return true;
@@ -294,6 +294,19 @@ bool hasInducedBull(const Graph& g) {
     return false;
 }
 
+std::function<uint64_t(const Graph&)> countInducedFunction(Graph f) {
+    f = f.canonical();
+    if (f == Graph::byName("P3")  .canonical()) return countInducedP3s;
+    if (f == Graph::byName("P4")  .canonical()) return countInducedP4s;
+    if (f == Graph::byName("P5")  .canonical()) return countInducedP5s;
+    if (f == Graph::byName("claw").canonical()) return countInducedClaws;
+    if (f == Graph::byName("paw") .canonical()) return countInducedPaws;
+    if (f == Graph::byName("C4")  .canonical()) return countInducedC4s;
+    return [f](const Graph& g) {
+        return countInduced(g, f);
+    };
+}
+
 uint64_t countInducedP3s(const Graph& g) {
     int n = g.n();
     uint64_t num = 0;
@@ -330,6 +343,33 @@ uint64_t countInducedP5s(const Graph& g) {
 	    }
 	}
     }
+    return count;
+}
+
+uint64_t countInducedClaws(const Graph& g) {
+    uint64_t count = 0;
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.nonneighbors(u).above(u))
+	    for (int w : (g.nonneighbors(u) & g.nonneighbors(v)).above(v))
+		count += (g.neighbors(u) & g.neighbors(v) & g.neighbors(w)).size();
+    return count;
+}
+
+uint64_t countInducedPaws(const Graph& g) {
+    uint64_t count = 0;
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u).above(u))
+	    for (int w : g.neighbors(u) & g.neighbors(v))
+		count += (g.nonneighbors(u) & g.nonneighbors(v) & g.neighbors(w)).size();
+    return count;
+}
+
+uint64_t countInducedC4s(const Graph& g) {
+    uint64_t count = 0;
+    for (int u = 0; u < g.n(); ++u)
+	for (int v : g.neighbors(u).above(u))
+	    for (int w : (g.neighbors(u) - g.neighbors(v)).above(v))
+		count += ((g.neighbors(v) & g.neighbors(w)) - g.neighbors(u)).above(u).size();
     return count;
 }
 
@@ -383,6 +423,31 @@ bool hasOddHole(const Graph& g) {
 	}
     }
     return false;
+}
+
+uint64_t countInducedCyclesExtend(const Graph& g, int l, int r, Set out) {
+    uint64_t count = 0;
+    for (int l2 : g.neighbors(l) - out) {
+	if (g.hasEdge(l2, r))
+	    ++count;
+	else
+	    count += countInducedCyclesExtend(g, l2, r, (out + l) | g.neighbors(l));
+    }
+    return count;
+}
+
+uint64_t countInducedCycles(const Graph& g) {
+    uint64_t count = 0;
+    for (int u = 0; u < g.n() - 2; ++u) {
+	for (int l : g.neighbors(u).above(u)) {
+	    count += (g.neighbors(u).above(l) & g.neighbors(l)).size();
+	    for (int r : g.neighbors(u).above(l) - g.neighbors(l)) {
+		Set out = g.vertices().belowEq(u) | g.neighbors(u);
+		count += countInducedCyclesExtend(g, l, r, out);
+	    }
+	}
+    }
+    return count;
 }
 
 }  // namespace Subgraph
