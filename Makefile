@@ -56,14 +56,14 @@ testMain: testMain.o testBits.o testSet.o testClasses.o testSubgraph.o testEuler
 
 Graph.o: nauty
 
-nauty: nauty26r6.tar.gz wordsize.h
-	rm -rf nauty26r6 nauty
-	tar -xvvzf nauty26r6.tar.gz
-	ln -s nauty26r6 nauty
+nauty: nauty27r3.tar.gz wordsize.h
+	rm -rf nauty27r3 nauty
+	tar -xvvzf nauty27r3.tar.gz
+	ln -s nauty27r3 nauty
 	(cd nauty && CFLAGS="$(CFLAGS)" ./configure --enable-wordsize=$$(perl -n -e'/define WORDSIZE (\d+)/ && print $$1' ../wordsize.h) && make $(GENG_OBJ))
 
-nauty26r6.tar.gz:
-	wget http://users.cecs.anu.edu.au/~bdm/nauty/nauty26r6.tar.gz
+nauty27r3.tar.gz:
+	wget https://pallini.di.uniroma1.it/nauty27r3.tar.gz
 
 .deps:
 	mkdir -p .deps
@@ -76,6 +76,6 @@ nauty26r6.tar.gz:
 		rm -f $*.d
 
 clean:
-	rm -rf *.o $(EXECS) testMain nauty26r6 nauty core gmon.out
+	rm -rf *.o $(EXECS) testMain nauty27r3 nauty core gmon.out
 
 -include $(wildcard .deps/*.P)
