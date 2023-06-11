@@ -44,6 +44,7 @@ static const std::map<std::string, Graph> namedGraphs = {
     {"house",   Graph::ofGraph6("DUw").canonical()},
     {"banner",  Graph::ofGraph6("DrG").canonical()},
     {"tadpole", Graph::ofGraph6("DKs").canonical()},
+    {"necktie", Graph::ofGraph6("DKs").canonical()},
     {"bull",    Graph::ofGraph6("D{O").canonical()},
     {"cricket", Graph::ofGraph6("DiS").canonical()},
     {"R",       Graph::ofGraph6("ElCO").canonical()},
