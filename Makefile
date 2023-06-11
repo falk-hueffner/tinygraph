@@ -15,6 +15,8 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+NAUTY_VERSION = 2_8_6
+
 EXECS	  = count count-table extremal ssge-approx p5editing forbidden-subgraphs
 
 CC	  = gcc
@@ -56,14 +58,15 @@ testMain: testMain.o testBits.o testSet.o testClasses.o testSubgraph.o testEuler
 
 Graph.o: nauty
 
-nauty: nauty27r3.tar.gz wordsize.h
-	rm -rf nauty27r3 nauty
-	tar -xvvzf nauty27r3.tar.gz
-	ln -s nauty27r3 nauty
+
+nauty: nauty$(NAUTY_VERSION).tar.gz wordsize.h
+	rm -rf nauty$(NAUTY_VERSION) nauty
+	tar -xvvzf nauty$(NAUTY_VERSION).tar.gz
+	ln -s nauty$(NAUTY_VERSION) nauty
 	(cd nauty && CFLAGS="$(CFLAGS)" ./configure --enable-wordsize=$$(perl -n -e'/define WORDSIZE (\d+)/ && print $$1' ../wordsize.h) && make $(GENG_OBJ))
 
-nauty27r3.tar.gz:
-	wget https://pallini.di.uniroma1.it/nauty27r3.tar.gz
+nauty$(NAUTY_VERSION).tar.gz:
+	wget https://pallini.di.uniroma1.it/nauty$(NAUTY_VERSION).tar.gz
 
 .deps:
 	mkdir -p .deps
@@ -76,6 +79,6 @@ nauty27r3.tar.gz:
 		rm -f $*.d
 
 clean:
-	rm -rf *.o $(EXECS) testMain nauty27r3 nauty core gmon.out
+	rm -rf *.o $(EXECS) testMain nauty$(NAUTY_VERSION) nauty core gmon.out
 
 -include $(wildcard .deps/*.P)
