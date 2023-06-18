@@ -41,7 +41,19 @@ provided.
 The default maximum number of vertices is 32. To change this, edit
 `wordsize.h` and run `make clean`.
 
-Enumeration of graphs up to isomorphism is currently handled by
-[nauty](http://cs.anu.edu.au/~bdm/nauty/), which comes with its own
-license (roughly, free for non-commercial use).
+## License
 
+Licensed under the Apache License, Version 2.0; see LICENSE.
+
+Non-legally binding summary:
+
+- You can freely use the software without any conditions.
+- You can freely distribute the software unmodified as long as you don't
+  strip the license or copyright, patent, trademark, and attribution notices.
+- If you want to distribute modified versions, you must additionally state
+  significant changes made and must not misrepresent the original source's
+  endorsement.
+
+Enumeration of graphs up to isomorphism is currently handled by
+[nauty](http://cs.anu.edu.au/~bdm/nauty/), which comes with the same
+license.
