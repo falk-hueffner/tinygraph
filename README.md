@@ -39,7 +39,7 @@ provided.
   2015.)](http://www.user.tu-berlin.de/hueffner/clique-edit-wads15.pdf)
 
 The default maximum number of vertices is 32. To change this, edit
-`wordsize.h`.
+`wordsize.h` and run `make clean`.
 
 Enumeration of graphs up to isomorphism is currently handled by
 [nauty](http://cs.anu.edu.au/~bdm/nauty/), which comes with its own
