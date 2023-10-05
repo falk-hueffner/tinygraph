@@ -207,6 +207,7 @@ int main(int argc, char* argv[]) {
     if (!propertyTest)
 	propertyTest = [](const Graph&) { return true; };
     std::vector<bignum> counts;
+    std::vector<int> max_ms;
     std::vector<double> times;
     for (int n = 0; n <= MAXN; ++n) {
 	auto tStart = double(std::clock()) / CLOCKS_PER_SEC;
@@ -222,9 +223,13 @@ int main(int argc, char* argv[]) {
 	    std::cerr << std::endl;
 	}
 	bignum count = 0;
-	auto counter = [&count,&propertyTest,&countLabeled](const Graph& g) {
-			   if (propertyTest(g))
+	int max_m = 0;
+	auto counter = [&count,&max_m,&propertyTest,&countLabeled](const Graph& g) {
+			   if (propertyTest(g)) {
 			       count += countLabeled ? g.numLabeledGraphs() : 1;
+			       if (g.m() > max_m)
+				   max_m = g.m();
+			   }
 		       };
 	if (doPrune) {
 	    Graph::enumerate(n, counter, std::not1(propertyTest), gengFlags);
@@ -232,6 +237,7 @@ int main(int argc, char* argv[]) {
 	    Graph::enumerate(n, counter, gengFlags);
 	}
 	counts.push_back(count);
+	max_ms.push_back(max_m);
 	auto tEnd = double(std::clock()) / CLOCKS_PER_SEC;
 	double t = tEnd - tStart;
 	times.push_back(t);
@@ -265,6 +271,9 @@ int main(int argc, char* argv[]) {
 		std::cout << "number of " << propertyName
 			  << " connected undirected " << un << "labeled graph on n vertices:\n"
 			  << counts << std::endl;
+		std::cout << "maximum number of edges in a " << propertyName
+			  << " connected undirected " << un << "labeled graph on n vertices:\n"
+			  << max_ms << std::endl;
 		std::cout << "number of non-" << propertyName
 			  << " connected undirected " << un << "labeled graph on n vertices:\n"
 			  << EulerTransform::connectedNonGraphs(counts) << std::endl;
