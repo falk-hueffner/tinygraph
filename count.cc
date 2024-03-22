@@ -100,6 +100,7 @@ std::map<std::string, Property> properties = {
     {"planar",        {Classes::isPlanar,                                           true,  true}},
     {"cograph",       {Classes::isCograph,                                          true,  true}},
     {"asymmetric",    {Classes::isAsymmetric,                                       false, false}},
+    {"simplicial-free", {Classes::isSimplicialFree,                                 false, true}},
     {"two-edge-connected",              {Classes::isTwoEdgeConnected,               false, false}},
     {"minimally-two-edge-connected",    {Classes::isMinimallyTwoEdgeConnected,      false, false}},
     {"minimally-two-vertex-connected",  {Classes::isMinimallyTwoVertexConnected,    false, false}},

@@ -649,4 +649,17 @@ bool isAsymmetric (const Graph& g) {
     return g.numLabeledGraphs() == 1;
 }
 
+// A simplicial vertex is one whose neighborhood induces a complete graph. A simplicial-free graph has no such vertices.
+bool isSimplicialFree(const Graph& g) {
+    for (int u : g.vertices()) {
+	Set n_u = g.neighbors(u);
+	for (int v : n_u)
+	    if (((g.neighbors(v) + v) & n_u) != n_u)
+		goto next;
+	return false;
+    next:;
+    }
+    return true;
+}
+
 }  // namespace Classes
