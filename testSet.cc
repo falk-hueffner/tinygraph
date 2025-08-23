@@ -133,8 +133,10 @@ TEST_CASE("Set", "[Set]") {
 	    ++n;
 	}
 	REQUIRE(n == all.size());
-	for (int x : empty)
+	for (int x : empty) {
+	    (void) x;
 	    REQUIRE(false);
+	}
     }
     SECTION("subsets") {
 	int n = 0;

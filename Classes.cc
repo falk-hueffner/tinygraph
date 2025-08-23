@@ -263,7 +263,8 @@ bool isTwoEdgeConnected(const Graph& g) {
     Set backEdges[n];
     int dfsOrder[n];
     std::memset(dfsNumber, 0, sizeof dfsNumber);
-    std::memset(backEdges, 0, sizeof backEdges);
+    for (int i = 0; i < n; ++i)
+	backEdges[i] = Set();
     int d = 0;
     // dfs numbering starts at 1
     dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, 0, 0, d);
@@ -309,7 +310,8 @@ bool isTwoVertexConnected(const Graph& g) {
     Set backEdges[n];
     int dfsOrder[n];
     std::memset(dfsNumber, 0, sizeof dfsNumber);
-    std::memset(backEdges, 0, sizeof backEdges);
+    for (int i = 0; i < n; ++i)
+	backEdges[i] = Set();
     int d = 0;
     dfs(g, dfsNumber, dfsParent, dfsOrder, backEdges, 0, 0, d);
     if (d != g.n())

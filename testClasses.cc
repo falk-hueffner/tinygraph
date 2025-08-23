@@ -20,7 +20,24 @@
 #include "catch.hh"
 
 TEST_CASE("chordal", "[Classes]" ) {
-    Graph g(2);
-    g.addEdge(0, 1);
-    REQUIRE(Classes::isChordal(g));
+    REQUIRE(Classes::isChordal(Graph::byName("K2")));
+}
+
+TEST_CASE("two-edge-connected", "[Classes]") {
+    REQUIRE_FALSE(Classes::isTwoEdgeConnected(Graph::byName("K1")));
+    REQUIRE_FALSE(Classes::isTwoEdgeConnected(Graph::byName("K2")));
+    REQUIRE(Classes::isTwoEdgeConnected(Graph::byName("triangle")));
+    REQUIRE_FALSE(Classes::isTwoEdgeConnected(Graph::byName("P3")));
+    REQUIRE_FALSE(Classes::isTwoEdgeConnected(Graph::byName("K2+K2")));
+    REQUIRE(Classes::isTwoEdgeConnected(Graph::byName("bowtie")));
+}
+
+TEST_CASE("two-vertex-connected", "[Classes]") {
+    REQUIRE_FALSE(Classes::isTwoVertexConnected(Graph::byName("K1")));
+    REQUIRE_FALSE(Classes::isTwoVertexConnected(Graph::byName("K2")));
+    REQUIRE(Classes::isTwoVertexConnected(Graph::byName("triangle")));
+    REQUIRE_FALSE(Classes::isTwoVertexConnected(Graph::byName("P3")));
+    REQUIRE_FALSE(Classes::isTwoVertexConnected(Graph::byName("claw")));
+    REQUIRE_FALSE(Classes::isTwoVertexConnected(Graph::byName("K2+K2")));
+    REQUIRE_FALSE(Classes::isTwoVertexConnected(Graph::byName("bowtie")));
 }
