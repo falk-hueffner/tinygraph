@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <map>
 #include <numeric>
+#include <vector>
 
 // A&BvC: an A graph with an extra B vertices, each of which is attached to C vertices of the A
 static const std::map<std::string, Graph> namedGraphs = {
@@ -207,17 +208,17 @@ int geng_prune(word* nautyg, int n, int /*maxn*/) {
 }
 
 Graph Graph::canonical() const {
-    word nautyg[n()];
+    std::vector<word> nautyg(n());
     for (int i = 0; i < n(); ++i)
 	nautyg[i] = reverseBits(neighbors(i).bits());
-    int orbits[n()];
+    std::vector<int> orbits(n());
     DEFAULTOPTIONS_GRAPH(options);
     options.getcanon = true;
-    int lab[n()];
-    int ptn[n()];
+    std::vector<int> lab(n());
+    std::vector<int> ptn(n());
     statsblk stats;
-    word canonical[n()];
-    densenauty(nautyg, lab, ptn, orbits, &options, &stats, 1, n(), canonical);
+    std::vector<word> canonical(n());
+    densenauty(nautyg.data(), lab.data(), ptn.data(), orbits.data(), &options, &stats, 1, n(), canonical.data());
     Graph g(n());
     for (int i = 0; i < n(); ++i)
 	g.neighbors_[i] = Set::ofBits(reverseBits(canonical[i]));

@@ -344,6 +344,65 @@ TEST_CASE("Graph cycle method", "[Graph]") {
     }
 }
 
+TEST_CASE("Graph canonical form", "[Graph]") {
+    SECTION("empty graph") {
+        Graph empty(0);
+        Graph canon_empty = empty.canonical();
+        REQUIRE(canon_empty.n() == 0);
+        REQUIRE(canon_empty.m() == 0);
+    }
+
+    SECTION("single vertex") {
+        Graph single(1);
+        Graph canon_single = single.canonical();
+        REQUIRE(canon_single.n() == 1);
+        REQUIRE(canon_single.m() == 0);
+    }
+
+    SECTION("canonical form is idempotent") {
+        Graph triangle = Graph::byName("K3");
+        Graph canon1 = triangle.canonical();
+        Graph canon2 = canon1.canonical();
+        REQUIRE(canon1 == canon2);
+    }
+
+    SECTION("isomorphic graphs have same canonical form") {
+        Graph tri1(3);
+        tri1.addEdge(0, 1);
+        tri1.addEdge(1, 2);
+        tri1.addEdge(0, 2);
+
+        Graph tri2(3);
+        tri2.addEdge(0, 2);
+        tri2.addEdge(0, 1);
+        tri2.addEdge(1, 2);
+
+        Graph canon1 = tri1.canonical();
+        Graph canon2 = tri2.canonical();
+        REQUIRE(canon1 == canon2);
+    }
+
+    SECTION("different graphs have different canonical forms") {
+        Graph triangle = Graph::byName("K3");
+        Graph path = Graph::byName("P3");
+
+        Graph canon_tri = triangle.canonical();
+        Graph canon_path = path.canonical();
+
+        REQUIRE(canon_tri.n() == canon_path.n());
+        REQUIRE(canon_tri.m() != canon_path.m());  // Different number of edges
+    }
+
+    SECTION("larger graphs") {
+        for (int n = 0; n <= 10; ++n) {
+            Graph kn = Graph::byName("K" + std::to_string(n));
+            Graph canon = kn.canonical();
+            REQUIRE(canon.n() == n);
+            REQUIRE(canon.m() == (n * (n - 1)) / 2);
+        }
+    }
+}
+
 TEST_CASE("Graph edges iteration", "[Graph]") {
     SECTION("empty graph") {
         Graph g(3);
