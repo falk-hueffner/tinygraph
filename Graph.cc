@@ -86,7 +86,7 @@ Graph Graph::byName(std::string name) {
     auto stoi = [](const std::string& s) -> int {
 	int r = 0;
 	for (std::size_t i = 0; i < s.size(); ++i) {
-	    if (!('0' <= s[i] && i <= '9'))
+	    if (!('0' <= s[i] && s[i] <= '9'))
 		throw std::invalid_argument("Graph::byName: invalid number");
 	    r *= 10;
 	    r += s[i] - '0';
@@ -139,7 +139,7 @@ Graph Graph::byName(std::string name) {
 	return g;
     }
     if ((name[0] == 'P' || name[0] == 'C' || name[0] == 'K')
-	&& name.find_first_not_of(DIGITS, 1) == std::string::npos) {
+	&& name.size() > 1 && name.find_first_not_of(DIGITS, 1) == std::string::npos) {
 	auto type = name[0];
 	name.erase(name.begin());
 	int n = stoi(name);
