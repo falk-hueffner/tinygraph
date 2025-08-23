@@ -209,21 +209,69 @@ TEST_CASE("Graph byName error handling", "[Graph]") {
 }
 
 TEST_CASE("Graph connectivity", "[Graph]") {
+    SECTION("empty graph") {
+        Graph empty(0);
+        REQUIRE(empty.isConnected());
+    }
+
+    SECTION("single vertex") {
+        Graph single(1);
+        REQUIRE(single.isConnected());
+    }
+
     SECTION("connected graphs") {
         REQUIRE(Graph::byName("K3").isConnected());
         REQUIRE(Graph::byName("P3").isConnected());
         REQUIRE(Graph::byName("C4").isConnected());
         REQUIRE(Graph::byName("claw").isConnected());
+
+        Graph path(4);
+        path.addEdge(0, 1);
+        path.addEdge(1, 2);
+        path.addEdge(2, 3);
+        REQUIRE(path.isConnected());
+
+        Graph star(5);
+        for (int i = 1; i < 5; ++i) {
+            star.addEdge(0, i);
+        }
+        REQUIRE(star.isConnected());
     }
 
     SECTION("disconnected graphs") {
         REQUIRE_FALSE(Graph::byName("K2+K2").isConnected());
         REQUIRE_FALSE(Graph::byName("2K3").isConnected());
 
-        Graph g(5);
-        g.addEdge(0, 1);
-        g.addEdge(3, 4);
-        REQUIRE_FALSE(g.isConnected());
+        Graph two_comp(5);
+        two_comp.addEdge(0, 1);
+        two_comp.addEdge(3, 4);
+        REQUIRE_FALSE(two_comp.isConnected());
+
+        Graph isolated_start(3);
+        isolated_start.addEdge(1, 2);
+        REQUIRE_FALSE(isolated_start.isConnected());
+
+        Graph isolated_mid(3);
+        isolated_mid.addEdge(0, 2);
+        REQUIRE_FALSE(isolated_mid.isConnected());
+
+        Graph multiple_isolated(5);
+        multiple_isolated.addEdge(1, 2);
+        REQUIRE_FALSE(multiple_isolated.isConnected());
+    }
+
+    SECTION("edge cases") {
+        Graph two_no_edge(2);
+        REQUIRE_FALSE(two_no_edge.isConnected());
+
+        Graph two_one_edge(2);
+        two_one_edge.addEdge(0, 1);
+        REQUIRE(two_one_edge.isConnected());
+
+        for (int n = 1; n <= 5; ++n) {
+            Graph kn = Graph::byName("K" + std::to_string(n));
+            REQUIRE(kn.isConnected());
+        }
     }
 }
 
