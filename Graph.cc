@@ -164,6 +164,8 @@ Graph Graph::byName(std::string name) {
 }
 
 Graph Graph::cycle(int n) {
+    if (n < 3)
+	throw std::invalid_argument("Graph::cycle: cycles must have at least 3 vertices");
     Graph g(n);
     for (int u = 0; u + 1 < n; ++u)
 	g.addEdge(u, u + 1);

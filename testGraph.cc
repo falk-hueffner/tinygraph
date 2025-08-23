@@ -18,6 +18,7 @@
 #include "Graph.hh"
 
 #include <set>
+#include <string>
 #include "catch.hh"
 
 TEST_CASE("Graph basic operations", "[Graph]") {
@@ -247,6 +248,51 @@ TEST_CASE("Graph complement", "[Graph]") {
         REQUIRE(comp.n() == 3);
         REQUIRE(comp.m() == 1);
         REQUIRE(comp.hasEdge(0, 2));
+    }
+}
+
+TEST_CASE("Graph cycle method", "[Graph]") {
+    SECTION("invalid small cycles") {
+        REQUIRE_THROWS_AS(Graph::cycle(0), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::cycle(1), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::cycle(2), std::invalid_argument);
+    }
+
+    SECTION("triangle cycle") {
+        Graph c3 = Graph::cycle(3);
+        REQUIRE(c3.n() == 3);
+        REQUIRE(c3.m() == 3);
+        REQUIRE(c3.hasEdge(0, 1));
+        REQUIRE(c3.hasEdge(1, 2));
+        REQUIRE(c3.hasEdge(2, 0));
+        REQUIRE(c3.isConnected());
+        for (int i = 0; i < 3; ++i) {
+            REQUIRE(c3.deg(i) == 2);
+        }
+    }
+
+    SECTION("square cycle") {
+        Graph c4 = Graph::cycle(4);
+        REQUIRE(c4.n() == 4);
+        REQUIRE(c4.m() == 4);
+        REQUIRE(c4.hasEdge(0, 1));
+        REQUIRE(c4.hasEdge(1, 2));
+        REQUIRE(c4.hasEdge(2, 3));
+        REQUIRE(c4.hasEdge(3, 0));
+        REQUIRE(c4.isConnected());
+        for (int i = 0; i < 4; ++i) {
+            REQUIRE(c4.deg(i) == 2);
+        }
+    }
+
+    SECTION("equivalence with byName") {
+        for (int n = 3; n <= 6; ++n) {  // Only test valid cycles (n >= 3)
+            Graph cycle1 = Graph::cycle(n);
+            Graph cycle2 = Graph::byName("C" + std::to_string(n));
+            REQUIRE(cycle1.n() == cycle2.n());
+            REQUIRE(cycle1.m() == cycle2.m());
+            // Note: We don't check exact equality because canonical forms might differ
+        }
     }
 }
 
