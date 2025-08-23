@@ -37,7 +37,7 @@ struct Property {
     PropertyTest test;
     // if G has the property, then also every induced subgraph of G has
     bool hereditary;
-    // G has the property if and only if each connected subgraph has the property
+    // G has the property if and only if each connected component has the property
     bool determinedByConnectedComponents;
 };
 
