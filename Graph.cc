@@ -61,16 +61,43 @@ Graph Graph::ofNauty(word* nautyg, int n) {
 }
 
 Graph Graph::ofGraph6(std::string g6) {
-    for (size_t i = 0; i < g6.size(); ++i)
-        g6[i] -= 63;
-    int n = g6[0];
+    auto decodeChar = [](unsigned char c) -> int {
+        if (c < 63 || c > 126)
+            throw std::invalid_argument("Graph::ofGraph6: invalid character");
+        return c - 63;
+    };
+
+    if (g6.empty())
+        throw std::invalid_argument("Graph::ofGraph6: empty input");
+
+    size_t pos = 0;
+    int n = 0;
+    if (static_cast<unsigned char>(g6[0]) != 126) {
+        n = decodeChar(static_cast<unsigned char>(g6[0]));
+        pos = 1;
+    } else {
+        if (g6.size() < 4)
+            throw std::invalid_argument("Graph::ofGraph6: truncated header");
+        n = (decodeChar(static_cast<unsigned char>(g6[1])) << 12)
+            | (decodeChar(static_cast<unsigned char>(g6[2])) << 6)
+            | decodeChar(static_cast<unsigned char>(g6[3]));
+        pos = 4;
+    }
+    if (n > maxn())
+        throw std::invalid_argument("Graph::ofGraph6: graph too large");
+
+    size_t numBits = (size_t(n) * (n - 1)) / 2;
+    size_t numChars = (numBits + 5) / 6;
+    if (g6.size() != pos + numChars)
+        throw std::invalid_argument("Graph::ofGraph6: wrong length");
+
     Graph g(n);
     int b = 0;
     for (int j = 0 ; j < n; ++j) {
         for (int i = 0; i < j; ++i) {
-            int byte = 1 + (b / 6);
+            size_t byte = pos + (b / 6);
             int bit = 5 - (b % 6);
-            if ((g6[byte] >> bit) & 1)
+            if ((decodeChar(static_cast<unsigned char>(g6[byte])) >> bit) & 1)
                 g.addEdge(i, j);
             ++b;
         }
@@ -429,7 +456,14 @@ std::string Graph::toString() const {
 
 std::string Graph::graph6() const {
     std::string s;
-    s += n() + 63;
+    if (n() <= 62) {
+        s += n() + 63;
+    } else {
+        s += char(126);
+        s += char(((n() >> 12) & 63) + 63);
+        s += char(((n() >> 6) & 63) + 63);
+        s += char((n() & 63) + 63);
+    }
     int k = 6;
     int x = 0;
     for (int j = 1; j < n(); ++j) {

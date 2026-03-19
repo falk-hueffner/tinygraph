@@ -405,6 +405,27 @@ TEST_CASE("Graph canonical form", "[Graph]") {
     }
 }
 
+TEST_CASE("Graph graph6", "[Graph]") {
+    SECTION("roundtrip small graph") {
+        Graph g = Graph::byName("P4");
+        REQUIRE(Graph::ofGraph6(g.graph6()) == g);
+    }
+
+    SECTION("reject malformed input") {
+        REQUIRE_THROWS_AS(Graph::ofGraph6(""), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::ofGraph6("A"), std::invalid_argument);
+    }
+
+    SECTION("roundtrip extended header") {
+        if (Graph::maxn() >= 64) {
+            Graph g(64);
+            for (int u = 0; u + 1 < g.n(); ++u)
+                g.addEdge(u, u + 1);
+            REQUIRE(Graph::ofGraph6(g.graph6()) == g);
+        }
+    }
+}
+
 TEST_CASE("Graph edges iteration", "[Graph]") {
     SECTION("empty graph") {
         Graph g(3);
