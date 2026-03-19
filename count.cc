@@ -191,7 +191,8 @@ int main(int argc, char* argv[]) {
 	    }
 	    Graph f = Graph::byName(type);
 	    propertyName += f.name() + "-free";
-	    test = std::not1(induced ? Subgraph::hasInducedTest(f) : Subgraph::hasTest(f));
+	    auto hasSubgraph = induced ? Subgraph::hasInducedTest(f) : Subgraph::hasTest(f);
+	    test = [hasSubgraph](const Graph& g) { return !hasSubgraph(g); };
 	    determinedByConnectedComponents &= f.isConnected();
 	} else {
 	    std::cerr << "unknown graph class\n";
@@ -228,7 +229,8 @@ int main(int argc, char* argv[]) {
 			       count += countLabeled ? g.numLabeledGraphs() : 1;
 		       };
 	if (doPrune) {
-	    Graph::enumerate(n, counter, std::not1(propertyTest), gengFlags);
+	    auto prune = [propertyTest](const Graph& g) { return !propertyTest(g); };
+	    Graph::enumerate(n, counter, prune, gengFlags);
 	} else {
 	    Graph::enumerate(n, counter, gengFlags);
 	}
