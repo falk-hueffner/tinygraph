@@ -112,6 +112,8 @@ Graph Graph::byName(std::string name) {
 	return p->second;
 
     auto stoi = [](const std::string& s) -> int {
+	if (s.empty())
+	    throw std::invalid_argument("Graph::byName: invalid number");
 	int r = 0;
 	for (std::size_t i = 0; i < s.size(); ++i) {
 	    if (!('0' <= s[i] && s[i] <= '9'))

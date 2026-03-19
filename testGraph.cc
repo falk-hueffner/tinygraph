@@ -183,6 +183,9 @@ TEST_CASE("Graph byName error handling", "[Graph]") {
         REQUIRE_THROWS_AS(Graph::byName(""), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("unknown"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("K"), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::byName("K,"), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::byName("K2,"), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::byName("K,3"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("P"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("C"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("C0"), std::invalid_argument);
