@@ -103,7 +103,7 @@ bool isSplit(const Graph& g) {
     int degs[n];
     for (int u = 0; u < n; ++u)
 	degs[u] = g.deg(u);
-    std::sort(degs, degs + n, std::greater<std::size_t>());
+    std::sort(degs, degs + n, std::greater<int>());
     int sum1 = 0, i;
     for (i = 0; i < n && degs[i] >= i; ++i)
         sum1 += degs[i];
