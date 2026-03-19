@@ -18,6 +18,7 @@
 #ifndef TINYGRAPH_BITS_HH_INCLUDED
 #define TINYGRAPH_BITS_HH_INCLUDED
 
+#include <climits>
 #include <cstdint>
 
 #include "wordsize.h"
@@ -62,7 +63,7 @@ inline int clz(word x) {
 		  sizeof (word) == sizeof (long long),
 		  "cannot determine clz intrinsic");
     if (sizeof (word) <= sizeof (int))
-	return __builtin_clz(x);
+	return __builtin_clz(x) - (sizeof(int) * CHAR_BIT - WORDSIZE);
     else if (sizeof (word) == sizeof (long))
 	return __builtin_clzl(x);
     else
