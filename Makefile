@@ -57,6 +57,8 @@ testMain: testMain.o testBits.o testSet.o testClasses.o testGraph.o testSubgraph
 	$(CXX) $(CXXFLAGS) $^ $(GMP_LIBS) -o $@
 
 Graph.o: nauty
+geng.o: nauty
+$(addprefix nauty/,$(GENG_OBJ)): nauty
 
 
 nauty: nauty$(NAUTY_VERSION).tar.gz wordsize.h
