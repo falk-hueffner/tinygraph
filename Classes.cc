@@ -135,6 +135,10 @@ bool isThreshold(const Graph& g) {
     return isSplit(g) && isCograph(g);
 }
 
+bool isTree(const Graph& g) {
+    return g.isConnected() && g.m() == g.n() - 1;
+}
+
 bool isP4Sparse(const Graph& g) {
     static auto c5 = Subgraph::hasInducedTest(Graph::byName("C5"));
     static auto p5 = Subgraph::hasInducedTest(Graph::byName("P5"));

@@ -23,6 +23,15 @@ TEST_CASE("chordal", "[Classes]" ) {
     REQUIRE(Classes::isChordal(Graph::byName("K2")));
 }
 
+TEST_CASE("tree", "[Classes]") {
+    REQUIRE_FALSE(Classes::isTree(Graph::byName("K0")));
+    REQUIRE(Classes::isTree(Graph::byName("K1")));
+    REQUIRE(Classes::isTree(Graph::byName("P3")));
+    REQUIRE(Classes::isTree(Graph::byName("claw")));
+    REQUIRE_FALSE(Classes::isTree(Graph::byName("triangle")));
+    REQUIRE_FALSE(Classes::isTree(Graph::byName("K2+K1")));
+}
+
 TEST_CASE("two-edge-connected", "[Classes]") {
     REQUIRE_FALSE(Classes::isTwoEdgeConnected(Graph::byName("K1")));
     REQUIRE_FALSE(Classes::isTwoEdgeConnected(Graph::byName("K2")));
