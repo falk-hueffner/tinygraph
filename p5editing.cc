@@ -95,11 +95,9 @@ std::vector<std::pair<int, int>> p5Editing(const Graph& g0) {
 }
 
 int main() {
-    double max_f = 0;
     for (int n = 1; n <= MAXN; ++n) {
-	double max_f_n = 0;
 	std::cerr << "--- n = " << n << std::endl;
-	Graph::enumerate(n, [&max_f, &max_f_n](const Graph& g) {
+	Graph::enumerate(n, [](const Graph& g) {
 		Set vs = g.vertices() - verticesInP5s(g);
 		if (!vs.isEmpty()) {
 		    auto s = p5Editing(g);
