@@ -52,7 +52,7 @@ forbidden-subgraphs: forbidden-subgraphs.o Classes.o Invariants.o Subgraph.o $(C
 test: testMain
 	./testMain
 
-testMain: testMain.o testBits.o testSet.o testClasses.o testGraph.o testSubgraph.o testEulerTransform.o \
+testMain: testMain.o testBits.o testSet.o testClasses.o testGraph.o testSubgraph.o testEulerTransform.o testInvariants.o \
 		$(COMMON_OBJ) Invariants.o Classes.o Subgraph.o EulerTransform.o
 	$(CXX) $(CXXFLAGS) $^ $(GMP_LIBS) -o $@
 

@@ -69,7 +69,7 @@ int radius(const Graph& g) {
 	    layer = nextLayer;
 	}
 	if (seen != g.vertices())
-	    return 0;
+	    return Graph::maxn();
 	radius = std::min(radius, d);
     }
     return radius;
