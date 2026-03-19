@@ -152,8 +152,8 @@ Graph Graph::byName(std::string name) {
 		for (int v = u + 1; v < n; ++v)
 		    g.addEdge(u, v);
 	} else {
-	    if (type == 'C' && n == 1)
-		throw std::invalid_argument("Graph::byName: self-loops not supported");
+	    if (type == 'C' && n < 3)
+		throw std::invalid_argument("Graph::byName: cycles must have at least 3 vertices");
 	    for (int u = 0; u + 1 < n; ++u)
 		g.addEdge(u, u + 1);
 	    if (type == 'C' && n != 0)

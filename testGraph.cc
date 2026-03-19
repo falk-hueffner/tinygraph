@@ -185,7 +185,9 @@ TEST_CASE("Graph byName error handling", "[Graph]") {
         REQUIRE_THROWS_AS(Graph::byName("K"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("P"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("C"), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::byName("C0"), std::invalid_argument);
         REQUIRE_THROWS_AS(Graph::byName("C1"), std::invalid_argument);
+        REQUIRE_THROWS_AS(Graph::byName("C2"), std::invalid_argument);
     }
 
     SECTION("explicit empty graphs") {
