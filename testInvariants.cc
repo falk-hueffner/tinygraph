@@ -39,3 +39,41 @@ TEST_CASE("diameter and radius", "[Invariants]") {
         REQUIRE(Invariants::radius(g) == Graph::maxn());
     }
 }
+
+TEST_CASE("girth", "[Invariants]") {
+    SECTION("empty graph is acyclic") {
+        REQUIRE(Invariants::girth(Graph(0)) == Graph::maxn() + 1);
+    }
+    SECTION("tree is acyclic") {
+        REQUIRE(Invariants::girth(Graph::byName("P5")) == Graph::maxn() + 1);
+    }
+    SECTION("triangle") {
+        REQUIRE(Invariants::girth(Graph::byName("K3")) == 3);
+    }
+    SECTION("C4, C5, C6, C7") {
+        REQUIRE(Invariants::girth(Graph::cycle(4)) == 4);
+        REQUIRE(Invariants::girth(Graph::cycle(5)) == 5);
+        REQUIRE(Invariants::girth(Graph::cycle(6)) == 6);
+        REQUIRE(Invariants::girth(Graph::cycle(7)) == 7);
+    }
+    SECTION("K4 has girth 3") {
+        REQUIRE(Invariants::girth(Graph::byName("K4")) == 3);
+    }
+    SECTION("K_{3,3} has girth 4") {
+        REQUIRE(Invariants::girth(Graph::byName("K3,3")) == 4);
+    }
+    SECTION("Petersen graph has girth 5") {
+        // graph6 string for the Petersen graph
+        Graph g = Graph::ofGraph6("IsP@OkWHG");
+        REQUIRE(Invariants::girth(g) == 5);
+    }
+    SECTION("disconnected: minimum over components") {
+        Graph g(8);
+        // C4 on {0,1,2,3}
+        g.addEdge(0, 1); g.addEdge(1, 2); g.addEdge(2, 3); g.addEdge(3, 0);
+        // K3 on {4,5,6}
+        g.addEdge(4, 5); g.addEdge(5, 6); g.addEdge(6, 4);
+        // isolated vertex 7
+        REQUIRE(Invariants::girth(g) == 3);
+    }
+}

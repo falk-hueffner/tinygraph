@@ -75,6 +75,40 @@ int radius(const Graph& g) {
     return radius;
 }
 
+// Return value Graph::maxn() + 1 indicates an acyclic graph.
+int girth(const Graph& g) {
+    int n = g.n();
+    int best = Graph::maxn() + 1;
+    for (int v = 0; v < n; ++v) {
+	int dist[Graph::maxn()];
+	for (int i = 0; i < n; ++i)
+	    dist[i] = -1;
+	dist[v] = 0;
+	int queue[Graph::maxn()];
+	queue[0] = v;
+	int head = 0, tail = 1;
+	while (head < tail) {
+	    int w = queue[head++];
+	    int dw = dist[w];
+	    if (2 * dw + 1 >= best)
+		break;
+	    for (int i : g.neighbors(w)) {
+		if (dist[i] < 0) {
+		    dist[i] = dw + 1;
+		    queue[tail++] = i;
+		} else if (dist[i] >= dw) {
+		    int c = dw + 1 + dist[i];
+		    if (c < best)
+			best = c;
+		}
+	    }
+	}
+	if (best == 3)
+	    return 3;
+    }
+    return best;
+}
+
 bool kColorable(const Graph& g, int k, const Set options[], Set uncolored, Set freshColors) {
     if (uncolored.isEmpty())
 	return true;

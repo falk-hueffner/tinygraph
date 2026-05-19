@@ -25,6 +25,7 @@ namespace Invariants {
 
 int diameter(const Graph& g);
 int radius(const Graph& g);
+int girth(const Graph& g);
 int coloringNumber(const Graph& g);
 int cliqueNumber(const Graph& g);
 bool kColorable(const Graph& g, int k);

@@ -92,18 +92,19 @@ std::map<std::string, Property> properties = {
 
 struct IntInvariant {
     std::function<int(const Graph&)> f;
-    enum Combine { COMBINE_NONE, COMBINE_MAX, COMBINE_SUM } combine;
-    bool monotone;          // f(induced subgraph) <= f(G)
-    bool requiresConnected; // restrict enumeration to connected graphs
+    enum Combine { COMBINE_NONE, COMBINE_MAX, COMBINE_MIN, COMBINE_SUM } combine;
+    enum Mono { MONO_NONE, MONO_DEC, MONO_INC } mono;
+    bool requiresConnected;
 };
 
 std::map<std::string, IntInvariant> intInvariants = {
-    {"diameter", {Invariants::diameter,       IntInvariant::COMBINE_NONE, false, true }},
-    {"radius",   {Invariants::radius,         IntInvariant::COMBINE_NONE, false, true }},
-    {"chi",      {Invariants::coloringNumber, IntInvariant::COMBINE_MAX,  true,  false}},
-    {"omega",    {Invariants::cliqueNumber,   IntInvariant::COMBINE_MAX,  true,  false}},
+    {"diameter", {Invariants::diameter,       IntInvariant::COMBINE_NONE, IntInvariant::MONO_NONE, true }},
+    {"radius",   {Invariants::radius,         IntInvariant::COMBINE_NONE, IntInvariant::MONO_NONE, true }},
+    {"girth",    {Invariants::girth,          IntInvariant::COMBINE_MIN,  IntInvariant::MONO_INC,  false}},
+    {"chi",      {Invariants::coloringNumber, IntInvariant::COMBINE_MAX,  IntInvariant::MONO_DEC,  false}},
+    {"omega",    {Invariants::cliqueNumber,   IntInvariant::COMBINE_MAX,  IntInvariant::MONO_DEC,  false}},
     {"m",        {[](const Graph& g) { return g.m(); },
-		  IntInvariant::COMBINE_SUM, true, false}},
+		  IntInvariant::COMBINE_SUM, IntInvariant::MONO_DEC, false}},
 };
 
 enum class CmpOp { LE, LT, GE, GT, EQ, NE };
@@ -235,8 +236,11 @@ int main(int argc, char* argv[]) {
 		case CmpOp::NE: test = [f, rhs](const Graph& g) { return f(g) != rhs; }; break;
 		}
 		bool upperBound = (op == CmpOp::LE || op == CmpOp::LT);
-		bool isHereditary = inv.monotone && upperBound;
-		bool isDByCC = (inv.combine == IntInvariant::COMBINE_MAX) && upperBound;
+		bool lowerBound = (op == CmpOp::GE || op == CmpOp::GT);
+		bool isHereditary = (inv.mono == IntInvariant::MONO_DEC && upperBound)
+				 || (inv.mono == IntInvariant::MONO_INC && lowerBound);
+		bool isDByCC = (inv.combine == IntInvariant::COMBINE_MAX && upperBound)
+			    || (inv.combine == IntInvariant::COMBINE_MIN && lowerBound);
 		hereditary &= isHereditary;
 		determinedByConnectedComponents &= isDByCC;
 		if (inv.requiresConnected) {
