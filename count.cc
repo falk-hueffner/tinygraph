@@ -58,23 +58,6 @@ std::map<std::string, Property> properties = {
     {"7-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 7); }, true,  true}},
     {"8-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 8); }, true,  true}},
     {"9-colorable",   {[](const Graph& g) { return Invariants::kColorable(g, 9); }, true,  true}},
-    {"radius-2",      {[](const Graph& g) { return Invariants::radius(g) == 2; }, false, false}},
-    {"diameter-2",    {[](const Graph& g) { return Invariants::diameter(g) == 2; }, false, false}},
-    {"diameter-3",    {[](const Graph& g) { return Invariants::diameter(g) == 3; }, false, false}},
-    {"diameter-4",    {[](const Graph& g) { return Invariants::diameter(g) == 4; }, false, false}},
-    {"diameter-5",    {[](const Graph& g) { return Invariants::diameter(g) == 5; }, false, false}},
-    {"diameter-6",    {[](const Graph& g) { return Invariants::diameter(g) == 6; }, false, false}},
-    {"diameter-7",    {[](const Graph& g) { return Invariants::diameter(g) == 7; }, false, false}},
-    {"diameter-8",    {[](const Graph& g) { return Invariants::diameter(g) == 8; }, false, false}},
-    {"diameter-9",    {[](const Graph& g) { return Invariants::diameter(g) == 9; }, false, false}},
-    {"diameter<=2",   {[](const Graph& g) { return Invariants::diameter(g) <= 2; }, false, false}},
-    {"diameter<=3",   {[](const Graph& g) { return Invariants::diameter(g) <= 3; }, false, false}},
-    {"diameter<=4",   {[](const Graph& g) { return Invariants::diameter(g) <= 4; }, false, false}},
-    {"diameter<=5",   {[](const Graph& g) { return Invariants::diameter(g) <= 5; }, false, false}},
-    {"diameter<=6",   {[](const Graph& g) { return Invariants::diameter(g) <= 6; }, false, false}},
-    {"diameter<=7",   {[](const Graph& g) { return Invariants::diameter(g) <= 7; }, false, false}},
-    {"diameter<=8",   {[](const Graph& g) { return Invariants::diameter(g) <= 8; }, false, false}},
-    {"diameter<=9",   {[](const Graph& g) { return Invariants::diameter(g) <= 9; }, false, false}},
     {"P4-sparse",     {Classes::isP4Sparse,                                         true,  true}},
     {"bipartite",     {Classes::isBipartite,                                        true,  true}},
     {"chordal",       {Classes::isChordal,                                          true,  true}},
@@ -106,6 +89,53 @@ std::map<std::string, Property> properties = {
     {"minimally-two-edge-connected",    {Classes::isMinimallyTwoEdgeConnected,      false, false}},
     {"minimally-two-vertex-connected",  {Classes::isMinimallyTwoVertexConnected,    false, false}},
 };
+
+struct IntInvariant {
+    std::function<int(const Graph&)> f;
+    enum Combine { COMBINE_NONE, COMBINE_MAX, COMBINE_SUM } combine;
+    bool monotone;          // f(induced subgraph) <= f(G)
+    bool requiresConnected; // restrict enumeration to connected graphs
+};
+
+std::map<std::string, IntInvariant> intInvariants = {
+    {"diameter", {Invariants::diameter,       IntInvariant::COMBINE_NONE, false, true }},
+    {"radius",   {Invariants::radius,         IntInvariant::COMBINE_NONE, false, true }},
+    {"chi",      {Invariants::coloringNumber, IntInvariant::COMBINE_MAX,  true,  false}},
+    {"omega",    {Invariants::cliqueNumber,   IntInvariant::COMBINE_MAX,  true,  false}},
+    {"m",        {[](const Graph& g) { return g.m(); },
+		  IntInvariant::COMBINE_SUM, true, false}},
+};
+
+enum class CmpOp { LE, LT, GE, GT, EQ, NE };
+
+static bool findOp(const std::string& s, size_t& opStart, size_t& opLen, CmpOp& op) {
+    for (size_t i = 0; i < s.size(); ++i) {
+	if (i + 1 < s.size()) {
+	    auto two = s.substr(i, 2);
+	    if (two == "<=") { opStart = i; opLen = 2; op = CmpOp::LE; return true; }
+	    if (two == ">=") { opStart = i; opLen = 2; op = CmpOp::GE; return true; }
+	    if (two == "==") { opStart = i; opLen = 2; op = CmpOp::EQ; return true; }
+	    if (two == "!=") { opStart = i; opLen = 2; op = CmpOp::NE; return true; }
+	}
+	char c = s[i];
+	if (c == '<') { opStart = i; opLen = 1; op = CmpOp::LT; return true; }
+	if (c == '>') { opStart = i; opLen = 1; op = CmpOp::GT; return true; }
+	if (c == '=') { opStart = i; opLen = 1; op = CmpOp::EQ; return true; }
+    }
+    return false;
+}
+
+static const char* opName(CmpOp op) {
+    switch (op) {
+    case CmpOp::LE: return "<=";
+    case CmpOp::LT: return "<";
+    case CmpOp::GE: return ">=";
+    case CmpOp::GT: return ">";
+    case CmpOp::EQ: return "==";
+    case CmpOp::NE: return "!=";
+    }
+    return "?";
+}
 
 std::map<std::string, GengProperty> gengProperties = {
     {"biconnected",           {Graph::BICONNECTED,   false, false}},
@@ -180,7 +210,52 @@ int main(int argc, char* argv[]) {
 		propertyName += ' ';
 	    propertyName += type;
 	    continue;
-	} else if (gengProperties.find(type) != gengProperties.end()) {
+	}
+	{
+	    size_t opStart, opLen;
+	    CmpOp op;
+	    if (findOp(type, opStart, opLen, op)
+		&& intInvariants.count(type.substr(0, opStart))) {
+		std::string name = type.substr(0, opStart);
+		int rhs;
+		try {
+		    rhs = std::stoi(type.substr(opStart + opLen));
+		} catch (...) {
+		    std::cerr << "invalid number in " << type << '\n';
+		    exit(1);
+		}
+		const auto& inv = intInvariants.find(name)->second;
+		auto f = inv.f;
+		switch (op) {
+		case CmpOp::LE: test = [f, rhs](const Graph& g) { return f(g) <= rhs; }; break;
+		case CmpOp::LT: test = [f, rhs](const Graph& g) { return f(g) <  rhs; }; break;
+		case CmpOp::GE: test = [f, rhs](const Graph& g) { return f(g) >= rhs; }; break;
+		case CmpOp::GT: test = [f, rhs](const Graph& g) { return f(g) >  rhs; }; break;
+		case CmpOp::EQ: test = [f, rhs](const Graph& g) { return f(g) == rhs; }; break;
+		case CmpOp::NE: test = [f, rhs](const Graph& g) { return f(g) != rhs; }; break;
+		}
+		bool upperBound = (op == CmpOp::LE || op == CmpOp::LT);
+		bool isHereditary = inv.monotone && upperBound;
+		bool isDByCC = (inv.combine == IntInvariant::COMBINE_MAX) && upperBound;
+		hereditary &= isHereditary;
+		determinedByConnectedComponents &= isDByCC;
+		if (inv.requiresConnected) {
+		    connectedOnly = true;
+		    gengFlags |= Graph::CONNECTED;
+		}
+		if (propertyName != "")
+		    propertyName += ' ';
+		propertyName += name;
+		propertyName += opName(op);
+		propertyName += std::to_string(rhs);
+		if (!propertyTest)
+		    propertyTest = test;
+		else
+		    propertyTest = [propertyTest, test](const Graph& g) { return propertyTest(g) && test(g); };
+		continue;
+	    }
+	}
+	if (gengProperties.find(type) != gengProperties.end()) {
 	    auto p = gengProperties.find(type)->second;
 	    gengFlags |= p.flag;
 	    hereditary &= p.hereditary;
