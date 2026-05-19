@@ -19,6 +19,7 @@
 #define TINYGRAPH_GRAPH_HH_INCLUDED
 
 #include <functional>
+#include <optional>
 #include <stdexcept>
 #include <vector>
 
@@ -230,8 +231,12 @@ public:
 	BIPARTITE     = 1 << 4,
 	TREE          = 1 << 5,
     };
-    static void enumerate(int n, EnumerateCallback f, int flags = 0);
-    static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0);
+    static void enumerate(int n, EnumerateCallback f, int flags = 0,
+			  std::optional<int> mindeg = std::nullopt,
+			  std::optional<int> maxdeg = std::nullopt);
+    static void enumerate(int n, EnumerateCallback f, PruneCallback p, int flags = 0,
+			  std::optional<int> mindeg = std::nullopt,
+			  std::optional<int> maxdeg = std::nullopt);
     static EnumerateCallback enumerateCallback() { return enumerateCallback_; }
     static PruneCallback pruneCallback() { return pruneCallback_; }
 
@@ -243,7 +248,8 @@ public:
     std::string name() const;
 
 private:
-    static void doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags);
+    static void doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags,
+			    std::optional<int> mindeg, std::optional<int> maxdeg);
     std::vector<Set> neighbors_;
     static EnumerateCallback enumerateCallback_;
     static PruneCallback pruneCallback_;

@@ -26,6 +26,7 @@
 #include <ctime>
 #include <map>
 #include <functional>
+#include <optional>
 
 auto maxCpuTime = 1e6;
 
@@ -142,6 +143,8 @@ int main(int argc, char* argv[]) {
     PropertyTest propertyTest = 0;
     std::string propertyName = "";
     int gengFlags = 0;
+    bool isRegular = false;
+    std::optional<int> regularDegree;
     int i = 1;
     bool countLabeled = false;
     if (i < argc && std::string(argv[i]) == "-l") {
@@ -159,6 +162,23 @@ int main(int argc, char* argv[]) {
 	} else if (type == "tree") {
 	    connectedOnly = true;
 	    gengFlags |= Graph::TREE;
+	    continue;
+	} else if (type == "regular"
+		   || (endsWith(type, "-regular")
+		       && type.find_first_not_of("0123456789") == type.size() - std::string("-regular").size())) {
+	    if (isRegular) {
+		std::cerr << "regular specified more than once\n";
+		exit(1);
+	    }
+	    isRegular = true;
+	    hereditary = false;
+	    if (type != "regular")
+		regularDegree = std::stoi(type.substr(0, type.size() - std::string("-regular").size()));
+	    else
+		determinedByConnectedComponents = false;
+	    if (propertyName != "")
+		propertyName += ' ';
+	    propertyName += type;
 	    continue;
 	} else if (gengProperties.find(type) != gengProperties.end()) {
 	    auto p = gengProperties.find(type)->second;
@@ -228,11 +248,40 @@ int main(int argc, char* argv[]) {
 			   if (propertyTest(g))
 			       count += countLabeled ? g.numLabeledGraphs() : 1;
 		       };
-	if (doPrune) {
-	    auto prune = [propertyTest](const Graph& g) { return !propertyTest(g); };
-	    Graph::enumerate(n, counter, prune, gengFlags);
+	auto prune = [propertyTest](const Graph& g) { return !propertyTest(g); };
+	auto enumerate = [&](std::optional<int> mindeg, std::optional<int> maxdeg) {
+	    if (doPrune)
+		Graph::enumerate(n, counter, prune, gengFlags, mindeg, maxdeg);
+	    else
+		Graph::enumerate(n, counter, gengFlags, mindeg, maxdeg);
+	};
+	auto feasibleRegular = [n, gengFlags](int k) {
+	    if (k < 0 || k >= n)
+		return false;
+	    if ((n * k) % 2 != 0)
+		return false;
+	    int m = n * k / 2;
+	    if ((gengFlags & Graph::CONNECTED) && m < n - 1)
+		return false;
+	    if ((gengFlags & Graph::BICONNECTED) && n > 2 && (k < 2 || m < n))
+		return false;
+	    if ((gengFlags & Graph::TREE) && m != n - 1)
+		return false;
+	    return true;
+	};
+	if (isRegular && n > 0) {
+	    if (regularDegree) {
+		if (feasibleRegular(*regularDegree))
+		    enumerate(*regularDegree, *regularDegree);
+	    } else {
+		for (int k = 0; k < n; ++k) {
+		    if (!feasibleRegular(k))
+			continue;
+		    enumerate(k, k);
+		}
+	    }
 	} else {
-	    Graph::enumerate(n, counter, gengFlags);
+	    enumerate(std::nullopt, std::nullopt);
 	}
 	counts.push_back(count);
 	auto tEnd = double(std::clock()) / CLOCKS_PER_SEC;

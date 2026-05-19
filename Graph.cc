@@ -288,7 +288,8 @@ bignum Graph::numLabeledGraphs() const {
     return factorial(n()) / grpsize;
 }
 
-void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
+void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags,
+			std::optional<int> mindeg, std::optional<int> maxdeg) {
     if (enumerateCallback_)
 	throw std::runtime_error("generating graphs is not reentrant");
     if (n == 0) {
@@ -304,6 +305,15 @@ void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) 
     if (flags & TRIANGLE_FREE) argv.push_back("-t");
     if (flags & SQUARE_FREE)   argv.push_back("-f");
     if (flags & BIPARTITE)     argv.push_back("-b");
+    std::string sd, sD;
+    if (mindeg) {
+	sd = "-d" + std::to_string(*mindeg);
+	argv.push_back(sd.c_str());
+    }
+    if (maxdeg) {
+	sD = "-D" + std::to_string(*maxdeg);
+	argv.push_back(sD.c_str());
+    }
     std::string sn = std::to_string(n);
     std::string sm = std::to_string(n - 1) + ':' + std::to_string(n - 1);
     argv.push_back(sn.c_str());
@@ -315,12 +325,14 @@ void Graph::doEnumerate(int n, EnumerateCallback f, PruneCallback p, int flags) 
     pruneCallback_ = nullptr;
 }
 
-void Graph::enumerate(int n, EnumerateCallback f, int flags) {
-    doEnumerate(n, f, nullptr, flags);
+void Graph::enumerate(int n, EnumerateCallback f, int flags,
+		      std::optional<int> mindeg, std::optional<int> maxdeg) {
+    doEnumerate(n, f, nullptr, flags, mindeg, maxdeg);
 }
 
-void Graph::enumerate(int n, EnumerateCallback f, PruneCallback p, int flags) {
-    doEnumerate(n, f, p, flags);
+void Graph::enumerate(int n, EnumerateCallback f, PruneCallback p, int flags,
+		      std::optional<int> mindeg, std::optional<int> maxdeg) {
+    doEnumerate(n, f, p, flags, mindeg, maxdeg);
 }
 
 Graph::EnumerateCallback Graph::enumerateCallback_;
