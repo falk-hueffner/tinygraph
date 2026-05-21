@@ -23,6 +23,7 @@
 #include "Invariants.hh"
 #include "Subgraph.hh"
 
+#include <algorithm>
 #include <ctime>
 #include <map>
 #include <functional>
@@ -105,6 +106,18 @@ std::map<std::string, IntInvariant> intInvariants = {
     {"omega",    {Invariants::cliqueNumber,   IntInvariant::COMBINE_MAX,  IntInvariant::MONO_DEC,  false}},
     {"m",        {[](const Graph& g) { return g.m(); },
 		  IntInvariant::COMBINE_SUM, IntInvariant::MONO_DEC, false}},
+    {"maxdeg",   {[](const Graph& g) {
+		      int d = 0;
+		      for (int u = 0; u < g.n(); ++u)
+			  d = std::max(d, g.deg(u));
+		      return d;
+		  }, IntInvariant::COMBINE_MAX, IntInvariant::MONO_DEC, false}},
+    {"mindeg",   {[](const Graph& g) {
+		      int d = g.n();
+		      for (int u = 0; u < g.n(); ++u)
+			  d = std::min(d, g.deg(u));
+		      return d;
+		  }, IntInvariant::COMBINE_MIN, IntInvariant::MONO_NONE, false}},
 };
 
 enum class CmpOp { LE, LT, GE, GT, EQ, NE };
