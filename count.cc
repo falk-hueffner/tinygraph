@@ -181,6 +181,55 @@ bool endsWith(const std::string& s, const std::string& e) {
     return s.compare(s.length() - e.length(), e.length(), e) == 0;
 }
 
+// Resolve a property name to a post-filter predicate. Used for `non-<name>`,
+// where the negation cannot be delegated to geng's generation flags.
+PropertyTest buildPredicate(const std::string& type) {
+    if (type == "connected")
+	return [](const Graph& g) { return g.isConnected(); };
+    if (type == "tree")
+	return [](const Graph& g) { return Classes::isTree(g); };
+    if (type == "biconnected" || type == "two-vertex-connected")
+	return [](const Graph& g) { return Classes::isTwoVertexConnected(g); };
+    if (type == "bipartite")
+	return [](const Graph& g) { return Classes::isBipartite(g); };
+    if (type == "triangle-free" || type == "induced-triangle-free")
+	return [](const Graph& g) { return !Subgraph::hasK3(g); };
+    if (type == "square-free" || type == "C4-free")
+	return [](const Graph& g) { return !Subgraph::hasC4(g); };
+    if (type == "regular")
+	return [](const Graph& g) {
+	    for (int u = 1; u < g.n(); ++u)
+		if (g.deg(u) != g.deg(0))
+		    return false;
+	    return true;
+	};
+    if (endsWith(type, "-regular")
+	&& type.find_first_not_of("0123456789") == type.size() - std::string("-regular").size()) {
+	int k = std::stoi(type.substr(0, type.size() - std::string("-regular").size()));
+	return [k](const Graph& g) {
+	    for (int u = 0; u < g.n(); ++u)
+		if (g.deg(u) != k)
+		    return false;
+	    return true;
+	};
+    }
+    auto p = properties.find(type);
+    if (p != properties.end())
+	return p->second.test;
+    if (endsWith(type, "-free")) {
+	std::string f = type.substr(0, type.length() - std::string("-free").length());
+	bool induced = false;
+	if (startsWith(f, "induced-")) {
+	    f = f.substr(std::string("induced-").length());
+	    induced = true;
+	}
+	Graph fg = Graph::byName(f);
+	auto hasSubgraph = induced ? Subgraph::hasInducedTest(fg) : Subgraph::hasTest(fg);
+	return [hasSubgraph](const Graph& g) { return !hasSubgraph(g); };
+    }
+    throw std::invalid_argument("non-: unknown property '" + type + "'");
+}
+
 int main(int argc, char* argv[]) {
     bool hereditary = true;
     bool connectedOnly = false;
@@ -199,6 +248,26 @@ int main(int argc, char* argv[]) {
     for (; i < argc; ++i) {
 	std::string type = argv[i];
 	PropertyTest test = 0;
+	if (startsWith(type, "non-")) {
+	    PropertyTest base;
+	    try {
+		base = buildPredicate(type.substr(std::string("non-").length()));
+	    } catch (const std::exception& e) {
+		std::cerr << e.what() << '\n';
+		exit(1);
+	    }
+	    test = [base](const Graph& g) { return !base(g); };
+	    hereditary = false;
+	    determinedByConnectedComponents = false;
+	    if (propertyName != "")
+		propertyName += ' ';
+	    propertyName += type;
+	    if (!propertyTest)
+		propertyTest = test;
+	    else
+		propertyTest = [propertyTest, test](const Graph& g) { return propertyTest(g) && test(g); };
+	    continue;
+	}
 	if (type == "connected") {
 	    connectedOnly = true;
 	    gengFlags |= Graph::CONNECTED;
